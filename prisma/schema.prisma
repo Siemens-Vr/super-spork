@@ -1,0 +1,525 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum ChallengePurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum DocumentCategory {
+  NATIONAL_ID
+  PASSPORT
+  BACHELOR
+  MASTER
+  PHD
+  DIPLOMA
+  TRANSCRIPT
+  SHORT_COURSE
+  INDUSTRY_CERTIFICATION
+  PROFESSIONAL_REGISTRATION
+  OTHER
+}
+
+enum VerificationStatus {
+  UPLOADED
+  UNDER_REVIEW
+  ADDITIONAL_EVIDENCE_REQUIRED
+  AUTHENTICATED
+  REJECTED
+  DISPUTED
+}
+
+enum VerificationMethod {
+  MANUAL
+  INSTITUTION_CONFIRMATION
+  OFFICIAL_VERIFICATION
+  AI_ASSISTED
+}
+
+enum ScanStatus {
+  QUARANTINED
+  CLEAN
+  INFECTED
+  FAILED
+}
+
+enum BookingStatus {
+  SCHEDULED
+  CANCELLED
+  RESCHEDULED
+  COMPLETED
+  EXPIRED
+  MISSED
+}
+
+model User {
+  id              String                 @id @default(uuid()) @db.Uuid
+  email           String                 @unique
+  legalName       String
+  phone           String?
+  passwordHash    String?
+  emailVerifiedAt DateTime?              @db.Timestamptz(3)
+  status          AccountStatus          @default(ACTIVE)
+  sessionVersion  Int                    @default(0)
+  createdAt       DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime               @updatedAt @db.Timestamptz(3)
+  profile         ApplicantProfile?
+  roles           UserRole[]
+  identities      AuthIdentity[]
+  challenges      AuthChallenge[]
+  sessions        Session[]
+  mfa             AdminMfaCredential?
+  documents       Document[]
+  preferences     CareerPreference?
+  bookings        AssessmentBooking[]
+  reviews         DocumentVerification[]
+  evidence        VerificationEvidence[]
+  audits          AuditLog[]
+  suggestions     CompanySuggestion[]
+}
+
+model Role {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id    String           @id @default(uuid()) @db.Uuid
+  name  String           @unique
+  roles RolePermission[]
+}
+
+model UserRole {
+  userId String @db.Uuid
+  roleId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String     @db.Uuid
+  permissionId String     @db.Uuid
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict)
+
+  @@id([roleId, permissionId])
+}
+
+model ApplicantProfile {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @unique @db.Uuid
+  user               User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  country            String   @default("KE")
+  region             String?
+  educationLevel     String?
+  institution        String?
+  discipline         String?
+  professionalStatus String?
+  graduationYear     Int?
+  summary            String?
+  consentVersion     String
+  consentAt          DateTime @default(now()) @db.Timestamptz(3)
+  createdAt          DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime @updatedAt @db.Timestamptz(3)
+}
+
+model AuthIdentity {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  provider  String
+  subject   String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([provider, subject])
+  @@unique([userId, provider])
+}
+
+model Session {
+  sid       String   @id
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Purpose-bound challenges replace two near-identical verification/reset tables.
+model AuthChallenge {
+  id         String           @id @default(uuid()) @db.Uuid
+  userId     String           @db.Uuid
+  user       User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  purpose    ChallengePurpose
+  verifier   String
+  attempts   Int              @default(0)
+  expiresAt  DateTime         @db.Timestamptz(3)
+  consumedAt DateTime?        @db.Timestamptz(3)
+  createdAt  DateTime         @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, purpose, createdAt])
+}
+
+model AdminMfaCredential {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @unique @db.Uuid
+  user            User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  encryptedSecret String
+  recoveryHashes  String[]
+  enabledAt       DateTime? @db.Timestamptz(3)
+  lastCounter     BigInt    @default(-1)
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  action     String
+  resourceId String?
+  details    Json?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([actorId, createdAt])
+  @@index([resourceId])
+}
+
+model Institution {
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @unique
+  country   String     @default("KE")
+  website   String?
+  active    Boolean    @default(true)
+  documents Document[]
+  createdAt DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime   @updatedAt @db.Timestamptz(3)
+}
+
+// Identity and academic records share storage mechanics; category separates their states.
+model Document {
+  id                        String                      @id @default(uuid()) @db.Uuid
+  applicantId               String                      @db.Uuid
+  applicant                 User                        @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  category                  DocumentCategory
+  title                     String
+  issuer                    String?
+  institutionId             String?                     @db.Uuid
+  institution               Institution?                @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  issuedAt                  DateTime?                   @db.Timestamptz(3)
+  expiresAt                 DateTime?                   @db.Timestamptz(3)
+  encryptedCredentialNumber String?
+  verificationUrl           String?
+  storageKey                String                      @unique
+  mimeType                  String
+  size                      Int
+  sha256                    String
+  scanStatus                ScanStatus                  @default(QUARANTINED)
+  status                    VerificationStatus          @default(UPLOADED)
+  replacesId                String?                     @unique @db.Uuid
+  replaces                  Document?                   @relation("DocumentVersions", fields: [replacesId], references: [id], onDelete: Restrict)
+  replacement               Document?                   @relation("DocumentVersions")
+  reviews                   DocumentVerification[]
+  evidence                  VerificationEvidence[]
+  history                   VerificationStatusHistory[]
+  analysisJobs              DocumentAnalysisJob[]
+  createdAt                 DateTime                    @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime                    @updatedAt @db.Timestamptz(3)
+
+  @@index([applicantId, category])
+  @@index([scanStatus, status])
+}
+
+model DocumentVerification {
+  id                String             @id @default(uuid()) @db.Uuid
+  documentId        String             @db.Uuid
+  document          Document           @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  reviewerId        String             @db.Uuid
+  reviewer          User               @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  method            VerificationMethod
+  outcome           VerificationStatus
+  reason            String
+  internalNotes     String?
+  evidenceReference String?
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+}
+
+model VerificationEvidence {
+  id         String   @id @default(uuid()) @db.Uuid
+  documentId String   @db.Uuid
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  authorId   String   @db.Uuid
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  note       String
+  reference  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model VerificationStatusHistory {
+  id         String              @id @default(uuid()) @db.Uuid
+  documentId String              @db.Uuid
+  document   Document            @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  fromStatus VerificationStatus?
+  toStatus   VerificationStatus
+  actorId    String              @db.Uuid
+  reason     String
+  createdAt  DateTime            @default(now()) @db.Timestamptz(3)
+}
+
+model DocumentAnalysisJob {
+  id             String   @id @default(uuid()) @db.Uuid
+  documentId     String   @db.Uuid
+  document       Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  serviceVersion String
+  state          String   @default("NOT_REQUESTED")
+  findings       Json?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model Industry {
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String               @unique
+  description String
+  active      Boolean              @default(true)
+  companies   CompanyIndustry[]
+  jobRoles    JobRoleIndustry[]
+  preferences IndustryPreference[]
+  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime             @updatedAt @db.Timestamptz(3)
+}
+
+model Company {
+  id          String              @id @default(uuid()) @db.Uuid
+  name        String              @unique
+  description String
+  website     String?
+  country     String              @default("KE")
+  active      Boolean             @default(true)
+  industries  CompanyIndustry[]
+  preferences CompanyPreference[]
+  createdAt   DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime            @updatedAt @db.Timestamptz(3)
+}
+
+model CompanyIndustry {
+  companyId  String   @db.Uuid
+  industryId String   @db.Uuid
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  industry   Industry @relation(fields: [industryId], references: [id], onDelete: Restrict)
+
+  @@id([companyId, industryId])
+}
+
+model CompanySuggestion {
+  id             String   @id @default(uuid()) @db.Uuid
+  applicantId    String   @db.Uuid
+  applicant      User     @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  name           String
+  website        String?
+  status         String   @default("PENDING")
+  decisionReason String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+}
+
+model JobRole {
+  id          String                @id @default(uuid()) @db.Uuid
+  title       String                @unique
+  description String
+  active      Boolean               @default(true)
+  industries  JobRoleIndustry[]
+  preferences CareerPreference[]
+  frameworks  CompetencyFramework[]
+  blueprints  AssessmentBlueprint[]
+  createdAt   DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime              @updatedAt @db.Timestamptz(3)
+}
+
+model JobRoleIndustry {
+  jobRoleId  String   @db.Uuid
+  industryId String   @db.Uuid
+  jobRole    JobRole  @relation(fields: [jobRoleId], references: [id], onDelete: Restrict)
+  industry   Industry @relation(fields: [industryId], references: [id], onDelete: Restrict)
+
+  @@id([jobRoleId, industryId])
+}
+
+model CareerPreference {
+  id            String               @id @default(uuid()) @db.Uuid
+  applicantId   String               @unique @db.Uuid
+  applicant     User                 @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  primaryRoleId String               @db.Uuid
+  primaryRole   JobRole              @relation(fields: [primaryRoleId], references: [id], onDelete: Restrict)
+  industries    IndustryPreference[]
+  companies     CompanyPreference[]
+  updatedAt     DateTime             @updatedAt @db.Timestamptz(3)
+}
+
+model IndustryPreference {
+  preferenceId String           @db.Uuid
+  industryId   String           @db.Uuid
+  rank         Int
+  preference   CareerPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  industry     Industry         @relation(fields: [industryId], references: [id], onDelete: Restrict)
+
+  @@id([preferenceId, industryId])
+  @@unique([preferenceId, rank])
+}
+
+model CompanyPreference {
+  preferenceId String           @db.Uuid
+  companyId    String           @db.Uuid
+  rank         Int
+  preference   CareerPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  company      Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@id([preferenceId, companyId])
+  @@unique([preferenceId, rank])
+}
+
+model Competency {
+  id          String                @id @default(uuid()) @db.Uuid
+  code        String                @unique
+  name        String
+  description String
+  frameworks  FrameworkCompetency[]
+}
+
+model CompetencyFramework {
+  id           String                @id @default(uuid()) @db.Uuid
+  jobRoleId    String                @db.Uuid
+  jobRole      JobRole               @relation(fields: [jobRoleId], references: [id], onDelete: Restrict)
+  version      Int
+  title        String
+  approved     Boolean               @default(false)
+  competencies FrameworkCompetency[]
+  blueprints   AssessmentBlueprint[]
+  createdAt    DateTime              @default(now()) @db.Timestamptz(3)
+
+  @@unique([jobRoleId, version])
+}
+
+model FrameworkCompetency {
+  frameworkId  String              @db.Uuid
+  competencyId String              @db.Uuid
+  framework    CompetencyFramework @relation(fields: [frameworkId], references: [id], onDelete: Restrict)
+  competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Restrict)
+  weight       Int
+
+  @@id([frameworkId, competencyId])
+}
+
+model AssessmentBlueprint {
+  id                            String                   @id @default(uuid()) @db.Uuid
+  jobRoleId                     String                   @db.Uuid
+  jobRole                       JobRole                  @relation(fields: [jobRoleId], references: [id], onDelete: Restrict)
+  frameworkId                   String                   @db.Uuid
+  framework                     CompetencyFramework      @relation(fields: [frameworkId], references: [id], onDelete: Restrict)
+  version                       Int
+  title                         String
+  durationMinutes               Int
+  instructions                  String
+  active                        Boolean                  @default(false)
+  requiresAuthenticatedIdentity Boolean                  @default(false)
+  requiresAuthenticatedAcademic Boolean                  @default(false)
+  availability                  AssessmentAvailability[]
+  bookings                      AssessmentBooking[]
+  createdAt                     DateTime                 @default(now()) @db.Timestamptz(3)
+
+  @@unique([jobRoleId, version])
+}
+
+model AssessmentAvailability {
+  id                        String              @id @default(uuid()) @db.Uuid
+  blueprintId               String              @db.Uuid
+  blueprint                 AssessmentBlueprint @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  startsAt                  DateTime            @db.Timestamptz(3)
+  endsAt                    DateTime            @db.Timestamptz(3)
+  capacity                  Int
+  minNoticeMinutes          Int                 @default(60)
+  maxHorizonDays            Int                 @default(90)
+  cancellationNoticeMinutes Int                 @default(60)
+  rescheduleLimit           Int                 @default(2)
+  timezone                  String              @default("Africa/Nairobi")
+  active                    Boolean             @default(true)
+  slots                     AssessmentSlot[]
+  createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentSlot {
+  id             String                 @id @default(uuid()) @db.Uuid
+  availabilityId String                 @db.Uuid
+  availability   AssessmentAvailability @relation(fields: [availabilityId], references: [id], onDelete: Restrict)
+  startsAt       DateTime               @db.Timestamptz(3)
+  endsAt         DateTime               @db.Timestamptz(3)
+  bookings       AssessmentBooking[]
+
+  @@unique([availabilityId, startsAt])
+  @@index([startsAt])
+}
+
+model AssessmentBooking {
+  id                String                   @id @default(uuid()) @db.Uuid
+  applicantId       String                   @db.Uuid
+  applicant         User                     @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  blueprintId       String                   @db.Uuid
+  blueprint         AssessmentBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  slotId            String                   @db.Uuid
+  slot              AssessmentSlot           @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  seat              Int
+  status            BookingStatus            @default(SCHEDULED)
+  idempotencyKey    String
+  rescheduleCount   Int                      @default(0)
+  rescheduledFromId String?                  @unique @db.Uuid
+  rescheduledFrom   AssessmentBooking?       @relation("BookingChain", fields: [rescheduledFromId], references: [id], onDelete: Restrict)
+  rescheduledTo     AssessmentBooking?       @relation("BookingChain")
+  events            AssessmentBookingEvent[]
+  createdAt         DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime                 @updatedAt @db.Timestamptz(3)
+
+  @@unique([applicantId, idempotencyKey])
+  @@index([slotId, status])
+  @@index([applicantId, createdAt])
+}
+
+model AssessmentBookingEvent {
+  id        String            @id @default(uuid()) @db.Uuid
+  bookingId String            @db.Uuid
+  booking   AssessmentBooking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  actorId   String            @db.Uuid
+  action    String
+  reason    String?
+  createdAt DateTime          @default(now()) @db.Timestamptz(3)
+}
+
+model NotificationOutbox {
+  id               String    @id @default(uuid()) @db.Uuid
+  encryptedPayload String?
+  status           String    @default("PENDING")
+  sentAt           DateTime? @db.Timestamptz(3)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([status, createdAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int      @default(1)
+  expiresAt DateTime @db.Timestamptz(3)
+}
