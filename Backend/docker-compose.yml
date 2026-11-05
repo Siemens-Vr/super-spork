@@ -1,0 +1,56 @@
+# Development infrastructure only. Do not expose this configuration publicly.
+services:
+  postgres:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_DB: nexus
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: nexus
+    # Keep the host's PostgreSQL (usually on 5432) available for other projects.
+    ports: ['127.0.0.1:55432:5432']
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nexus -d nexus']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    ports: ['127.0.0.1:6379:6379']
+    volumes: [redis-data:/data]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  minio:
+    # Silo is the maintained MinIO fork; the upstream images are no longer public.
+    image: docker.io/pgsty/silo:RELEASE.2026-10-26T00-00-00Z
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: nexus-local
+      MINIO_ROOT_PASSWORD: nexus-local-change-me
+    ports: ['127.0.0.1:9000:9000', '127.0.0.1:9001:9001']
+    volumes: [object-data:/data]
+  storage-init:
+    image: docker.io/pgsty/mc:RELEASE.2026-10-26T00-00-00Z
+    depends_on: [minio]
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - >-
+        until mc alias set local http://minio:9000 nexus-local nexus-local-change-me; do sleep 2; done;
+        mc mb --ignore-existing local/nexus-private;
+        mc anonymous set none local/nexus-private
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ['127.0.0.1:1025:1025', '127.0.0.1:8025:8025']
+  clamav:
+    image: clamav/clamav:1.4
+    ports: ['127.0.0.1:3310:3310']
+    volumes: [clamav-data:/var/lib/clamav]
+volumes:
+  postgres-data:
+  redis-data:
+  object-data:
+  clamav-data:
