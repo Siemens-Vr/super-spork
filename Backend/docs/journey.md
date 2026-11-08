@@ -34,11 +34,12 @@ curl -sS -X PATCH -b "$NEXUS_COOKIE" -H "X-CSRF-Token: $NEXUS_CSRF" -H 'Content-
 # Set this to an actual nonsensitive PDF/JPEG/PNG file for local testing:
 export NEXUS_SAMPLE_FILE=/absolute/path/to/sample.pdf
 curl -sS -b "$NEXUS_COOKIE" -H "X-CSRF-Token: $NEXUS_CSRF" \
-  -F category=NATIONAL_ID -F 'title=Identity onboarding test' -F "file=@$NEXUS_SAMPLE_FILE;type=application/pdf" \
+  -F category=NATIONAL_ID -F "file=@$NEXUS_SAMPLE_FILE;type=application/pdf" \
   "$NEXUS_API/identity/documents"
 # Optional academic document (identity need only be submitted, not authenticated):
 curl -sS -b "$NEXUS_COOKIE" -H "X-CSRF-Token: $NEXUS_CSRF" \
-  -F category=BACHELOR -F 'title=BEng Mechatronics test' -F 'issuer=Example Technical Institution' \
+  -F category=BACHELOR -F 'institutionName=Example Technical Institution' \
+  -F "transcripts=@$NEXUS_SAMPLE_FILE;type=application/pdf" \
   -F "file=@$NEXUS_SAMPLE_FILE;type=application/pdf" "$NEXUS_API/documents"
 export NEXUS_INDUSTRY="$(curl -sS -b "$NEXUS_COOKIE" "$NEXUS_API/industries" | jq -r '.data[0].id')"
 # Select a role that has a seeded blueprint, such as PLC Programmer:

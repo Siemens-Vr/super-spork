@@ -222,6 +222,7 @@ model Document {
   title                     String
   issuer                    String?
   institutionId             String?                     @db.Uuid
+  institutionName           String?
   institution               Institution?                @relation(fields: [institutionId], references: [id], onDelete: Restrict)
   issuedAt                  DateTime?                   @db.Timestamptz(3)
   expiresAt                 DateTime?                   @db.Timestamptz(3)
@@ -236,6 +237,9 @@ model Document {
   replacesId                String?                     @unique @db.Uuid
   replaces                  Document?                   @relation("DocumentVersions", fields: [replacesId], references: [id], onDelete: Restrict)
   replacement               Document?                   @relation("DocumentVersions")
+  qualificationId           String?                     @db.Uuid
+  qualification             Document?                   @relation("QualificationTranscripts", fields: [qualificationId], references: [id], onDelete: Restrict)
+  transcripts               Document[]                  @relation("QualificationTranscripts")
   reviews                   DocumentVerification[]
   evidence                  VerificationEvidence[]
   history                   VerificationStatusHistory[]
@@ -244,6 +248,7 @@ model Document {
   updatedAt                 DateTime                    @updatedAt @db.Timestamptz(3)
 
   @@index([applicantId, category])
+  @@index([qualificationId])
   @@index([scanStatus, status])
 }
 

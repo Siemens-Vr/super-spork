@@ -8,13 +8,15 @@ import { audit } from '../utils/audit.js';
 export function upload(identity: boolean, replacement = false): RequestHandler {
   return async (req, res) => {
     const id = replacement ? uuid.parse(req.params.id) : undefined;
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
     res.status(201).json({
       data: await s.uploadDocument(
         req.principal!.id,
         documentSchema.parse(req.body),
-        req.file,
+        files?.file?.[0],
         identity,
         id,
+        files?.transcripts ?? [],
       ),
     });
   };
@@ -31,6 +33,7 @@ export function list(identity = false): RequestHandler {
               : { notIn: ['NATIONAL_ID', 'PASSPORT'] },
           },
           orderBy: { createdAt: 'desc' },
+          include: { transcripts: true },
           take: 100,
         })
       ).map(s.publicDocument),

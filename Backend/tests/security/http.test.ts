@@ -95,5 +95,10 @@ describe('HTTP security without external services', () => {
       { sessionCookie: [] },
     ]);
     expect(Object.keys(r.body.paths).length).toBeGreaterThan(50);
+    expect(r.body.paths['/institutions'].get).toBeDefined();
+    expect(r.body.components.schemas.IdentityUpload.required).toEqual(['category', 'file']);
+    expect(r.body.components.schemas.IdentityUpload.properties.title).toBeUndefined();
+    expect(r.body.components.schemas.Upload.properties.transcripts.items.format).toBe('binary');
+    expect(r.body.components.schemas.Upload.properties.title).toBeUndefined();
   });
 });

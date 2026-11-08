@@ -42,7 +42,21 @@ The example above is an illustrative response shape; only a successful database 
 
 Use a persistent cookie jar and obtain a new CSRF token after login/MFA/reauthentication. Do not send a Bearer token; these are server-side sessions. Include a distinct `Idempotency-Key` for booking and rescheduling. Retry a timed-out request with the original key and body. Schema validation is strict on writable bodies; applicant IDs, roles, password hashes, storage keys and review outcomes cannot be mass-assigned.
 
-Multipart endpoints accept one `file`, category, title and optional issuer, institutionId, issuedAt, expiresAt, credentialNumber and verificationUrl. Accepted file types are detected PDF, JPEG and PNG with matching MIME type, up to `MAX_UPLOAD_MB` (10 by default). Dates require timezone offsets. Identity categories only use identity upload/replacement routes; academic categories only use academic routes. Downloads work through `/documents/:id/download` for both owned identity and academic files.
+Multipart uploads derive the title from the uploaded filename; users do not need to enter a title.
+
+| Category                                              | Required multipart fields                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| `NATIONAL_ID`, `PASSPORT`                             | `category`, `file`                                                        |
+| `BACHELOR`, `MASTER`, `DIPLOMA`, `PHD`                | `category`, `file`, institution selection/name, `transcripts` (1–5 files) |
+| `SHORT_COURSE`, standalone `TRANSCRIPT`               | `category`, `file`, institution selection/name                            |
+| `INDUSTRY_CERTIFICATION`, `PROFESSIONAL_REGISTRATION` | `category`, `file`, institution selection/name, `expiresAt`               |
+| `OTHER`                                               | `category`, `file`                                                        |
+
+Populate the searchable institution dropdown using `GET /api/v1/institutions?search=...&page=1&limit=20` (verified session required). Send either the selected `institutionId` or a typed `institutionName`, never both. Typed names are stored on the document, not automatically published in the institution catalogue. Responses include `institutionName` for both selection modes.
+
+Repeat the `transcripts` multipart field for each transcript file. Each transcript is a private `Document` with its own scan/review state and a `qualificationId` linking it to the certificate. Upload, detail and list responses include attached `transcripts`. Replacement degree/diploma uploads require new transcripts; old files remain linked to the old qualification for history. Database records are created atomically, and staged objects are cleaned up on failure.
+
+Accepted file types are detected PDF, JPEG and PNG with matching MIME type, up to `MAX_UPLOAD_MB` (10 by default) **per file**. Every attachment is quarantined until scanning passes. Document dates accept `YYYY-MM-DD` or an ISO datetime with timezone offset. Identity categories only use identity upload/replacement routes; academic categories only use academic routes. Downloads work through `/documents/:id/download` for certificates and transcripts as well as identity files. Legacy optional `title` input is accepted but the filename determines the stored title; other existing optional metadata remains supported.
 
 Admin routes always require a granular permission and recent MFA. Review requests are structured historical decisions, never Boolean toggles. Activation may change independently from blueprint content; published versions stay stable. Every consequential admin change records an audit row.
 

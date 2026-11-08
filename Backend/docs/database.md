@@ -15,6 +15,8 @@ There are 36 Prisma models. Foreign keys generally restrict historical record de
 
 ## Migrations
 
+`20261108090000_document_upload_requirements` adds nullable `institutionName` and `qualificationId` columns. Selected institution names are captured at upload; typed names stay private to the document. Transcript documents reference their qualification through `qualificationId` and retain the existing quarantine, ownership and review protections. Existing records remain unchanged and readable; new category requirements apply to new uploads and replacements.
+
 ```bash
 npm run db:generate
 npm run db:migrate

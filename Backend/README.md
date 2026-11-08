@@ -49,7 +49,7 @@ The bootstrap script refuses a second administrator unless the operator explicit
 
 ## API capabilities
 
-All routes are below `/api/v1`. **88 operations** are documented in [docs/openapi.yaml](docs/openapi.yaml).
+All routes are below `/api/v1`. Operations are documented in [docs/openapi.yaml](docs/openapi.yaml), including searchable `/institutions` for upload dropdowns. See [document upload requirements](docs/api.md) for institution, transcript and expiry fields by category; upload titles come from filenames.
 
 | Area              | Routes                                                                                                                                                                                                                                                                      |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

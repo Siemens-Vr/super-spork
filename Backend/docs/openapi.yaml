@@ -2472,7 +2472,9 @@ paths:
       tags:
         - Documents
       summary: Upload private quarantined document
-      description: Category must be NATIONAL_ID or PASSPORT. Files are limited to 10 MB by default.
+      description:
+        Only category and file are required. Title is derived from the filename. Files are
+        limited to 10 MB by default.
       security:
         - sessionCookie: []
       parameters:
@@ -2488,7 +2490,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Upload'
+              $ref: '#/components/schemas/IdentityUpload'
       responses:
         '201':
           description: Success
@@ -2679,6 +2681,9 @@ paths:
       tags:
         - Documents
       summary: Replace document while retaining prior review history
+      description:
+        Same requirements as a new upload, including fresh transcripts for degrees/diplomas.
+        Prior documents and transcripts remain in the history.
       security:
         - sessionCookie: []
       parameters:
@@ -2700,7 +2705,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Upload'
+              $ref: '#/components/schemas/IdentityUpload'
       responses:
         '201':
           description: Success
@@ -2794,7 +2799,13 @@ paths:
       tags:
         - Documents
       summary: Upload private quarantined document
-      description: Academic category required. A current identity document must have been submitted first.
+      description:
+        Select institutionId from GET /institutions OR supply institutionName. An institution
+        is required for degrees, diplomas, transcripts, short courses and professional credentials.
+        Degrees/diplomas additionally require transcripts. INDUSTRY_CERTIFICATION and
+        PROFESSIONAL_REGISTRATION require expiresAt (YYYY-MM-DD or ISO datetime). Every file must be
+        PDF, JPEG or PNG, at most 10 MB by default. Titles are derived from filenames. A current
+        identity document must have been submitted first.
       security:
         - sessionCookie: []
       parameters:
@@ -3001,6 +3012,9 @@ paths:
       tags:
         - Documents
       summary: Replace document while retaining prior review history
+      description:
+        Same requirements as a new upload, including fresh transcripts for degrees/diplomas.
+        Prior documents and transcripts remain in the history.
       security:
         - sessionCookie: []
       parameters:
@@ -3771,6 +3785,124 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Industry'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /institutions:
+    get:
+      operationId: get__institutions
+      tags:
+        - Career catalogue
+      summary: Browse active institutions
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Institution'
                   meta:
                     type: object
                     properties:
@@ -9990,6 +10122,19 @@ components:
             - string
             - 'null'
           format: uuid
+        institutionName:
+          type:
+            - string
+            - 'null'
+        qualificationId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        transcripts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
         issuedAt:
           type:
             - string
@@ -10849,24 +10994,50 @@ components:
             - PROFESSIONAL_REGISTRATION
             - OTHER
         title:
-          type: string
-          minLength: 2
-          maxLength: 200
+          anyOf:
+            - type: string
+              maxLength: 200
+            - type: string
+              const: ''
         issuer:
           type: string
           maxLength: 200
         institutionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          anyOf:
+            - type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            - type: string
+              const: ''
+        institutionName:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
         issuedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+          anyOf:
+            - anyOf:
+                - type: string
+                  format: date
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                - type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+            - type: string
+              const: ''
         expiresAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+          anyOf:
+            - anyOf:
+                - type: string
+                  format: date
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                - type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+            - type: string
+              const: ''
         credentialNumber:
           type: string
           maxLength: 150
@@ -10876,7 +11047,6 @@ components:
           format: uri
       required:
         - category
-        - title
       additionalProperties: false
     DocumentUpdate:
       type: object
@@ -11073,8 +11243,6 @@ components:
         category:
           type: string
           enum:
-            - NATIONAL_ID
-            - PASSPORT
             - BACHELOR
             - MASTER
             - PHD
@@ -11084,40 +11252,69 @@ components:
             - INDUSTRY_CERTIFICATION
             - PROFESSIONAL_REGISTRATION
             - OTHER
-        title:
-          type: string
-          minLength: 2
-          maxLength: 200
-        issuer:
-          type: string
-          maxLength: 200
         institutionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        issuedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+          anyOf:
+            - type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            - type: string
+              const: ''
+        institutionName:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
         expiresAt:
+          anyOf:
+            - anyOf:
+                - type: string
+                  format: date
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                - type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+            - type: string
+              const: ''
+        file:
           type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
-        credentialNumber:
+          format: binary
+          description: Certificate or document file. Its filename becomes the title.
+        transcripts:
+          type: array
+          items:
+            type: string
+            format: binary
+          minItems: 1
+          maxItems: 5
+          description:
+            Required for BACHELOR, MASTER, PHD and DIPLOMA. Repeat this multipart field for each
+            transcript.
+      required:
+        - category
+        - file
+      additionalProperties: false
+      description:
+        Select institutionId from GET /institutions OR supply institutionName. An institution
+        is required for degrees, diplomas, transcripts, short courses and professional credentials.
+        Degrees/diplomas additionally require transcripts. INDUSTRY_CERTIFICATION and
+        PROFESSIONAL_REGISTRATION require expiresAt (YYYY-MM-DD or ISO datetime). Every file must be
+        PDF, JPEG or PNG, at most 10 MB by default. Titles are derived from filenames.
+    IdentityUpload:
+      type: object
+      properties:
+        category:
           type: string
-          maxLength: 150
-        verificationUrl:
-          type: string
-          maxLength: 1000
-          format: uri
+          enum:
+            - NATIONAL_ID
+            - PASSPORT
         file:
           type: string
           format: binary
       required:
         - category
-        - title
         - file
-      additionalProperties: false
     Admin_industries:
       type: object
       properties:

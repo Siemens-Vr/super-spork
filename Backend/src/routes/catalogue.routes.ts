@@ -8,6 +8,24 @@ import { rateLimit } from '../middleware/security.js';
 import { requireCondition } from '../errors/app-error.js';
 export const catalogueRouter = Router();
 catalogueRouter.use(authenticate, verified);
+catalogueRouter.get('/institutions', async (req, res) => {
+  const p = pagination.parse(req.query);
+  const where = {
+    active: true,
+    ...(p.search ? { name: { contains: p.search, mode: 'insensitive' as const } } : {}),
+  };
+  const [data, total] = await Promise.all([
+    prisma.institution.findMany({
+      where,
+      skip: (p.page - 1) * p.limit,
+      take: p.limit,
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, country: true, website: true },
+    }),
+    prisma.institution.count({ where }),
+  ]);
+  res.json({ data, meta: { ...p, total } });
+});
 catalogueRouter.get('/industries', async (req, res) => {
   const p = pagination.parse(req.query);
   const where = {

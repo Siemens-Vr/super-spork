@@ -95,6 +95,9 @@ const schemas: Record<string, Schema> = {
     title: str,
     issuer: { type: ['string', 'null'] },
     institutionId: { type: ['string', 'null'], format: 'uuid' },
+    institutionName: { type: ['string', 'null'] },
+    qualificationId: { type: ['string', 'null'], format: 'uuid' },
+    transcripts: array(ref('Document')),
     issuedAt: { type: ['string', 'null'], format: 'date-time' },
     expiresAt: { type: ['string', 'null'], format: 'date-time' },
     verificationUrl: { type: ['string', 'null'] },
@@ -347,9 +350,39 @@ for (const [name, schema] of Object.entries(inputs)) schemas[name] = json(schema
 const uploadProperties = schemas.DocumentMetadata!.properties as Record<string, unknown>;
 schemas.Upload = {
   ...schemas.DocumentMetadata,
-  properties: { ...uploadProperties, file: { type: 'string', format: 'binary' } },
+  properties: {
+    ...Object.fromEntries(
+      Object.entries(uploadProperties).filter(([key]) =>
+        ['category', 'institutionId', 'institutionName', 'expiresAt'].includes(key),
+      ),
+    ),
+    file: {
+      type: 'string',
+      format: 'binary',
+      description: 'Certificate or document file. Its filename becomes the title.',
+    },
+    transcripts: {
+      type: 'array',
+      items: { type: 'string', format: 'binary' },
+      minItems: 1,
+      maxItems: 5,
+      description:
+        'Required for BACHELOR, MASTER, PHD and DIPLOMA. Repeat this multipart field for each transcript.',
+    },
+  },
   required: [...(schemas.DocumentMetadata!.required as string[]), 'file'],
 };
+schemas.IdentityUpload = object(
+  {
+    category: { type: 'string', enum: [...document.identityCategories] },
+    file: { type: 'string', format: 'binary' },
+  },
+  ['category', 'file'],
+);
+schemas.Upload.description =
+  'Select institutionId from GET /institutions OR supply institutionName. An institution is required for degrees, diplomas, transcripts, short courses and professional credentials. Degrees/diplomas additionally require transcripts. INDUSTRY_CERTIFICATION and PROFESSIONAL_REGISTRATION require expiresAt (YYYY-MM-DD or ISO datetime). Every file must be PDF, JPEG or PNG, at most 10 MB by default. Titles are derived from filenames.';
+const academicUploadProperties = schemas.Upload.properties as Record<string, unknown>;
+academicUploadProperties.category = { type: 'string', enum: [...document.academicCategories] };
 const paths: Record<string, Record<string, unknown>> = {};
 interface Options {
   input?: string;
@@ -590,13 +623,14 @@ add(
 );
 for (const prefix of ['/identity/documents', '/documents']) {
   add('post', prefix, 'Upload private quarantined document', 'Documents', {
-    input: 'Upload',
+    input: prefix.startsWith('/identity') ? 'IdentityUpload' : 'Upload',
     multipart: true,
     status: 201,
     output: ref('Document'),
     description: prefix.startsWith('/identity')
-      ? 'Category must be NATIONAL_ID or PASSPORT. Files are limited to 10 MB by default.'
-      : 'Academic category required. A current identity document must have been submitted first.',
+      ? 'Only category and file are required. Title is derived from the filename. Files are limited to 10 MB by default.'
+      : String(schemas.Upload.description) +
+        ' A current identity document must have been submitted first.',
   });
   add('get', prefix, 'List owned documents', 'Documents', { output: array(ref('Document')) });
   add(
@@ -604,7 +638,14 @@ for (const prefix of ['/identity/documents', '/documents']) {
     `${prefix}/{id}/replace`,
     'Replace document while retaining prior review history',
     'Documents',
-    { input: 'Upload', multipart: true, status: 201, output: ref('Document') },
+    {
+      input: prefix.startsWith('/identity') ? 'IdentityUpload' : 'Upload',
+      multipart: true,
+      status: 201,
+      output: ref('Document'),
+      description:
+        'Same requirements as a new upload, including fresh transcripts for degrees/diplomas. Prior documents and transcripts remain in the history.',
+    },
   );
 }
 add('get', '/identity/status', 'Read identity submissions and review status', 'Documents', {
@@ -643,6 +684,7 @@ add(
 );
 for (const [path, output] of [
   ['industries', 'Industry'],
+  ['institutions', 'Institution'],
   ['companies', 'Company'],
   ['careers', 'Career'],
 ] as const)

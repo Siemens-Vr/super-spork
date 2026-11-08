@@ -4,9 +4,12 @@ export const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: env.MAX_UPLOAD_MB * 1024 * 1024,
-    files: 1,
-    fields: 10,
+    files: 6,
+    fields: 12,
     fieldSize: 4096,
-    parts: 11,
+    parts: 18,
   },
-}).single('file');
+}).fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'transcripts', maxCount: 5 },
+]);

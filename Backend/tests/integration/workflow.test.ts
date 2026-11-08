@@ -77,9 +77,9 @@ async function uploadIdentity(a: Agent) {
     .post('/api/v1/identity/documents')
     .set('X-CSRF-Token', await csrf(a))
     .field('category', 'NATIONAL_ID')
-    .field('title', 'National ID for test applicant')
     .attach('file', pdf, { filename: 'identity.pdf', contentType: 'application/pdf' });
   expect(r.status).toBe(201);
+  expect(r.body.data.title).toBe('identity.pdf');
   return r.body.data.id as string;
 }
 async function readyApplicant() {
@@ -425,6 +425,121 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     start.mockRestore();
     finish.mockRestore();
   });
+  it('supports institution search, typed institutions and linked quarantined transcripts', async () => {
+    const p = await applicant();
+    await uploadIdentity(p.a);
+    const institutions = await p.a.get('/api/v1/institutions?search=Dedan');
+    expect(institutions.status).toBe(200);
+    expect(institutions.body.data).toHaveLength(1);
+    const institution = institutions.body.data[0];
+    const r = await p.a
+      .post('/api/v1/documents')
+      .set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'DIPLOMA')
+      .field('institutionId', institution.id)
+      .attach('file', pdf, { filename: 'diploma.pdf', contentType: 'application/pdf' })
+      .attach('transcripts', pdf, { filename: 'year-1.pdf', contentType: 'application/pdf' })
+      .attach('transcripts', pdf, { filename: 'year-2.pdf', contentType: 'application/pdf' });
+    expect(r.status).toBe(201);
+    expect(r.body.data).toMatchObject({
+      title: 'diploma.pdf',
+      institutionName: institution.name,
+      scanStatus: 'QUARANTINED',
+    });
+    expect(r.body.data.transcripts).toHaveLength(2);
+    for (const transcript of r.body.data.transcripts) {
+      expect(transcript).toMatchObject({
+        category: 'TRANSCRIPT',
+        qualificationId: r.body.data.id,
+        institutionId: institution.id,
+        scanStatus: 'QUARANTINED',
+      });
+      expect((await p.a.get(`/api/v1/documents/${transcript.id}/download`)).status).toBe(409);
+      await scanDocument(transcript.id);
+      expect((await p.a.get(`/api/v1/documents/${transcript.id}/download`)).status).toBe(200);
+    }
+    const other = await applicant();
+    expect((await other.a.get(`/api/v1/documents/${r.body.data.transcripts[0].id}`)).status).toBe(
+      404,
+    );
+    expect(
+      (await p.a.get(`/api/v1/documents/${r.body.data.id}`)).body.data.transcripts,
+    ).toHaveLength(2);
+    const replacement = await p.a
+      .post(`/api/v1/documents/${r.body.data.id}/replace`)
+      .set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'DIPLOMA')
+      .field('institutionName', 'Unlisted Institute')
+      .attach('file', pdf, { filename: 'updated-diploma.pdf', contentType: 'application/pdf' })
+      .attach('transcripts', pdf, {
+        filename: 'updated-transcript.pdf',
+        contentType: 'application/pdf',
+      });
+    expect(replacement.status).toBe(201);
+    expect(replacement.body.data.transcripts[0].qualificationId).toBe(replacement.body.data.id);
+    expect(replacement.body.data.institutionName).toBe('Unlisted Institute');
+    expect(await prisma.institution.count({ where: { name: 'Unlisted Institute' } })).toBe(0);
+    expect(
+      (await p.a.get(`/api/v1/documents/${r.body.data.id}`)).body.data.transcripts,
+    ).toHaveLength(2);
+  });
+  it('enforces required attachments and cleans up failed uploads', async () => {
+    const p = await applicant();
+    await uploadIdentity(p.a);
+    const upload = async (category: string, transcript?: Buffer, institutionId?: string) => {
+      const req = p.a
+        .post('/api/v1/documents')
+        .set('X-CSRF-Token', await csrf(p.a))
+        .field('category', category)
+        .field(
+          institutionId ? 'institutionId' : 'institutionName',
+          institutionId ?? 'Local College',
+        )
+        .attach('file', pdf, { filename: 'certificate.pdf', contentType: 'application/pdf' });
+      if (transcript)
+        req.attach('transcripts', transcript, {
+          filename: 'transcript.pdf',
+          contentType: 'application/pdf',
+        });
+      return req;
+    };
+    const count = await prisma.document.count({ where: { applicantId: p.id } });
+    const stored = files.size;
+    expect((await upload('BACHELOR')).body.error.code).toBe('TRANSCRIPT_REQUIRED');
+    expect((await upload('BACHELOR', Buffer.from('not a PDF'))).status).toBe(415);
+    expect((await upload('SHORT_COURSE', pdf)).body.error.code).toBe('TRANSCRIPT_NOT_ALLOWED');
+    expect((await upload('BACHELOR', pdf, crypto.randomUUID())).body.error.code).toBe(
+      'INSTITUTION_INVALID',
+    );
+    expect(await prisma.document.count({ where: { applicantId: p.id } })).toBe(count);
+    expect(files.size).toBe(stored);
+    const inactive = await prisma.institution.create({
+      data: { name: `Inactive ${++sequence}`, active: false },
+    });
+    expect(
+      (await p.a.get(`/api/v1/institutions?search=${encodeURIComponent(inactive.name)}`)).body.data,
+    ).toHaveLength(0);
+    expect((await upload('SHORT_COURSE', undefined, inactive.id)).body.error.code).toBe(
+      'INSTITUTION_INVALID',
+    );
+    const short = await upload('SHORT_COURSE');
+    expect(short.status).toBe(201);
+    expect(short.body.data).toMatchObject({
+      title: 'certificate.pdf',
+      institutionName: 'Local College',
+      expiresAt: null,
+    });
+    expect((await upload('PROFESSIONAL_REGISTRATION')).status).toBe(422);
+    const professional = await p.a
+      .post('/api/v1/documents')
+      .set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'PROFESSIONAL_REGISTRATION')
+      .field('institutionName', 'Engineering Board')
+      .field('expiresAt', '2028-12-31')
+      .attach('file', pdf, { filename: 'licence.pdf', contentType: 'application/pdf' });
+    expect(professional.status).toBe(201);
+    expect(professional.body.data.expiresAt).toBe('2028-12-31T00:00:00.000Z');
+  });
   it('requires identity before academic uploads', async () => {
     const p = await applicant();
     const r = await p.a
@@ -432,6 +547,8 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       .set('X-CSRF-Token', await csrf(p.a))
       .field('category', 'BACHELOR')
       .field('title', 'BEng Mechatronics')
+      .field('institutionName', 'Example College')
+      .attach('transcripts', pdf, { filename: 'transcript.pdf', contentType: 'application/pdf' })
       .attach('file', pdf, { filename: 'degree.pdf', contentType: 'application/pdf' });
     expect(r.status).toBe(409);
     expect(r.body.error.code).toBe('IDENTITY_REQUIRED');
@@ -879,6 +996,8 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       .set('X-CSRF-Token', await csrf(p.a))
       .field('category', 'BACHELOR')
       .field('title', 'BEng Mechatronics test certificate')
+      .field('institutionName', 'Example College')
+      .attach('transcripts', pdf, { filename: 'transcript.pdf', contentType: 'application/pdf' })
       .field('credentialNumber', 'sensitive-test-credential-number')
       .attach('file', pdf, { filename: 'degree.pdf', contentType: 'application/pdf' });
     expect(r.status).toBe(201);

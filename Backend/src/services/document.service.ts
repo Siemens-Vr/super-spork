@@ -3,20 +3,27 @@ import { fileTypeFromBuffer } from 'file-type';
 import type { z } from 'zod';
 import { prisma, userLock } from '../config/prisma.js';
 import { storage } from '../config/storage.js';
-import { documentSchema, identityCategories, reviewSchema } from '../validators/document.schema.js';
+import {
+  documentSchema,
+  identityCategories,
+  degreeCategories,
+  reviewSchema,
+} from '../validators/document.schema.js';
 import { requireCondition } from '../errors/app-error.js';
 import { encrypt } from '../utils/crypto.js';
 import { audit } from '../utils/audit.js';
 import { notify } from './email.service.js';
 import type { Document, VerificationStatus } from '../generated/prisma/client.js';
 export const isIdentity = (category: string) => identityCategories.some((c) => c === category);
-export function publicDocument(d: Document) {
+function documentMetadata(d: Document) {
   return {
     id: d.id,
     category: d.category,
     title: d.title,
     issuer: d.issuer,
     institutionId: d.institutionId,
+    institutionName: d.institutionName,
+    qualificationId: d.qualificationId,
     issuedAt: d.issuedAt,
     expiresAt: d.expiresAt,
     verificationUrl: d.verificationUrl,
@@ -29,8 +36,17 @@ export function publicDocument(d: Document) {
     updatedAt: d.updatedAt,
   };
 }
+export function publicDocument(d: Document & { transcripts?: Document[] }) {
+  return {
+    ...documentMetadata(d),
+    ...(d.transcripts ? { transcripts: d.transcripts.map(documentMetadata) } : {}),
+  };
+}
 export async function ownedDocument(id: string, applicantId: string) {
-  const d = await prisma.document.findFirst({ where: { id, applicantId } });
+  const d = await prisma.document.findFirst({
+    where: { id, applicantId },
+    include: { transcripts: true },
+  });
   requireCondition(d, 404, 'NOT_FOUND', 'Document not found');
   return d;
 }
@@ -40,7 +56,9 @@ export async function uploadDocument(
   file: Express.Multer.File | undefined,
   identityOnly: boolean,
   replacesId?: string,
+  transcripts: Express.Multer.File[] = [],
 ) {
+  input = documentSchema.parse(input);
   requireCondition(file, 422, 'FILE_REQUIRED', 'Attach one document file');
   requireCondition(
     isIdentity(input.category) === identityOnly,
@@ -48,18 +66,52 @@ export async function uploadDocument(
     'INVALID_DOCUMENT_CATEGORY',
     'Use the appropriate identity or academic upload endpoint',
   );
-  const detected = await fileTypeFromBuffer(file.buffer);
+  const degree = degreeCategories.some((category) => category === input.category);
   requireCondition(
-    detected &&
-      ['application/pdf', 'image/jpeg', 'image/png'].includes(detected.mime) &&
-      detected.mime === file.mimetype,
-    415,
-    'INVALID_FILE_TYPE',
-    'Only matching PDF, JPEG, and PNG files are accepted',
+    !degree || transcripts.length > 0,
+    422,
+    'TRANSCRIPT_REQUIRED',
+    'Attach at least one transcript for this qualification',
   );
-  const key = `quarantine/${randomUUID()}`;
-  await storage.put(key, file.buffer, detected.mime);
+  requireCondition(
+    degree || transcripts.length === 0,
+    422,
+    'TRANSCRIPT_NOT_ALLOWED',
+    'Transcript attachments are only accepted with a degree or diploma',
+  );
+  requireCondition(
+    transcripts.length <= 5,
+    422,
+    'TOO_MANY_TRANSCRIPTS',
+    'Attach at most five transcript files',
+  );
+  const uploads = await Promise.all(
+    [file, ...transcripts].map(async (attachment) => {
+      const detected = await fileTypeFromBuffer(attachment.buffer);
+      requireCondition(
+        detected &&
+          ['application/pdf', 'image/jpeg', 'image/png'].includes(detected.mime) &&
+          detected.mime === attachment.mimetype,
+        415,
+        'INVALID_FILE_TYPE',
+        'Only matching PDF, JPEG, and PNG files are accepted for every attachment',
+      );
+      const basename = attachment.originalname.replaceAll('\\', '/').split('/').at(-1) ?? '';
+      const title =
+        [...basename]
+          .filter((character) => character.charCodeAt(0) >= 32 && character.charCodeAt(0) !== 127)
+          .join('')
+          .trim()
+          .slice(0, 200) || 'uploaded-document';
+      return { attachment, mime: detected.mime, title, key: `quarantine/${randomUUID()}` };
+    }),
+  );
+  const storedKeys: string[] = [];
   try {
+    for (const upload of uploads) {
+      storedKeys.push(upload.key);
+      await storage.put(upload.key, upload.attachment.buffer, upload.mime);
+    }
     return await prisma.$transaction(async (tx) => {
       await userLock(tx, applicantId);
       if (!identityOnly)
@@ -76,6 +128,7 @@ export async function uploadDocument(
           'IDENTITY_REQUIRED',
           'Submit a National ID or passport first',
         );
+      let qualificationId: string | undefined;
       if (replacesId) {
         const previous = await tx.document.findFirst({
           where: { id: replacesId, applicantId },
@@ -87,25 +140,39 @@ export async function uploadDocument(
           'REPLACEMENT_INVALID',
           'Document cannot be replaced',
         );
+        if (previous.qualificationId) {
+          requireCondition(
+            input.category === 'TRANSCRIPT',
+            422,
+            'INVALID_DOCUMENT_CATEGORY',
+            'Replace a linked transcript with another transcript',
+          );
+          qualificationId = previous.qualificationId;
+        }
       }
-      if (input.institutionId)
-        requireCondition(
-          await tx.institution.findFirst({ where: { id: input.institutionId, active: true } }),
-          422,
-          'INSTITUTION_INVALID',
-          'Institution is not available',
-        );
+      let institutionName = input.institutionName;
+      if (input.institutionId) {
+        const institution = await tx.institution.findFirst({
+          where: { id: input.institutionId, active: true },
+        });
+        requireCondition(institution, 422, 'INSTITUTION_INVALID', 'Institution is not available');
+        institutionName = institution.name;
+      }
       const { credentialNumber, ...metadata } = input;
+      const main = uploads[0]!;
       const d = await tx.document.create({
         data: {
           ...metadata,
+          title: main.title,
+          institutionName,
           issuedAt: input.issuedAt ? new Date(input.issuedAt) : undefined,
           expiresAt: input.expiresAt ? new Date(input.expiresAt) : undefined,
           applicantId,
           replacesId,
+          qualificationId,
           encryptedCredentialNumber: credentialNumber ? encrypt(credentialNumber) : undefined,
-          storageKey: key,
-          mimeType: detected.mime,
+          storageKey: main.key,
+          mimeType: main.mime,
           size: file.size,
           sha256: createHash('sha256').update(file.buffer).digest('hex'),
           history: {
@@ -117,14 +184,43 @@ export async function uploadDocument(
           },
         },
       });
+      const attached: Document[] = [];
+      for (const upload of uploads.slice(1)) {
+        const transcript = await tx.document.create({
+          data: {
+            applicantId,
+            category: 'TRANSCRIPT',
+            qualificationId: d.id,
+            institutionId: input.institutionId,
+            institutionName,
+            title: upload.title,
+            storageKey: upload.key,
+            mimeType: upload.mime,
+            size: upload.attachment.size,
+            sha256: createHash('sha256').update(upload.attachment.buffer).digest('hex'),
+            history: {
+              create: {
+                toStatus: 'UPLOADED',
+                actorId: applicantId,
+                reason: 'Qualification transcript submitted',
+              },
+            },
+          },
+        });
+        await audit(tx, applicantId, 'document.uploaded', transcript.id, {
+          category: 'TRANSCRIPT',
+          qualificationId: d.id,
+        });
+        attached.push(transcript);
+      }
       await audit(tx, applicantId, 'document.uploaded', d.id, {
         category: d.category,
         replacesId: replacesId ?? null,
       });
-      return publicDocument(d);
+      return publicDocument({ ...d, transcripts: attached });
     });
   } catch (e) {
-    await storage.remove(key).catch(() => {});
+    await Promise.all(storedKeys.map((key) => storage.remove(key).catch(() => {})));
     throw e;
   }
 }

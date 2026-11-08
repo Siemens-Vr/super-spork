@@ -3304,6 +3304,7 @@ export const DocumentScalarFieldEnum = {
   title: 'title',
   issuer: 'issuer',
   institutionId: 'institutionId',
+  institutionName: 'institutionName',
   issuedAt: 'issuedAt',
   expiresAt: 'expiresAt',
   encryptedCredentialNumber: 'encryptedCredentialNumber',
@@ -3315,6 +3316,7 @@ export const DocumentScalarFieldEnum = {
   scanStatus: 'scanStatus',
   status: 'status',
   replacesId: 'replacesId',
+  qualificationId: 'qualificationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
