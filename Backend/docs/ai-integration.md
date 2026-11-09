@@ -1,16 +1,18 @@
-# Future Python/FastAPI integration
+# AI assessment and future document-analysis integration
 
-This milestone intentionally stops at successful assessment scheduling. Interfaces are in `src/integrations/document-analysis/contracts.ts` and `src/integrations/ai-assessment/contracts.ts`. No live LLM calls, interview agent, automated authenticity decision or final competency score is implemented.
+The TypeScript assessment interaction engine now uses LangChain.js and LangGraph.js, an approved scenario bank, durable PostgreSQL checkpoints, configurable chat/STT/TTS adapters, and confirmed text or voice responses. Authorised assessors review AI competency proposals before existing deterministic skill-gap calculations and learning plans become final. See [assessment entry and voice audit](assessment-interaction-audit.md) for API details, deployment, privacy and validation limits. No Python service is required for the assessment engine. Document analysis remains a future integration; no automated authenticity decision is connected.
 
-| Agent                 | Future input                                                                              | Future output / constraint                                                                                 |
-| --------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Document Review       | Purpose-scoped document capability, category, identity name when justified, consent       | Extracted names, consistency signals, confidence, version and findings; authenticity always NOT_DETERMINED |
-| Assessment Planner    | Pseudonymous applicant, pinned booking/blueprint/framework version and competency weights | Approved task identifiers and durations from the approved assessment catalogue                             |
-| Technical Interviewer | Approved plan and time-limited interview session                                          | Structured responses and evidence, no unrestricted admin access                                            |
-| Practical Assessment  | Approved practical tasks and controlled workspace                                         | Artifacts and structured observations                                                                      |
-| Competency Evaluator  | Approved rubric, versioned assessment evidence                                            | Proposed rubric assessments subject to institutional evaluation policy                                     |
-| Assessment Integrity  | Defined, consented integrity signals                                                      | Referrals for human review; no automatic punitive action                                                   |
-| Skills Gap Analyst    | Authorized assessed evidence and approved training catalogue                              | Explainable recommendations after an evaluation service exists                                             |
+The planning interfaces below are future extensions; the current interactive scenario workflow is implemented in `src/integrations/assessment-interview`, `src/integrations/speech` and `src/services/assessment-interaction.service.ts`.
+
+| Agent                 | Future input                                                                              | Future output / constraint                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Document Review       | Purpose-scoped document capability, category, identity name when justified, consent       | Extracted names, consistency signals, confidence, version and findings; authenticity always NOT_DETERMINED  |
+| Assessment Planner    | Pseudonymous applicant, pinned booking/blueprint/framework version and competency weights | Approved task identifiers and durations from the approved assessment catalogue                              |
+| Technical Interviewer | Approved plan and time-limited interview session                                          | Structured responses and evidence, no unrestricted admin access                                             |
+| Practical Assessment  | Approved practical tasks and controlled workspace                                         | Artifacts and structured observations                                                                       |
+| Competency Evaluator  | Approved rubric, versioned assessment evidence                                            | Proposed rubric assessments subject to institutional evaluation policy                                      |
+| Assessment Integrity  | Defined, consented integrity signals                                                      | Referrals for human review; no automatic punitive action                                                    |
+| Skills Gap Analyst    | Authorized assessed evidence and approved training catalogue                              | Optional enrichment of the recorded gaps and curated learning objectives; deterministic plans already exist |
 
 Document analysis distinguishes reordered names, initials, possible legitimate name changes, discrepancies and insufficient evidence. Confidence or a matching name does not prove authenticity. `DocumentAnalysisJob` provides a versioned findings container but no artificial job or AI result is seeded. Human admin review remains fully operational if no analysis service exists.
 

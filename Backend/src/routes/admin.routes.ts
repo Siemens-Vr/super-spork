@@ -12,10 +12,35 @@ import { reviewDocument, publicDocument } from '../services/document.service.js'
 import * as docs from '../controllers/document.controller.js';
 import * as catalogue from '../services/admin.service.js';
 import * as scheduling from '../services/scheduling.service.js';
+import * as assessmentTargets from '../services/assessment-target.service.js';
+import { completeAttemptSchema } from '../validators/assessment-target.schema.js';
+import { idempotencyKey } from '../validators/assessment.schema.js';
 import { audit } from '../utils/audit.js';
 import { requireCondition } from '../errors/app-error.js';
+import { applicantProfileSelect } from '../utils/applicant-profile.js';
 export const adminRouter = Router();
 adminRouter.use(authenticate, verified, admin);
+adminRouter.get('/assessment-attempts/:id', authorize('assessments.review'), async (req, res) => {
+  const id = uuid.parse(req.params.id);
+  const data = await assessmentTargets.getAttempt(req.principal!.id, id, true);
+  await audit(prisma, req.principal!.id, 'admin.assessment_viewed', id);
+  res.json({ data });
+});
+adminRouter.post(
+  '/assessment-attempts/:id/complete',
+  authorize('assessments.review'),
+  validate(completeAttemptSchema),
+  async (req, res) => {
+    res.json({
+      data: await assessmentTargets.completeAttempt(
+        req.principal!.id,
+        uuid.parse(req.params.id),
+        idempotencyKey.parse(req.get('idempotency-key')),
+        completeAttemptSchema.parse(req.body),
+      ),
+    });
+  },
+);
 adminRouter.get('/applicants', authorize('users.manage'), async (req, res) => {
   const p = pagination.parse(req.query);
   const status = z.enum(['ACTIVE', 'SUSPENDED', 'CLOSED']).optional().parse(req.query.status);
@@ -60,9 +85,12 @@ adminRouter.get('/applicants/:id', authorize('users.manage'), async (req, res) =
       email: true,
       phone: true,
       status: true,
-      profile: true,
+      profile: { select: applicantProfileSelect },
       documents: true,
-      preferences: true,
+      assessmentTargets: {
+        select: { id: true, jobRoleId: true, status: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+      },
     },
   });
   requireCondition(data, 404, 'NOT_FOUND', 'Applicant not found');
@@ -311,6 +339,7 @@ adminRouter.get('/bookings', authorize('assessments.manage'), async (req, res) =
         : {}),
     },
     include: {
+      target: { select: { attempt: { select: { id: true } } } },
       blueprint: { include: { jobRole: true } },
       slot: { include: { availability: true } },
       events: { orderBy: { createdAt: 'asc' } },

@@ -1,0 +1,2735 @@
+{
+  "sourceUrl": "https://en.wikipedia.org/w/index.php?title=List_of_universities_and_colleges_in_Kenya&oldid=1375901675",
+  "retrievedAt": "2026-11-09",
+  "sourceHtmlSha256": "1ca501c1c4093cb76d2d0e18583e96d8fcac5ae92463cee3a3e76abab9eda6f7",
+  "notes": "Directory names for applicant selection; inclusion and offersTvet are not accreditation determinations. Types are UI groupings inferred from directory names/sections. Campus/location suffixes are consolidated; sourceNames preserve the original entries for review. Existing inactive institutions must not be reactivated by seeding.",
+  "excluded": [
+    {
+      "name": "Teachers College",
+      "reason": "Unidentified generic institution name"
+    },
+    {
+      "name": "Technical Training Institute (MTTI) - Mombasa",
+      "reason": "Ambiguous name/abbreviation; requires review"
+    },
+    {
+      "name": "Elite Centre - Embakasi - Nairobi, Mlolongo, next to Co-operative Bank, Stepup Training Institute, Nakuru",
+      "reason": "Combines several organisations and addresses"
+    },
+    {
+      "name": "Kimathi Chambers",
+      "reason": "Unclear whether this is an institution or a building"
+    },
+    {
+      "name": "Mark University of IT - Uganda",
+      "reason": "Outside the Kenyan catalogue"
+    },
+    {
+      "name": "Motion City International - Multimedia School, The Make Up Place",
+      "reason": "Combines several organisation names"
+    },
+    {
+      "name": "Na rap Training Institute - Yaya Centre",
+      "reason": "Ambiguous spelling; requires review"
+    }
+  ],
+  "institutions": [
+    {
+      "name": "Adept College of Professional Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Adept College of Professional Studies - Nakuru."],
+      "sourceNames": ["Adept College of Professional Studies - Nakuru."]
+    },
+    {
+      "name": "Adventist University of Africa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Adventist University of Africa"]
+    },
+    {
+      "name": "Africa College of Social Work",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Africa College of Social Work"]
+    },
+    {
+      "name": "Africa Digital Media Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Africa Digital Media Institute - ADMI"],
+      "sourceNames": ["Africa Digital Media Institute - ADMI"]
+    },
+    {
+      "name": "Africa International University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Africa International University"]
+    },
+    {
+      "name": "Africa Nazarene University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Africa Nazarene University"]
+    },
+    {
+      "name": "African Institute of Research and Development Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["African Institute of Research and Development Studies, Bandari College"],
+      "sourceNames": [
+        "African Institute of Research and Development Studies, Bandari College",
+        "African Institute of Research and Development Studies"
+      ]
+    },
+    {
+      "name": "African International Technical College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["African International Technical College(AITEC) www.aitec.ac.ke", "AITEC"],
+      "sourceNames": ["African International Technical College(AITEC) www.aitec.ac.ke"]
+    },
+    {
+      "name": "Aga Khan University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Aga Khan University"]
+    },
+    {
+      "name": "AirSwiss International College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["AirSwiss International College - Nairobi"],
+      "sourceNames": ["AirSwiss International College", "AirSwiss International College - Nairobi"]
+    },
+    {
+      "name": "Airways Travel Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Airways Travel Institute"]
+    },
+    {
+      "name": "Alphax College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Alphax College - Eldoret"],
+      "sourceNames": ["Alphax College - Eldoret"]
+    },
+    {
+      "name": "Alupe University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Alupe University"]
+    },
+    {
+      "name": "Amani College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Amani College"]
+    },
+    {
+      "name": "Amboseli Institute of Hospitality and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Amboseli Institute of Hospitality and Technology - Thika, Nakuru"],
+      "sourceNames": ["Amboseli Institute of Hospitality and Technology - Thika, Nakuru"]
+    },
+    {
+      "name": "Ambritch College of Technology",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Ambritch College of Technology"]
+    },
+    {
+      "name": "Amref International University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Amref International University (AMIU)", "AMIU"],
+      "sourceNames": ["Amref International University (AMIU)", "Amref International University"]
+    },
+    {
+      "name": "Arkline College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Arkline College - Nairobi"],
+      "sourceNames": ["Arkline College - Nairobi"]
+    },
+    {
+      "name": "Associated Computer Services",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Associated Computer Services - Development House, Nairobi"],
+      "sourceNames": ["Associated Computer Services - Development House, Nairobi"]
+    },
+    {
+      "name": "Atlas College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Atlas College -Eastleigh, Nairobi"],
+      "sourceNames": ["Atlas College -Eastleigh, Nairobi"]
+    },
+    {
+      "name": "AUGAB Computer College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["AUGAB Computer College - Garissa"],
+      "sourceNames": ["AUGAB Computer College - Garissa"]
+    },
+    {
+      "name": "Augustana College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Augustana College - Kasarani - Nairobi"],
+      "sourceNames": ["Augustana College - Kasarani - Nairobi"]
+    },
+    {
+      "name": "Australian Studies Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Australian Studies Institute (AUSI) - Westlands, Nairobi", "AUSI"],
+      "sourceNames": ["Australian Studies Institute (AUSI) - Westlands, Nairobi"]
+    },
+    {
+      "name": "Bandari College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["African Institute of Research and Development Studies, Bandari College"]
+    },
+    {
+      "name": "Baraton Teachers' Training College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Baraton Teachers' Training College - Nandi Central Kapsabet"],
+      "sourceNames": ["Baraton Teachers' Training College - Nandi Central Kapsabet"]
+    },
+    {
+      "name": "Barista Coffee Skills and Technology Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Barista Coffee Skills and Technology Training Institute"]
+    },
+    {
+      "name": "Bell Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Bell Institute of Technology - Nairobi"],
+      "sourceNames": ["Bell Institute of Technology - Nairobi"]
+    },
+    {
+      "name": "Belmont International College-Ongata Rongai",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Belmont International College-Ongata Rongai - Kajiado"],
+      "sourceNames": ["Belmont International College-Ongata Rongai - Kajiado"]
+    },
+    {
+      "name": "Bible College of East Africa, Kasarani",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Bible College of East Africa, Kasarani - Nairobi"],
+      "sourceNames": ["Bible College of East Africa, Kasarani - Nairobi"]
+    },
+    {
+      "name": "BizSmart Inter Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["BizSmart Inter Technology"]
+    },
+    {
+      "name": "Bomet University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Bomet University"]
+    },
+    {
+      "name": "Bungoma North Technical Vocational College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Bungoma North Technical Vocational College -Naitiri"],
+      "sourceNames": ["Bungoma North Technical Vocational College -Naitiri"]
+    },
+    {
+      "name": "Bungoma Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Bungoma Technical Training Institute - Bungoma"],
+      "sourceNames": ["Bungoma Technical Training Institute - Bungoma"]
+    },
+    {
+      "name": "Career Training Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Career Training Centre - Nairobi"],
+      "sourceNames": ["Career Training Centre - Nairobi"]
+    },
+    {
+      "name": "Cascade Institute of Hospitality",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Cascade Institute of Hospitality - Thika"],
+      "sourceNames": ["Cascade Institute of Hospitality - Thika"]
+    },
+    {
+      "name": "Catholic University of Eastern Africa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["CUEA", "Catholic University of Eastern Africa (CUEA)"],
+      "sourceNames": [
+        "Catholic University of Eastern Africa (CUEA)",
+        "Catholic University of Eastern Africa"
+      ]
+    },
+    {
+      "name": "Centre for Distance & Online Learning",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Centre for Distance & Online Learning - Nairobi"],
+      "sourceNames": ["Centre for Distance & Online Learning - Nairobi"]
+    },
+    {
+      "name": "Century Park College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Century Park College - Machakos"],
+      "sourceNames": ["Century Park College - Machakos"]
+    },
+    {
+      "name": "Chuka University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Chuka University"]
+    },
+    {
+      "name": "Coast Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Coast Institute of Technology"]
+    },
+    {
+      "name": "College of Management Sciences",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["College of Management Sciences - Nairobi CBD"],
+      "sourceNames": ["College of Management Sciences - Nairobi CBD"]
+    },
+    {
+      "name": "Compuera College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Compuera College - Nairobi"],
+      "sourceNames": ["Compuera College - Nairobi"]
+    },
+    {
+      "name": "Compugoal College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Compugoal College - Nairobi"],
+      "sourceNames": ["Compugoal College - Nairobi"]
+    },
+    {
+      "name": "Computer Learning Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Computer Learning Centre (CLC) - Nairobi", "CLC"],
+      "sourceNames": ["Computer Learning Centre (CLC) - Nairobi"]
+    },
+    {
+      "name": "Computer Pride Training Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Computer Pride Training Centre - Nairobi"],
+      "sourceNames": ["Computer Pride Training Centre - Nairobi"]
+    },
+    {
+      "name": "Computer Training Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Computer Training Centre - Nairobi"],
+      "sourceNames": ["Computer Training Centre - Nairobi"]
+    },
+    {
+      "name": "Consolata Cathedral Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Consolata Cathedral Institute -Nyeri"],
+      "sourceNames": ["Consolata Cathedral Institute -Nyeri"]
+    },
+    {
+      "name": "Consolata Institute of Communication and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Consolata Institute of Communication and Technology - Nyeri-Mathari"],
+      "sourceNames": ["Consolata Institute of Communication and Technology - Nyeri-Mathari"]
+    },
+    {
+      "name": "Cornerstone Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Cornerstone Training Institute - Nairobi"],
+      "sourceNames": ["Cornerstone Training Institute - Nairobi"]
+    },
+    {
+      "name": "Dairy Training Institute Naivasha",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Dairy Training Institute Naivasha (DTI Naivasha)", "DTI Naivasha"],
+      "sourceNames": ["Dairy Training Institute Naivasha (DTI Naivasha)"]
+    },
+    {
+      "name": "Daystar University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Daystar University"]
+    },
+    {
+      "name": "Dedan Kimathi University of Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["DeKUT"],
+      "sourceNames": ["Dedan Kimathi University of Technology"]
+    },
+    {
+      "name": "Digital Resource Center",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Digital Resource Center (DRC) - Karama Estate, Nakuru", "DRC"],
+      "sourceNames": ["Digital Resource Center (DRC) - Karama Estate, Nakuru"]
+    },
+    {
+      "name": "Digiworld Computer School",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Digiworld Computer School - Meru"],
+      "sourceNames": ["Digiworld Computer School - Meru"]
+    },
+    {
+      "name": "Divas Technology College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Divas Technology College - Kilifi"],
+      "sourceNames": ["Divas Technology College - Kilifi"]
+    },
+    {
+      "name": "Don Bosco Boys' Town",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Don Bosco Boys' Town - Karen"],
+      "sourceNames": ["Don Bosco Boys' Town - Karen"]
+    },
+    {
+      "name": "Don Bosco Institute of Management Studies, Nairobi",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Don Bosco Institute of Management Studies, Nairobi"]
+    },
+    {
+      "name": "Duolotech Computers",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Duolotech Computers - Gachie and Thika"],
+      "sourceNames": ["Duolotech Computers - Gachie and Thika"]
+    },
+    {
+      "name": "Eagle Air Aviation College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Eagle Air Aviation College (EAAC) - Ongata Rongai", "EAAC"],
+      "sourceNames": ["Eagle Air Aviation College (EAAC) - Ongata Rongai"]
+    },
+    {
+      "name": "Eagle College of Management Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Eagle College of Management Studies"]
+    },
+    {
+      "name": "East Africa Institute of Certified Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["East Africa Institute of Certified Studies - Nairobi"],
+      "sourceNames": [
+        "East Africa Institute of Certified Studies",
+        "East Africa Institute of Certified Studies - Nairobi"
+      ]
+    },
+    {
+      "name": "East Africa School of Journalism",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["East Africa School of Journalism (EASJ) - Jamuhuri Show Ground", "EASJ"],
+      "sourceNames": ["East Africa School of Journalism (EASJ) - Jamuhuri Show Ground"]
+    },
+    {
+      "name": "East Africa School of Management",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["East Africa School of Management - Nairobi"],
+      "sourceNames": ["East Africa School of Management - Nairobi"]
+    },
+    {
+      "name": "East Africa Vision Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["East Africa Vision Institute"]
+    },
+    {
+      "name": "East African Media Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["East African Media Institute (EAMI) - Nairobi", "EAMI"],
+      "sourceNames": ["East African Media Institute (EAMI) - Nairobi"]
+    },
+    {
+      "name": "East African School of Aviation",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["East African School of Aviation - Embakasi, Nairobi"],
+      "sourceNames": ["East African School of Aviation - Embakasi, Nairobi"]
+    },
+    {
+      "name": "Egerton University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Egerton University"]
+    },
+    {
+      "name": "Eldoret Aviation Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Eldoret Aviation Training Institute - Eldoret"],
+      "sourceNames": ["Eldoret Aviation Training Institute - Eldoret"]
+    },
+    {
+      "name": "Eldoret Polytechnic",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Eldoret Polytechnic - Eldoret"],
+      "sourceNames": ["Eldoret Polytechnic - Eldoret"]
+    },
+    {
+      "name": "Eldoret Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "ELDORET TECHNICAL TRAINING INSTITUTE",
+        "Eldoret Technical Training Institute- Eldoret"
+      ],
+      "sourceNames": [
+        "ELDORET TECHNICAL TRAINING INSTITUTE",
+        "Eldoret Technical Training Institute- Eldoret"
+      ]
+    },
+    {
+      "name": "Elite Commercial Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Elite Commercial Institute - Embakasi, Syokimau, satellite branches"],
+      "sourceNames": ["Elite Commercial Institute - Embakasi, Syokimau, satellite branches"]
+    },
+    {
+      "name": "Elix Centre of Informatics",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Elix Centre of Informatics - Lokichar-Turkana"],
+      "sourceNames": ["Elix Centre of Informatics - Lokichar-Turkana"]
+    },
+    {
+      "name": "Emanex Computer College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Emanex Computer College - Kahawa"],
+      "sourceNames": ["Emanex Computer College - Kahawa"]
+    },
+    {
+      "name": "Emma Daniel Arts Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Emma Daniel Arts Training Institute (EDATI)", "EDATI"],
+      "sourceNames": ["Emma Daniel Arts Training Institute (EDATI)"]
+    },
+    {
+      "name": "Esmart College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Esmart College - Kikuyu Town"],
+      "sourceNames": ["Esmart College - Kikuyu Town"]
+    },
+    {
+      "name": "Felma College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Felma College - Nairobi - Embakasi"],
+      "sourceNames": ["Felma College - Nairobi - Embakasi"]
+    },
+    {
+      "name": "Garissa University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Garissa University"]
+    },
+    {
+      "name": "German Institute of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["German Institute of Professional Studies - Nairobi"],
+      "sourceNames": ["German Institute of Professional Studies - Nairobi"]
+    },
+    {
+      "name": "Globoville Shanzu Beach College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Globoville Shanzu Beach College - Mombasa"],
+      "sourceNames": ["Globoville Shanzu Beach College - Mombasa"]
+    },
+    {
+      "name": "Government Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Government Training Institute (GTI)", "GTI"],
+      "sourceNames": ["Government Training Institute (GTI)"]
+    },
+    {
+      "name": "Graffins College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Graffins College - Westlands, Nairobi"],
+      "sourceNames": ["Graffins College - Westlands, Nairobi"]
+    },
+    {
+      "name": "Great Lakes University of Kisumu",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Great Lakes University of Kisumu"]
+    },
+    {
+      "name": "Gretsa University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Gretsa University"]
+    },
+    {
+      "name": "Gusii Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Gusii Institute of Technology - Kisii"],
+      "sourceNames": ["Gusii Institute of Technology", "Gusii Institute of Technology - Kisii"]
+    },
+    {
+      "name": "Hansons College of Professional Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Hansons College of Professional Studies - Gachie, Nairobi/Kuimbu"],
+      "sourceNames": ["Hansons College of Professional Studies - Gachie, Nairobi/Kuimbu"]
+    },
+    {
+      "name": "Harvard Institute of Development Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Harvard Institute of Development Studies - Thika"],
+      "sourceNames": ["Harvard Institute of Development Studies - Thika"]
+    },
+    {
+      "name": "Hemland College of Professional and Technical Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Hemland College of Professional and Technical Studies - Thika"],
+      "sourceNames": ["Hemland College of Professional and Technical Studies - Thika"]
+    },
+    {
+      "name": "Hemland Computer Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Hemland Computer Institute – Thika, Thika Arcade 5th Floor"],
+      "sourceNames": ["Hemland Computer Institute – Thika, Thika Arcade 5th Floor"]
+    },
+    {
+      "name": "Hi-tec Institute of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Hi-tec Institute of Professional Studies - Mombasa CBD"],
+      "sourceNames": ["Hi-tec Institute of Professional Studies - Mombasa CBD"]
+    },
+    {
+      "name": "Higher Institute of Development Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Higher Institute of Development Studies - CBD, Nairobi"],
+      "sourceNames": ["Higher Institute of Development Studies - CBD, Nairobi"]
+    },
+    {
+      "name": "Holy Rosary College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Holy Rosary College - Tala"],
+      "sourceNames": ["Holy Rosary College - Tala"]
+    },
+    {
+      "name": "ICT Fire and Rescue",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["ICT Fire and Rescue - Thika"],
+      "sourceNames": ["ICT Fire and Rescue - Thika", "ICT Fire and Rescue"]
+    },
+    {
+      "name": "Indian Institute of Hardware Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Indian Institute of Hardware Technology- IIHT Westlands, Nairobi"],
+      "sourceNames": ["Indian Institute of Hardware Technology- IIHT Westlands, Nairobi"]
+    },
+    {
+      "name": "Institute of Advanced Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Institute of Advanced Technology - Loita House, Loita Street, Buruburu, Nairobi",
+        "Institute of Advanced Technology Campus - Westlands"
+      ],
+      "sourceNames": [
+        "Institute of Advanced Technology - Loita House, Loita Street, Buruburu, Nairobi",
+        "Institute of Advanced Technology Campus - Westlands"
+      ]
+    },
+    {
+      "name": "Institute of Business and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Institute of Business and Technology - Nakuru"],
+      "sourceNames": ["Institute of Business and Technology - Nakuru"]
+    },
+    {
+      "name": "Institute of Information Technology Studies & Research",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Institute of Information Technology Studies & Research - Nairobi, Ambank Hse, University Way"
+      ],
+      "sourceNames": [
+        "Institute of Information Technology Studies & Research - Nairobi, Ambank Hse, University Way"
+      ]
+    },
+    {
+      "name": "Institute of Zaburi Technologies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Institute of Zaburi Technologies - Nairobi CBD"],
+      "sourceNames": ["Institute of Zaburi Technologies - Nairobi CBD"]
+    },
+    {
+      "name": "Inter-Afrika Development Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Inter-Afrika Development Institute - NACICO Plaza 4th Floor, Nairobi"],
+      "sourceNames": ["Inter-Afrika Development Institute - NACICO Plaza 4th Floor, Nairobi"]
+    },
+    {
+      "name": "International Centre of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["International Centre of Technology (ICT-Thika) - Thika", "ICT-Thika"],
+      "sourceNames": ["International Centre of Technology (ICT-Thika) - Thika"]
+    },
+    {
+      "name": "International College of Kenya",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["International College of Kenya - Nairobi/Machakos"],
+      "sourceNames": ["International College of Kenya - Nairobi/Machakos"]
+    },
+    {
+      "name": "International Hotel & Tourism Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["International Hotel & Tourism Institute - Nairobi"],
+      "sourceNames": ["International Hotel & Tourism Institute - Nairobi"]
+    },
+    {
+      "name": "InterWorld College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["InterWorld College - Nairobi"],
+      "sourceNames": ["InterWorld College - Nairobi"]
+    },
+    {
+      "name": "Intraglobal Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Intraglobal Training Institute -Nairobi CBD",
+        "Intraglobal Training Institute -Kisumu",
+        "Intraglobal Training Institute -Kisii",
+        "Intraglobal Training Institute -Embu",
+        "Intraglobal Training Institute -Nakuru",
+        "Intraglobal Training Institute -Donholm",
+        "Intraglobal Training Institute- Nairobi",
+        "Intraglobal Training Institute - Nairobi, Kisumu, Nakuru, Embu, Kisii"
+      ],
+      "sourceNames": [
+        "Intraglobal Training Institute -Nairobi CBD",
+        "Intraglobal Training Institute -Kisumu",
+        "Intraglobal Training Institute -Kisii",
+        "Intraglobal Training Institute -Embu",
+        "Intraglobal Training Institute -Nakuru",
+        "Intraglobal Training Institute -Donholm",
+        "Intraglobal Training Institute- Nairobi",
+        "Intraglobal Training Institute - Nairobi, Kisumu, Nakuru, Embu, Kisii"
+      ]
+    },
+    {
+      "name": "Islamic University of Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Islamic University of Kenya"]
+    },
+    {
+      "name": "Jaffery Institute of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Jaffery Institute of Professional Studies - Mombasa"],
+      "sourceNames": ["Jaffery Institute of Professional Studies - Mombasa"]
+    },
+    {
+      "name": "Jaramogi Oginga Odinga University of Science and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Jaramogi Oginga Odinga University of Science and Technology"]
+    },
+    {
+      "name": "Jodan College of Technology",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Jodan College of Technology - Thika"],
+      "sourceNames": ["Jodan College of Technology - Thika"]
+    },
+    {
+      "name": "Jogoo Commercial College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Jogoo Commercial College - Nakuru"],
+      "sourceNames": ["Jogoo Commercial College - Nakuru"]
+    },
+    {
+      "name": "Jomo Kenyatta University of Agriculture and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["JKUAT"],
+      "sourceNames": ["Jomo Kenyatta University of Agriculture and Technology"]
+    },
+    {
+      "name": "Kabarak University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kabarak University"]
+    },
+    {
+      "name": "Kabarnet University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kabarnet University College"]
+    },
+    {
+      "name": "Kabete National Polytechnic",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kabete National Polytechnic"]
+    },
+    {
+      "name": "KAG EAST University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["K.A.G East University"],
+      "sourceNames": ["K.A.G East University", "KAG EAST University"]
+    },
+    {
+      "name": "Kagumo College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kagumo College"]
+    },
+    {
+      "name": "Kaiboi Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kaiboi Technical Training Institute"]
+    },
+    {
+      "name": "Kaimosi Friends University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kaimosi Friends University"]
+    },
+    {
+      "name": "Karatina Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Karatina Institute of Technology (KIT-Karatina) - Karatina", "KIT-Karatina"],
+      "sourceNames": ["Karatina Institute of Technology (KIT-Karatina) - Karatina"]
+    },
+    {
+      "name": "Karatina University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Karatina University"]
+    },
+    {
+      "name": "KCA University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["KCA University"]
+    },
+    {
+      "name": "Keiway Mining & Technology College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Keiway Mining & Technology College - Equity Bank Bldg, Mtwapa"],
+      "sourceNames": ["Keiway Mining & Technology College - Equity Bank Bldg, Mtwapa"]
+    },
+    {
+      "name": "Kenair travel and related studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenair travel and related studies - Nairobi and Mombasa"],
+      "sourceNames": ["Kenair travel and related studies - Nairobi and Mombasa"]
+    },
+    {
+      "name": "Kenya Advanced Institute of Science and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kenya Advanced Institute of Science and Technology"]
+    },
+    {
+      "name": "Kenya Aeronautical College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Kenya Aeronautical College (Aviation, Engineering & Cabin Crew) Wilson Airport - Nairobi",
+        "Aviation, Engineering & Cabin Crew"
+      ],
+      "sourceNames": [
+        "Kenya Aeronautical College (Aviation, Engineering & Cabin Crew) Wilson Airport - Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Christian Industrial Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Christian Industrial Training Institute- KCITI",
+        "Kenya Christian Industrial Training Institute (KCITI) - Eastleigh Campus",
+        "KCITI"
+      ],
+      "sourceNames": [
+        "Kenya Christian Industrial Training Institute- KCITI",
+        "Kenya Christian Industrial Training Institute (KCITI) - Eastleigh Campus"
+      ]
+    },
+    {
+      "name": "Kenya Coffee School",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kenya Coffee School"]
+    },
+    {
+      "name": "Kenya College of Communications Technology",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya College of Communications Technology - Mbagathi, Nairobi"],
+      "sourceNames": ["Kenya College of Communications Technology - Mbagathi, Nairobi"]
+    },
+    {
+      "name": "Kenya College of Medicine & Related Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya College of Medicine & Related Studies - Nairobi"],
+      "sourceNames": ["Kenya College of Medicine & Related Studies - Nairobi"]
+    },
+    {
+      "name": "Kenya College of Skills and Talent Development",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya College of Skills and Talent Development - Embakasi"],
+      "sourceNames": ["Kenya College of Skills and Talent Development - Embakasi"]
+    },
+    {
+      "name": "Kenya Forestry College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Forestry College - Londiani"],
+      "sourceNames": ["Kenya Forestry College - Londiani"]
+    },
+    {
+      "name": "Kenya Forestry Research Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kenya Forestry Research Institute"]
+    },
+    {
+      "name": "Kenya Highlands University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Kenya Highlands University (KHU)",
+        "KHU",
+        "Kenya Highlands Evangelical University"
+      ],
+      "sourceNames": ["Kenya Highlands University (KHU)", "Kenya Highlands Evangelical University"]
+    },
+    {
+      "name": "Kenya Institute of Applied Sciences",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kenya Institute of Applied Sciences"]
+    },
+    {
+      "name": "Kenya Institute of Biomedical Sciences and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Institute of Biomedical Sciences and Technology - Nakuru",
+        "Kenya Institute of Biomedical Sciences and Technology (KIBSAT) - Nakuru",
+        "KIBSAT"
+      ],
+      "sourceNames": [
+        "Kenya Institute of Biomedical Sciences and Technology - Nakuru",
+        "Kenya Institute of Biomedical Sciences and Technology (KIBSAT) - Nakuru"
+      ]
+    },
+    {
+      "name": "Kenya Institute of Development Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Institute of Development Studies (K.I.D.S.) - Nairobi",
+        "K.I.D.S.",
+        "Kenya Institute of Development Studies (KIDS) - Nairobi",
+        "KIDS"
+      ],
+      "sourceNames": [
+        "Kenya Institute of Development Studies (K.I.D.S.) - Nairobi",
+        "Kenya Institute of Development Studies (KIDS) - Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Institute of Highways and Building Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Institute of Highways and Building Technology (KIHBT)- Nairobi", "KIHBT"],
+      "sourceNames": ["Kenya Institute of Highways and Building Technology (KIHBT)- Nairobi"]
+    },
+    {
+      "name": "Kenya Institute of Management",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Institute of Management (KIM)",
+        "KIM",
+        "Kenya Institute of Management (KIM) - Nairobi"
+      ],
+      "sourceNames": [
+        "Kenya Institute of Management (KIM)",
+        "Kenya Institute of Management (KIM) - Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Institute of Mass Communication",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Institute of Mass Communication - South C",
+        "Kenya Institute of Mass Communication - South C, Nairobi"
+      ],
+      "sourceNames": [
+        "Kenya Institute of Mass Communication - South C",
+        "Kenya Institute of Mass Communication - South C, Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Institute of Media and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya Institute of Media and Technology (KIMT) - Nairobi", "KIMT"],
+      "sourceNames": ["Kenya Institute of Media and Technology (KIMT) - Nairobi"]
+    },
+    {
+      "name": "Kenya Institute of Monitoring and Evaluation Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Institute of Monitoring and Evaluation Studies (KIMES) - Nakuru", "KIMES"],
+      "sourceNames": ["Kenya Institute of Monitoring and Evaluation Studies (KIMES) - Nakuru"]
+    },
+    {
+      "name": "Kenya Institute of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya Institute of Professional Studies - Nairobi"],
+      "sourceNames": ["Kenya Institute of Professional Studies - Nairobi"]
+    },
+    {
+      "name": "Kenya Institute of Social Work and Community Development",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Kenya Institute of Social Work and Community Development (KISWCD) - CBD, Nairobi",
+        "KISWCD"
+      ],
+      "sourceNames": [
+        "Kenya Institute of Social Work and Community Development (KISWCD) - CBD, Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Institute of Software Engineering",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Institute of Software Engineering - Thika"],
+      "sourceNames": ["Kenya Institute of Software Engineering - Thika"]
+    },
+    {
+      "name": "Kenya Institute of Special Education",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya Institute of Special Education (KISE) - Kasarani, Nairobi", "KISE"],
+      "sourceNames": ["Kenya Institute of Special Education (KISE) - Kasarani, Nairobi"]
+    },
+    {
+      "name": "Kenya Medical Training College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["KMTC", "KMTC - Kilifi", "Kenya Medical Training Centre (KMTC)"],
+      "sourceNames": ["KMTC - Kilifi", "Kenya Medical Training Centre (KMTC)"]
+    },
+    {
+      "name": "Kenya Methodist University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["KeMU"],
+      "sourceNames": ["Kenya Methodist University"]
+    },
+    {
+      "name": "Kenya School of Accountancy and Finance",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya School of Accountancy and Finance - Kitale and Kisii"],
+      "sourceNames": ["Kenya School of Accountancy and Finance - Kitale and Kisii"]
+    },
+    {
+      "name": "Kenya School of Government",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Keshnya School of Government (Formerly Kenya Institute of Administration (KIA))",
+        "KIA",
+        "Kenya Institute of Administration (KIA) - Kabete"
+      ],
+      "sourceNames": [
+        "Keshnya School of Government (Formerly Kenya Institute of Administration (KIA))",
+        "Kenya School of Government",
+        "Kenya Institute of Administration (KIA) - Kabete"
+      ]
+    },
+    {
+      "name": "Kenya School of Medical Science and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Kenya School of Medical Science and Technology"]
+    },
+    {
+      "name": "Kenya School of Monetary Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya School of Monetary Studies - Ruaraka"],
+      "sourceNames": ["Kenya School of Monetary Studies - Ruaraka"]
+    },
+    {
+      "name": "Kenya School of Professional Counseling & Behavioural Sciences",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Kenya School of Professional Counseling & Behavioural Sciences (KSCBS)",
+        "KSCBS"
+      ],
+      "sourceNames": ["Kenya School of Professional Counseling & Behavioural Sciences (KSCBS)"]
+    },
+    {
+      "name": "Kenya School of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya School of Professional Studies (KSPS) - Parklands, Nairobi", "KSPS"],
+      "sourceNames": ["Kenya School of Professional Studies (KSPS) - Parklands, Nairobi"]
+    },
+    {
+      "name": "Kenya School of Technology Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenya School of Technology Studies (KSTS)- Thika", "KSTS"],
+      "sourceNames": ["Kenya School of Technology Studies (KSTS)- Thika"]
+    },
+    {
+      "name": "Kenya Science Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Science Teachers College, University of Nairobi",
+        "Kenya Science Teachers College - Jamhuri, Nairobi"
+      ],
+      "sourceNames": [
+        "Kenya Science Teachers College, University of Nairobi",
+        "Kenya Science Teachers College - Jamhuri, Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Technical Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Kenya Technical Teachers College (KTTC)",
+        "KTTC",
+        "Kenya Technical Teachers College – Gigiri, Nairobi"
+      ],
+      "sourceNames": [
+        "Kenya Technical Teachers College (KTTC)",
+        "Kenya Technical Teachers College – Gigiri, Nairobi"
+      ]
+    },
+    {
+      "name": "Kenya Utalii College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Utalii College - Nairobi"],
+      "sourceNames": ["Kenya Utalii College", "Kenya Utalii College - Nairobi"]
+    },
+    {
+      "name": "Kenya Water Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Water Institute - South C, Nairobi"],
+      "sourceNames": ["Kenya Water Institute - South C, Nairobi"]
+    },
+    {
+      "name": "Kenya Wildlife Service Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kenya Wildlife Service Training Institute - Naivasha"],
+      "sourceNames": ["Kenya Wildlife Service Training Institute - Naivasha"]
+    },
+    {
+      "name": "Kenyaplex Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kenyaplex Institute of Technology, Mwala"],
+      "sourceNames": ["Kenyaplex Institute of Technology, Mwala"]
+    },
+    {
+      "name": "Kenyatta University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["KU"],
+      "sourceNames": ["Kenyatta University"]
+    },
+    {
+      "name": "Kericho Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Kericho Teachers College – Kericho"],
+      "sourceNames": ["Kericho Teachers College – Kericho"]
+    },
+    {
+      "name": "Kiambu Institute of Science and Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kiambu Institute of Science and Technology – Kiambu"],
+      "sourceNames": [
+        "Kiambu Institute of Science and Technology",
+        "Kiambu Institute of Science and Technology – Kiambu"
+      ]
+    },
+    {
+      "name": "Kibabii University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kibabii University"]
+    },
+    {
+      "name": "Kigari Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kigari Teachers College - Embu", "Kigari Teachers College – Embu"],
+      "sourceNames": ["Kigari Teachers College - Embu", "Kigari Teachers College – Embu"]
+    },
+    {
+      "name": "Kilimambogo Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kilimambogo Teachers College - Kilimambogo"],
+      "sourceNames": ["Kilimambogo Teachers College - Kilimambogo"]
+    },
+    {
+      "name": "Kima International School of Theology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Kima International School of Theology (KIST) - Kima, Western Province of Kenya",
+        "KIST"
+      ],
+      "sourceNames": [
+        "Kima International School of Theology (KIST) - Kima, Western Province of Kenya"
+      ]
+    },
+    {
+      "name": "Kipkabus Technical and Vocational College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kipkabus Technical and Vocational College (KTVC)", "KTVC"],
+      "sourceNames": ["Kipkabus Technical and Vocational College (KTVC)"]
+    },
+    {
+      "name": "Kirinyaga University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kirinyaga University"]
+    },
+    {
+      "name": "Kiriri Women's University of Science and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kiriri Women's University of Science and Technology"]
+    },
+    {
+      "name": "Kisii University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Kisii University"]
+    },
+    {
+      "name": "Kisumu Polytechnic",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kisumu Polytechnic - Makasembo", "Kisumu Polytechnic - Makasembo, Kisumu"],
+      "sourceNames": ["Kisumu Polytechnic - Makasembo", "Kisumu Polytechnic - Makasembo, Kisumu"]
+    },
+    {
+      "name": "Kitale Technical Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Kitale Technical Institute - Kitale"],
+      "sourceNames": ["Kitale Technical Institute - Kitale"]
+    },
+    {
+      "name": "Koitaleel Samoei University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Koitalel Arap Samoei University College"],
+      "sourceNames": ["Koitalel Arap Samoei University College"]
+    },
+    {
+      "name": "Laikipia University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Laikipia University"]
+    },
+    {
+      "name": "Lake Region Business Training and Consultancy",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Lake Region Business Training and Consultancy - Naivasha, Kwa Muhia"],
+      "sourceNames": ["Lake Region Business Training and Consultancy - Naivasha, Kwa Muhia"]
+    },
+    {
+      "name": "Lakeview Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Lakeview Training Institute - Naivasha Kangiri House"],
+      "sourceNames": ["Lakeview Training Institute - Naivasha Kangiri House"]
+    },
+    {
+      "name": "Lukenya University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Lukenya University"]
+    },
+    {
+      "name": "Maasai Mara University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Maasai Mara University"]
+    },
+    {
+      "name": "Machakos Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Machakos Institute of Technology - Machakos"],
+      "sourceNames": ["Machakos Institute of Technology - Machakos"]
+    },
+    {
+      "name": "Machakos University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Machakos University"]
+    },
+    {
+      "name": "Makueni University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Makueni University College"]
+    },
+    {
+      "name": "Mama Ngina University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Mama Ngina University College"]
+    },
+    {
+      "name": "Management University of Africa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Management University of Africa"]
+    },
+    {
+      "name": "Maseno University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Maseno University"]
+    },
+    {
+      "name": "Masinde Muliro University of Science and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["MMUST"],
+      "sourceNames": ["Masinde Muliro University of Science and Technology"]
+    },
+    {
+      "name": "Mawego Technical Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Mawego Technical Institute - Kendu Bay"],
+      "sourceNames": ["Mawego Technical Institute - Kendu Bay"]
+    },
+    {
+      "name": "Maxton College Of Media & Communications",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Maxton College Of Media & Communications - Nairobi Umo"],
+      "sourceNames": ["Maxton College Of Media & Communications - Nairobi Umo"]
+    },
+    {
+      "name": "Mboya Labour College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Mboya Labour College - Kisumu"],
+      "sourceNames": ["Mboya Labour College - Kisumu"]
+    },
+    {
+      "name": "Meru Technical Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Meru Technical Institute - Meru"],
+      "sourceNames": ["Meru Technical Institute - Meru"]
+    },
+    {
+      "name": "Meru University of Science and Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Meru University of Science and Technology TVET"],
+      "sourceNames": [
+        "Meru University of Science and Technology",
+        "Meru University of Science and Technology TVET"
+      ]
+    },
+    {
+      "name": "Michuki Technical Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Michuki Technical Institute - Muranga"],
+      "sourceNames": ["Michuki Technical Institute - Muranga"]
+    },
+    {
+      "name": "Migori Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Migori Teachers college, Migori"],
+      "sourceNames": ["Migori Teachers college, Migori"]
+    },
+    {
+      "name": "Moi University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Moi University"]
+    },
+    {
+      "name": "Mosoriot Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Mosoriot Teachers College – Eldoret"],
+      "sourceNames": ["Mosoriot Teachers College – Eldoret"]
+    },
+    {
+      "name": "Mount Kenya University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["MKU", "Mount Kenya University (MKU)"],
+      "sourceNames": ["Mount Kenya University (MKU)", "Mount Kenya University"]
+    },
+    {
+      "name": "Multimedia University of Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["MMU"],
+      "sourceNames": ["Multimedia University of Kenya"]
+    },
+    {
+      "name": "Murang'a Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Murang'a Institute of Technology – Murang'a"],
+      "sourceNames": ["Murang'a Institute of Technology – Murang'a"]
+    },
+    {
+      "name": "Murang'a University of Technology",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Murang'a University of Technology"]
+    },
+    {
+      "name": "Nairobi Aviation College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Nairobi Aviation College - Kisumu Campus", "Nairobi Aviation College - Nairobi"],
+      "sourceNames": [
+        "Nairobi Aviation College - Kisumu Campus",
+        "Nairobi Aviation College - Nairobi"
+      ]
+    },
+    {
+      "name": "Nairobi Film School",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Nairobi Film School - Kipande Road, opposite National Museum of Kenya"],
+      "sourceNames": ["Nairobi Film School - Kipande Road, opposite National Museum of Kenya"]
+    },
+    {
+      "name": "Nairobi Industrial Institute College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Nairobi Industrial Institute College"]
+    },
+    {
+      "name": "Nairobi Institute of Business Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Nairobi Institute of Business Studies (NIBS)", "NIBS"],
+      "sourceNames": ["Nairobi Institute of Business Studies (NIBS)"]
+    },
+    {
+      "name": "Nairobi Institute of Software Development",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Nairobi Institute of Software Development - Nairobi"],
+      "sourceNames": [
+        "Nairobi Institute of Software Development",
+        "Nairobi Institute of Software Development - Nairobi"
+      ]
+    },
+    {
+      "name": "Nairobi Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Nairobi Institute of Technology Westlands"],
+      "sourceNames": ["Nairobi Institute of Technology Westlands"]
+    },
+    {
+      "name": "NairoBits",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["NairoBits Collage"],
+      "sourceNames": ["NairoBits Collage"]
+    },
+    {
+      "name": "Naivasha Computer & Business Studies College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Naivasha Computer & Business Studies College - Naivasha, Kenya"],
+      "sourceNames": ["Naivasha Computer & Business Studies College - Naivasha, Kenya"]
+    },
+    {
+      "name": "Nakuru College of Health Sciences and Management",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Nakuru College of Health Sciences and Management - KFA and Showground campuses, Nakuru"
+      ],
+      "sourceNames": [
+        "Nakuru College of Health Sciences and Management - KFA and Showground campuses, Nakuru"
+      ]
+    },
+    {
+      "name": "Nakuru Counselling & Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Nakuru Counselling & Training Institute - Nakuru",
+        "Nakuru Counselling & Training Institute, Centre of Hope - Nakuru"
+      ],
+      "sourceNames": [
+        "Nakuru Counselling & Training Institute - Nakuru",
+        "Nakuru Counselling & Training Institute, Centre of Hope - Nakuru"
+      ]
+    },
+    {
+      "name": "Nakuru Institute of Information Communication Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Nakuru Institute of Information Communication Technology"]
+    },
+    {
+      "name": "Narok Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Narok Teachers College – Narok", "Narok Teachers Training – Narok"],
+      "sourceNames": ["Narok Teachers College – Narok", "Narok Teachers Training – Narok"]
+    },
+    {
+      "name": "National Defence University-Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["National Defence University - Kenya", "National Defence University–Kenya"],
+      "sourceNames": ["National Defence University - Kenya", "National Defence University–Kenya"]
+    },
+    {
+      "name": "National Intelligence Research University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["National Intelligence Research University"]
+    },
+    {
+      "name": "National Youth Service Engineering Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["National Youth Service Engineering Institute - Nairobi"],
+      "sourceNames": ["National Youth Service Engineering Institute - Nairobi"]
+    },
+    {
+      "name": "Nationwide Hotel and Tourism College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Nationwide Hotel and Tourism College (NHTC) - Nakuru", "NHTC"],
+      "sourceNames": ["Nationwide Hotel and Tourism College (NHTC) - Nakuru"]
+    },
+    {
+      "name": "Neema Lutheran College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Neema Lutheran College - Nyamira"],
+      "sourceNames": ["Neema Lutheran College - Nyamira"]
+    },
+    {
+      "name": "Newview College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["NEWVIEW COLLEGE - Nairobi"],
+      "sourceNames": ["NEWVIEW COLLEGE - Nairobi"]
+    },
+    {
+      "name": "Nkabune Technical Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Nkabune Technical Institute"]
+    },
+    {
+      "name": "Nyandarua University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Nyandarua University College"]
+    },
+    {
+      "name": "Open University of Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Open University of Kenya"]
+    },
+    {
+      "name": "Oshwal College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Oshwal College - Parklands, Nairobi"],
+      "sourceNames": ["Oshwal College - Parklands, Nairobi"]
+    },
+    {
+      "name": "Pan Africa Christian University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Pan Africa Christian University"]
+    },
+    {
+      "name": "Pan African School of Theology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Pan African School of Theology (PAST) - Nyahururu, Kenya", "PAST"],
+      "sourceNames": ["Pan African School of Theology (PAST) - Nyahururu, Kenya"]
+    },
+    {
+      "name": "PC Kinyanjui Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "PC Kinyanjui Technical Training Institute (PCKTTI)",
+        "PCKTTI",
+        "Kinyanjui Technical Training Institute - Riruta, Nairobi"
+      ],
+      "sourceNames": [
+        "PC Kinyanjui Technical Training Institute (PCKTTI)",
+        "Kinyanjui Technical Training Institute - Riruta, Nairobi"
+      ]
+    },
+    {
+      "name": "PCEA Shalom Training College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["PCEA Shalom Training College - Eastleigh, Nairobi"],
+      "sourceNames": ["PCEA Shalom Training College - Eastleigh, Nairobi"]
+    },
+    {
+      "name": "Pioneer's Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Pioneer's Training Institute - Nairobi, Umoja"],
+      "sourceNames": ["Pioneer's Training Institute - Nairobi, Umoja"]
+    },
+    {
+      "name": "PREMESE Africa Development Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["PREMESE Africa Development Institute - Vision Plaza, Msa Road, Nairobi"],
+      "sourceNames": ["PREMESE Africa Development Institute - Vision Plaza, Msa Road, Nairobi"]
+    },
+    {
+      "name": "Premier College of Hospitality and Business Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Premier College of Hospitality and Business Studies - Biashara Street"],
+      "sourceNames": ["Premier College of Hospitality and Business Studies - Biashara Street"]
+    },
+    {
+      "name": "Premier College of Professional Studies Ltd",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Premier College of Professional Studies Ltd - Nairobi"],
+      "sourceNames": ["Premier College of Professional Studies Ltd - Nairobi"]
+    },
+    {
+      "name": "Presbyterian University of East Africa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Presbyterian University of East Africa"]
+    },
+    {
+      "name": "Prestige Academy and College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Prestige Academy and College - Nakuru"],
+      "sourceNames": ["Prestige Academy and College - Nakuru"]
+    },
+    {
+      "name": "Pwani University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Pwani University"]
+    },
+    {
+      "name": "Railway Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Railway Training Institute - South B, Nairobi"],
+      "sourceNames": ["Railway Training Institute - South B, Nairobi"]
+    },
+    {
+      "name": "Ramogi Institute of Advanced Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Ramogi Institute of Advanced Technology - Kisumu"],
+      "sourceNames": ["Ramogi Institute of Advanced Technology - Kisumu"]
+    },
+    {
+      "name": "Regional Centre for Tourism and Foreign language",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Regional Centre for Tourism and Foreign language - Eagle House, opposite Tacos Club"
+      ],
+      "sourceNames": [
+        "Regional Centre for Tourism and Foreign language - Eagle House, opposite Tacos Club"
+      ]
+    },
+    {
+      "name": "Regional Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Regional Training Institute - CBD, Nairobi"],
+      "sourceNames": ["Regional Training Institute - CBD, Nairobi"]
+    },
+    {
+      "name": "Regions Group International College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Regions Group International College"]
+    },
+    {
+      "name": "Rehoboth College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Rehoboth College - Nairobi, Ngumo area"],
+      "sourceNames": ["Rehoboth College - Nairobi, Ngumo area"]
+    },
+    {
+      "name": "Riara University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Riara University"]
+    },
+    {
+      "name": "Riccatti Business College of East Africa",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Riccatti Business College of East Africa"]
+    },
+    {
+      "name": "Rifkins College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Rifkins College - Mombasa"],
+      "sourceNames": ["Rifkins College - Mombasa"]
+    },
+    {
+      "name": "Rift Valley Institute of Business Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Rift valley institute of business studies, Nakuru and Kericho"],
+      "sourceNames": ["Rift valley institute of business studies, Nakuru and Kericho"]
+    },
+    {
+      "name": "Rift Valley Institute of Science & Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Rift Valley Institute of Science & Technology - Nakuru",
+        "Rift Valley Institute Of Science & Technology - Nakuru"
+      ],
+      "sourceNames": [
+        "Rift Valley Institute of Science & Technology - Nakuru",
+        "Rift Valley Institute Of Science & Technology - Nakuru"
+      ]
+    },
+    {
+      "name": "Rift Valley Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Rift Valley Technical Training Institute - Nakuru"],
+      "sourceNames": ["Rift Valley Technical Training Institute - Nakuru"]
+    },
+    {
+      "name": "Rochester Business School",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Rochester Business School - View Park Towers, Nairobi"],
+      "sourceNames": ["Rochester Business School - View Park Towers, Nairobi"]
+    },
+    {
+      "name": "Rongo University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Rongo University"]
+    },
+    {
+      "name": "Royal Institute of Applied Sciences",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Royal Institute of Applied Sciences - Meru"],
+      "sourceNames": ["Royal Institute of Applied Sciences - Meru"]
+    },
+    {
+      "name": "Sacred Lake Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Sacred Lake Institute of Technology - Kiirua, along Meru Nanyuki Road"],
+      "sourceNames": ["Sacred Lake Institute of Technology - Kiirua, along Meru Nanyuki Road"]
+    },
+    {
+      "name": "Sacred Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Sacred Training Institute - Bungoma and Nairobi Campuses"],
+      "sourceNames": ["Sacred Training Institute - Bungoma and Nairobi Campuses"]
+    },
+    {
+      "name": "Sagana Institute of Technology",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Sagana Institute of Technology"]
+    },
+    {
+      "name": "Savannah Institute for Business and Informatics",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Savannah Institute for Business and Informatics - Nakuru"],
+      "sourceNames": ["Savannah Institute for Business and Informatics - Nakuru"]
+    },
+    {
+      "name": "School of ICT & Hairdressing and Beauty",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["School of ICT & Hairdressing and Beauty - Pioneer College"],
+      "sourceNames": ["School of ICT & Hairdressing and Beauty - Pioneer College"]
+    },
+    {
+      "name": "School of Professional Studies",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["School of Professional Studies - Parklands, Nairobi"],
+      "sourceNames": ["School of Professional Studies - Parklands, Nairobi"]
+    },
+    {
+      "name": "Scott Christian University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Scott Christian University"]
+    },
+    {
+      "name": "Sensei Institute of Technology for Plant Operator Training",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Sensei Institute of Technology for Plant Operator Training"]
+    },
+    {
+      "name": "Shalom Information Technology Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Shalom Information Technology Centre - Shalom House, off Ngong Road, Nairobi"],
+      "sourceNames": [
+        "Shalom Information Technology Centre - Shalom House, off Ngong Road, Nairobi"
+      ]
+    },
+    {
+      "name": "Shanzu Teachers College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Shanzu Teachers College - Shanzu, Mombasa"],
+      "sourceNames": ["Shanzu Teachers College - Shanzu, Mombasa"]
+    },
+    {
+      "name": "Shepherds Foundation Education & Research Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Shepherds Foundation Education & Research Centre - Buruburu, Nairobi"],
+      "sourceNames": ["Shepherds Foundation Education & Research Centre - Buruburu, Nairobi"]
+    },
+    {
+      "name": "Sirisia Youth Polytechnic",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Sirisia Youth Polytechnic"]
+    },
+    {
+      "name": "Skynet Business College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Skynet Business College - CBD, Nairobi"],
+      "sourceNames": ["Skynet Business College - CBD, Nairobi"]
+    },
+    {
+      "name": "Skypath Aviation College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Skypath Aviation College - Wilson Airport AMREF KCO building, Nairobi"],
+      "sourceNames": ["Skypath Aviation College - Wilson Airport AMREF KCO building, Nairobi"]
+    },
+    {
+      "name": "SMA Swiss Management Academy",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["SMA Swiss Management Academy - New Muthaiga, Nairobi"],
+      "sourceNames": ["SMA Swiss Management Academy - New Muthaiga, Nairobi"]
+    },
+    {
+      "name": "Softpro Computer Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Softpro Computer Institute - Pipeline Tumaini S/mkt blg, 3rd floor, Pipeline (Embakasi)",
+        "Embakasi"
+      ],
+      "sourceNames": [
+        "Softpro Computer Institute - Pipeline Tumaini S/mkt blg, 3rd floor, Pipeline (Embakasi)"
+      ]
+    },
+    {
+      "name": "South Eastern Kenya University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["SEKU"],
+      "sourceNames": ["South Eastern Kenya University"]
+    },
+    {
+      "name": "South Rift International College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["South Rift International College (SORICO) - AM Plaza, Kericho", "SORICO"],
+      "sourceNames": ["South Rift International College (SORICO) - AM Plaza, Kericho"]
+    },
+    {
+      "name": "St Joseph's Medical Training College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["St Joseph's Medical Training College - Nyabondo"],
+      "sourceNames": ["St Joseph's Medical Training College - Nyabondo"]
+    },
+    {
+      "name": "St. Andrew's Pre-Medical College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["St. Andrew's Pre-Medical College - Mumbasa"],
+      "sourceNames": ["St. Andrew's Pre-Medical College - Mumbasa"]
+    },
+    {
+      "name": "St. Joseph Vocational Training Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["St. Joseph Vocational Training Centre - Mlolongo"],
+      "sourceNames": ["St. Joseph Vocational Training Centre - Mlolongo"]
+    },
+    {
+      "name": "St. Mary's School of Clinical Medicine",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["St. Mary's School of Clinical Medicine - Mumias"],
+      "sourceNames": ["St. Mary's School of Clinical Medicine - Mumias"]
+    },
+    {
+      "name": "St. Paul's University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["St. Paul's University"]
+    },
+    {
+      "name": "Stanbridge College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Stanbridge College - Voi"],
+      "sourceNames": ["Stanbridge College - Voi"]
+    },
+    {
+      "name": "Star Media Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Star Media Institute - South B Estate, Southgate Ctr 1st Floor, Nairobi"],
+      "sourceNames": ["Star Media Institute - South B Estate, Southgate Ctr 1st Floor, Nairobi"]
+    },
+    {
+      "name": "Starnet College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Starnet College - Nairobi"],
+      "sourceNames": ["Starnet College - Nairobi"]
+    },
+    {
+      "name": "Stonebic College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Stonebic College - Westlands, Nairobi"],
+      "sourceNames": ["Stonebic College - Westlands, Nairobi"]
+    },
+    {
+      "name": "Strathmore University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Strathmore University"]
+    },
+    {
+      "name": "Superior Group of Colleges Intl",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Superior Group of Colleges Intl."],
+      "sourceNames": ["Superior Group of Colleges Intl."]
+    },
+    {
+      "name": "Taita Taveta University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Taita Taveta University"]
+    },
+    {
+      "name": "Talanta Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Talanta Institute"]
+    },
+    {
+      "name": "Talent institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Talent institute - Nairobi"],
+      "sourceNames": ["Talent institute - Nairobi"]
+    },
+    {
+      "name": "Tambach Teachers Training College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Tambach Teachers Training College - Kerio Valley, Rift Valley"],
+      "sourceNames": ["Tambach Teachers Training College - Kerio Valley, Rift Valley"]
+    },
+    {
+      "name": "Tangaza University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Tangaza College"],
+      "sourceNames": ["Tangaza University", "Tangaza College"]
+    },
+    {
+      "name": "Taznaam Tutorial College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Taznaam Tutorial College - Nairobi"],
+      "sourceNames": ["Taznaam Tutorial College - Nairobi"]
+    },
+    {
+      "name": "Tec Institute of Management",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Tec Institute of Management - Nairobi and Eldoret"],
+      "sourceNames": ["Tec Institute of Management - Nairobi and Eldoret"]
+    },
+    {
+      "name": "Technical University of Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["TUK"],
+      "sourceNames": ["Technical University of Kenya"]
+    },
+    {
+      "name": "Technical University of Mombasa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["TUM"],
+      "sourceNames": ["Technical University of Mombasa"]
+    },
+    {
+      "name": "Techno Links Ltd",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Techno Links Ltd"]
+    },
+    {
+      "name": "Tharaka University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Tharaka University"]
+    },
+    {
+      "name": "The Co-operative University of Kenya",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["The Co-operative University of Kenya"]
+    },
+    {
+      "name": "The East African University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["The East African University"]
+    },
+    {
+      "name": "The iNet College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "The iNet College - Bungoma Cooperative Bank Building, 3rd floor, Bungoma County"
+      ],
+      "sourceNames": [
+        "The iNet College - Bungoma Cooperative Bank Building, 3rd floor, Bungoma County"
+      ]
+    },
+    {
+      "name": "The Kenya College of Science and Technology",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["The Kenya College of Science and Technology"]
+    },
+    {
+      "name": "The Language School in Kenya",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Language School in Kenya, The - Chania Avenue, Kilimani Nairobi"],
+      "sourceNames": ["Language School in Kenya, The - Chania Avenue, Kilimani Nairobi"]
+    },
+    {
+      "name": "The Regional Institute of Business Management",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["The Regional Institute of Business Management - Nairobi CBD"],
+      "sourceNames": ["The Regional Institute of Business Management - Nairobi CBD"]
+    },
+    {
+      "name": "Thika Technical Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["The Thika Technical Training Institute - Thika"],
+      "sourceNames": ["The Thika Technical Training Institute - Thika"]
+    },
+    {
+      "name": "Thomas Asingo College of Computer and Business Management",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Thomas Asingo College of Computer and Business Management"]
+    },
+    {
+      "name": "Times Training Centre",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Times Training Centre - Mombasa"],
+      "sourceNames": ["Times Training Centre - Mombasa"]
+    },
+    {
+      "name": "Tom Mboya University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Tom Mboya University"]
+    },
+    {
+      "name": "Turkana University College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Turkana University College"]
+    },
+    {
+      "name": "Umma University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Umma University (UMMA)", "UMMA"],
+      "sourceNames": ["Umma University (UMMA)", "Umma University"]
+    },
+    {
+      "name": "United Africa College",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["United Africa College - Nairobi"],
+      "sourceNames": ["United Africa College - Nairobi"]
+    },
+    {
+      "name": "United States International University Africa",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "USIU",
+        "USIU - Africa",
+        "USIU-Africa",
+        "United States International University",
+        "United States International University Africa (USIU - Africa)"
+      ],
+      "sourceNames": [
+        "United States International University Africa (USIU - Africa)",
+        "United States International University"
+      ]
+    },
+    {
+      "name": "Universal Group of Colleges",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Universal Group of Colleges - Nairobi CBD"],
+      "sourceNames": ["Universal Group of Colleges - Nairobi CBD"]
+    },
+    {
+      "name": "University of Eastern Africa, Baraton",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["University of Eastern Africa, Baraton"]
+    },
+    {
+      "name": "University of Eldoret",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["University of Eldoret"]
+    },
+    {
+      "name": "University of Embu",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["University of Embu"]
+    },
+    {
+      "name": "University of Kabianga",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["University of Kabianga"]
+    },
+    {
+      "name": "University of Nairobi",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["UoN"],
+      "sourceNames": ["University of Nairobi"]
+    },
+    {
+      "name": "Uzima University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Uzima University College (constituent college of CUEA)"],
+      "sourceNames": ["Uzima University College (constituent college of CUEA)", "Uzima University"]
+    },
+    {
+      "name": "Vision Empowerment Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [
+        "Vision Empowerment Training Institute- Nairobi",
+        "Vision Empowerment Training Institute- Kitengela"
+      ],
+      "sourceNames": [
+        "Vision Empowerment Training Institute- Nairobi",
+        "Vision Empowerment Training Institute- Kitengela"
+      ]
+    },
+    {
+      "name": "Vision Institute of Professionals",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Vision Institute of Professionals - Nairobi and Mombasa"],
+      "sourceNames": ["Vision Institute of Professionals - Nairobi and Mombasa"]
+    },
+    {
+      "name": "Vision Stars Training Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": ["Vision Stars Training Institute - Nairobi"],
+      "sourceNames": [
+        "Vision Stars Training Institute - Nairobi",
+        "Vision Stars Training Institute"
+      ]
+    },
+    {
+      "name": "Visualdo Institute",
+      "type": "TRAINING_INSTITUTE",
+      "country": "KE",
+      "offersTvet": true,
+      "aliases": [],
+      "sourceNames": ["Visualdo Institute"]
+    },
+    {
+      "name": "Wang Point Technologies College of Information Technology",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [],
+      "sourceNames": ["Wang Point Technologies College of Information Technology"]
+    },
+    {
+      "name": "Western College of Hospitality and Professional Studies",
+      "type": "COLLEGE",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": [
+        "Western College of Hospitality and Professional Studies - Wechaps College, Kisumu"
+      ],
+      "sourceNames": [
+        "Western College of Hospitality and Professional Studies - Wechaps College, Kisumu"
+      ]
+    },
+    {
+      "name": "Zetech University",
+      "type": "UNIVERSITY",
+      "country": "KE",
+      "offersTvet": false,
+      "aliases": ["Zetech College - Nairobi"],
+      "sourceNames": ["Zetech University", "Zetech College - Nairobi"]
+    }
+  ]
+}

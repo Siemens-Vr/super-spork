@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Manufacturing and Industrial Production",
+    "description": "Machinery, production lines, industrial automation, equipment maintenance and quality systems."
+  },
+  {
+    "name": "Automotive and Electric Mobility",
+    "description": "Vehicle assembly, vehicle electronics, batteries, electric drivetrains and charging infrastructure."
+  },
+  {
+    "name": "Energy and Power",
+    "description": "Power generation, transmission and distribution, solar, wind, geothermal and energy storage."
+  },
+  {
+    "name": "Oil, Gas and Petroleum",
+    "description": "Pipelines, refineries, pumping systems, instrumentation and plant maintenance."
+  },
+  {
+    "name": "Construction and Real Estate Development",
+    "description": "Buildings, structural works, site engineering and construction equipment."
+  },
+  {
+    "name": "Building Services and Facilities Management",
+    "description": "Air conditioning, ventilation, lifts, electrical installations and fire protection systems."
+  },
+  {
+    "name": "Roads, Railways and Transport Infrastructure",
+    "description": "Roads, bridges, tunnels, railway systems and transport signalling."
+  },
+  {
+    "name": "Water, Wastewater and Sanitation",
+    "description": "Water treatment, sewerage, pumping stations, dams and drainage systems."
+  },
+  {
+    "name": "Environmental Services and Waste Management",
+    "description": "Recycling plants, waste processing, pollution control and flood protection."
+  },
+  {
+    "name": "Electronics and Semiconductor Technology",
+    "description": "Electronic devices, circuit boards, sensors, semiconductor chips and embedded systems."
+  },
+  {
+    "name": "Telecommunications and Networking",
+    "description": "Fibre networks, mobile infrastructure, networking systems and communication equipment."
+  },
+  {
+    "name": "Software, Computing and Digital Infrastructure",
+    "description": "Industrial software, control software, Internet of Things systems, data centres and hardware integration."
+  },
+  {
+    "name": "Agriculture and Agricultural Technology",
+    "description": "Farm machinery, irrigation, automated farming and agricultural sensors."
+  },
+  {
+    "name": "Food and Beverage Processing",
+    "description": "Food processing machinery, refrigeration, bottling, packaging and factory utilities."
+  },
+  {
+    "name": "Mining and Mineral Processing",
+    "description": "Mining equipment, conveyors, mineral processing plants and mine infrastructure."
+  },
+  {
+    "name": "Metals and Construction Materials",
+    "description": "Steelworks, foundries, cement factories, glass and ceramics production."
+  },
+  {
+    "name": "Chemicals, Plastics and Process Manufacturing",
+    "description": "Process equipment, plant automation, utilities and equipment maintenance in chemicals and plastics production."
+  },
+  {
+    "name": "Pharmaceuticals and Biotechnology",
+    "description": "Pharmaceutical production equipment, cleanrooms, automation and controlled manufacturing environments."
+  },
+  {
+    "name": "Healthcare and Medical Devices",
+    "description": "Medical equipment, diagnostic devices and hospital engineering systems."
+  },
+  {
+    "name": "Aviation and Aerospace",
+    "description": "Aircraft systems, avionics, aircraft maintenance equipment and airport infrastructure."
+  },
+  {
+    "name": "Maritime, Ports and Shipbuilding",
+    "description": "Ship systems, port equipment, coastal structures and marine infrastructure."
+  },
+  {
+    "name": "Logistics, Warehousing and Supply Chain",
+    "description": "Automated warehouses, sorting systems, conveyors and cold storage."
+  },
+  {
+    "name": "Textiles, Apparel and Leather Manufacturing",
+    "description": "Textile and leather processing machinery, production automation and factory maintenance."
+  },
+  {
+    "name": "Paper, Printing and Packaging",
+    "description": "Printing equipment, paper production and automated packaging systems."
+  },
+  {
+    "name": "Defence and Security Technology",
+    "description": "Defence vehicles, communications, surveillance equipment and supporting infrastructure."
+  },
+  {
+    "name": "Engineering Consultancy, Testing and Technical Services",
+    "description": "Engineering design, inspection, testing, technical advisory services and project supervision."
+  },
+  {
+    "name": "Education, Research and Development",
+    "description": "Technical training, laboratory equipment, product development and engineering research."
+  }
+]

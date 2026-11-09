@@ -32,6 +32,6 @@ The PostgreSQL driver emits a pg 8 deprecation notice during concurrent transact
 - The production image, TLS/reverse-proxy cookie behavior, backup restores, key rotation and operational alerting need deployment checks.
 - Institutional privacy/legal decisions, approved deletion/appeal procedures and final competency rubrics remain institution-owned release requirements.
 
-There is no live AI engine, OCR authenticity claim, assessment execution, completion score, or interview launch mechanism in this milestone. Automated deletion is intentionally not enabled without an approved institutional policy; a configurable report-only retention tool is included.
+The backend now records assessment starts and authorised assessor results, computes skill gaps and produces learning plans. The interaction service now launches booked assessments, uses a configured AI provider and saves provisional evaluations for authorised assessor review. It makes no OCR authenticity claim. See [assessment targets](assessment-targets.md) and [the interaction validation record](assessment-interaction-audit.md#validation-record). Automated deletion is intentionally not enabled without an approved institutional policy; a configurable report-only retention tool is included.
 
 Reproduce with the README commands and an explicitly named `nexus_test` database. Integration tests skip without `TEST_DATABASE_URL` and refuse other database names.

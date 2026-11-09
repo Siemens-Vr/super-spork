@@ -6,7 +6,7 @@ import { storage } from '../config/storage.js';
 import {
   documentSchema,
   identityCategories,
-  degreeCategories,
+  academicDocumentRules,
   reviewSchema,
 } from '../validators/document.schema.js';
 import { requireCondition } from '../errors/app-error.js';
@@ -20,6 +20,8 @@ function documentMetadata(d: Document) {
     id: d.id,
     category: d.category,
     title: d.title,
+    courseName: d.courseName,
+    certificationName: d.certificationName,
     issuer: d.issuer,
     institutionId: d.institutionId,
     institutionName: d.institutionName,
@@ -66,7 +68,9 @@ export async function uploadDocument(
     'INVALID_DOCUMENT_CATEGORY',
     'Use the appropriate identity or academic upload endpoint',
   );
-  const degree = degreeCategories.some((category) => category === input.category);
+  const degree =
+    academicDocumentRules[input.category as keyof typeof academicDocumentRules]
+      ?.transcriptsRequired ?? false;
   requireCondition(
     !degree || transcripts.length > 0,
     422,
@@ -163,7 +167,7 @@ export async function uploadDocument(
       const d = await tx.document.create({
         data: {
           ...metadata,
-          title: main.title,
+          title: input.category === 'OTHER' ? input.title! : main.title,
           institutionName,
           issuedAt: input.issuedAt ? new Date(input.issuedAt) : undefined,
           expiresAt: input.expiresAt ? new Date(input.expiresAt) : undefined,
@@ -193,6 +197,7 @@ export async function uploadDocument(
             qualificationId: d.id,
             institutionId: input.institutionId,
             institutionName,
+            courseName: input.courseName,
             title: upload.title,
             storageKey: upload.key,
             mimeType: upload.mime,

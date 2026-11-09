@@ -19,6 +19,12 @@ export default defineConfig({
       APP_URL: 'http://localhost:3000',
       CORS_ORIGINS: 'http://localhost:3000',
       ENABLE_SWAGGER: 'true',
+      AI_PROVIDER: 'disabled',
+      AI_BASE_URL: 'https://ai.example.test/v1',
+      AI_API_KEY: 'test-only-key',
+      AI_MODEL: 'test-only-model',
+      STT_PROVIDER: 'browser',
+      TTS_PROVIDER: 'browser',
     },
   },
 });

@@ -191,9 +191,9 @@ export type JobRoleWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"JobRole"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"JobRole"> | Date | string
   industries?: Prisma.JobRoleIndustryListRelationFilter
-  preferences?: Prisma.CareerPreferenceListRelationFilter
   frameworks?: Prisma.CompetencyFrameworkListRelationFilter
   blueprints?: Prisma.AssessmentBlueprintListRelationFilter
+  assessmentTargets?: Prisma.AssessmentTargetListRelationFilter
 }
 
 export type JobRoleOrderByWithRelationInput = {
@@ -204,9 +204,9 @@ export type JobRoleOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   industries?: Prisma.JobRoleIndustryOrderByRelationAggregateInput
-  preferences?: Prisma.CareerPreferenceOrderByRelationAggregateInput
   frameworks?: Prisma.CompetencyFrameworkOrderByRelationAggregateInput
   blueprints?: Prisma.AssessmentBlueprintOrderByRelationAggregateInput
+  assessmentTargets?: Prisma.AssessmentTargetOrderByRelationAggregateInput
 }
 
 export type JobRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -220,9 +220,9 @@ export type JobRoleWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"JobRole"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"JobRole"> | Date | string
   industries?: Prisma.JobRoleIndustryListRelationFilter
-  preferences?: Prisma.CareerPreferenceListRelationFilter
   frameworks?: Prisma.CompetencyFrameworkListRelationFilter
   blueprints?: Prisma.AssessmentBlueprintListRelationFilter
+  assessmentTargets?: Prisma.AssessmentTargetListRelationFilter
 }, "id" | "title">
 
 export type JobRoleOrderByWithAggregationInput = {
@@ -257,9 +257,9 @@ export type JobRoleCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutJobRoleInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleUncheckedCreateInput = {
@@ -270,9 +270,9 @@ export type JobRoleUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryUncheckedCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceUncheckedCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutJobRoleInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleUpdateInput = {
@@ -283,9 +283,9 @@ export type JobRoleUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutJobRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleUncheckedUpdateInput = {
@@ -296,9 +296,9 @@ export type JobRoleUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUncheckedUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUncheckedUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleCreateManyInput = {
@@ -374,20 +374,6 @@ export type JobRoleUpdateOneRequiredWithoutIndustriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JobRoleUpdateToOneWithWhereWithoutIndustriesInput, Prisma.JobRoleUpdateWithoutIndustriesInput>, Prisma.JobRoleUncheckedUpdateWithoutIndustriesInput>
 }
 
-export type JobRoleCreateNestedOneWithoutPreferencesInput = {
-  create?: Prisma.XOR<Prisma.JobRoleCreateWithoutPreferencesInput, Prisma.JobRoleUncheckedCreateWithoutPreferencesInput>
-  connectOrCreate?: Prisma.JobRoleCreateOrConnectWithoutPreferencesInput
-  connect?: Prisma.JobRoleWhereUniqueInput
-}
-
-export type JobRoleUpdateOneRequiredWithoutPreferencesNestedInput = {
-  create?: Prisma.XOR<Prisma.JobRoleCreateWithoutPreferencesInput, Prisma.JobRoleUncheckedCreateWithoutPreferencesInput>
-  connectOrCreate?: Prisma.JobRoleCreateOrConnectWithoutPreferencesInput
-  upsert?: Prisma.JobRoleUpsertWithoutPreferencesInput
-  connect?: Prisma.JobRoleWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.JobRoleUpdateToOneWithWhereWithoutPreferencesInput, Prisma.JobRoleUpdateWithoutPreferencesInput>, Prisma.JobRoleUncheckedUpdateWithoutPreferencesInput>
-}
-
 export type JobRoleCreateNestedOneWithoutFrameworksInput = {
   create?: Prisma.XOR<Prisma.JobRoleCreateWithoutFrameworksInput, Prisma.JobRoleUncheckedCreateWithoutFrameworksInput>
   connectOrCreate?: Prisma.JobRoleCreateOrConnectWithoutFrameworksInput
@@ -416,6 +402,20 @@ export type JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JobRoleUpdateToOneWithWhereWithoutBlueprintsInput, Prisma.JobRoleUpdateWithoutBlueprintsInput>, Prisma.JobRoleUncheckedUpdateWithoutBlueprintsInput>
 }
 
+export type JobRoleCreateNestedOneWithoutAssessmentTargetsInput = {
+  create?: Prisma.XOR<Prisma.JobRoleCreateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedCreateWithoutAssessmentTargetsInput>
+  connectOrCreate?: Prisma.JobRoleCreateOrConnectWithoutAssessmentTargetsInput
+  connect?: Prisma.JobRoleWhereUniqueInput
+}
+
+export type JobRoleUpdateOneRequiredWithoutAssessmentTargetsNestedInput = {
+  create?: Prisma.XOR<Prisma.JobRoleCreateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedCreateWithoutAssessmentTargetsInput>
+  connectOrCreate?: Prisma.JobRoleCreateOrConnectWithoutAssessmentTargetsInput
+  upsert?: Prisma.JobRoleUpsertWithoutAssessmentTargetsInput
+  connect?: Prisma.JobRoleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.JobRoleUpdateToOneWithWhereWithoutAssessmentTargetsInput, Prisma.JobRoleUpdateWithoutAssessmentTargetsInput>, Prisma.JobRoleUncheckedUpdateWithoutAssessmentTargetsInput>
+}
+
 export type JobRoleCreateWithoutIndustriesInput = {
   id?: string
   title: string
@@ -423,9 +423,9 @@ export type JobRoleCreateWithoutIndustriesInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  preferences?: Prisma.CareerPreferenceCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutJobRoleInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleUncheckedCreateWithoutIndustriesInput = {
@@ -435,9 +435,9 @@ export type JobRoleUncheckedCreateWithoutIndustriesInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  preferences?: Prisma.CareerPreferenceUncheckedCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutJobRoleInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleCreateOrConnectWithoutIndustriesInput = {
@@ -463,9 +463,9 @@ export type JobRoleUpdateWithoutIndustriesInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  preferences?: Prisma.CareerPreferenceUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutJobRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleUncheckedUpdateWithoutIndustriesInput = {
@@ -475,73 +475,9 @@ export type JobRoleUncheckedUpdateWithoutIndustriesInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  preferences?: Prisma.CareerPreferenceUncheckedUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleNestedInput
-}
-
-export type JobRoleCreateWithoutPreferencesInput = {
-  id?: string
-  title: string
-  description: string
-  active?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  industries?: Prisma.JobRoleIndustryCreateNestedManyWithoutJobRoleInput
-  frameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutJobRoleInput
-  blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutJobRoleInput
-}
-
-export type JobRoleUncheckedCreateWithoutPreferencesInput = {
-  id?: string
-  title: string
-  description: string
-  active?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  industries?: Prisma.JobRoleIndustryUncheckedCreateNestedManyWithoutJobRoleInput
-  frameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutJobRoleInput
-  blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutJobRoleInput
-}
-
-export type JobRoleCreateOrConnectWithoutPreferencesInput = {
-  where: Prisma.JobRoleWhereUniqueInput
-  create: Prisma.XOR<Prisma.JobRoleCreateWithoutPreferencesInput, Prisma.JobRoleUncheckedCreateWithoutPreferencesInput>
-}
-
-export type JobRoleUpsertWithoutPreferencesInput = {
-  update: Prisma.XOR<Prisma.JobRoleUpdateWithoutPreferencesInput, Prisma.JobRoleUncheckedUpdateWithoutPreferencesInput>
-  create: Prisma.XOR<Prisma.JobRoleCreateWithoutPreferencesInput, Prisma.JobRoleUncheckedCreateWithoutPreferencesInput>
-  where?: Prisma.JobRoleWhereInput
-}
-
-export type JobRoleUpdateToOneWithWhereWithoutPreferencesInput = {
-  where?: Prisma.JobRoleWhereInput
-  data: Prisma.XOR<Prisma.JobRoleUpdateWithoutPreferencesInput, Prisma.JobRoleUncheckedUpdateWithoutPreferencesInput>
-}
-
-export type JobRoleUpdateWithoutPreferencesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  industries?: Prisma.JobRoleIndustryUpdateManyWithoutJobRoleNestedInput
-  frameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutJobRoleNestedInput
-  blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutJobRoleNestedInput
-}
-
-export type JobRoleUncheckedUpdateWithoutPreferencesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  industries?: Prisma.JobRoleIndustryUncheckedUpdateManyWithoutJobRoleNestedInput
-  frameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput
-  blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleCreateWithoutFrameworksInput = {
@@ -552,8 +488,8 @@ export type JobRoleCreateWithoutFrameworksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceCreateNestedManyWithoutPrimaryRoleInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleUncheckedCreateWithoutFrameworksInput = {
@@ -564,8 +500,8 @@ export type JobRoleUncheckedCreateWithoutFrameworksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryUncheckedCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceUncheckedCreateNestedManyWithoutPrimaryRoleInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleCreateOrConnectWithoutFrameworksInput = {
@@ -592,8 +528,8 @@ export type JobRoleUpdateWithoutFrameworksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUpdateManyWithoutPrimaryRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleUncheckedUpdateWithoutFrameworksInput = {
@@ -604,8 +540,8 @@ export type JobRoleUncheckedUpdateWithoutFrameworksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUncheckedUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUncheckedUpdateManyWithoutPrimaryRoleNestedInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleCreateWithoutBlueprintsInput = {
@@ -616,8 +552,8 @@ export type JobRoleCreateWithoutBlueprintsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleUncheckedCreateWithoutBlueprintsInput = {
@@ -628,8 +564,8 @@ export type JobRoleUncheckedCreateWithoutBlueprintsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.JobRoleIndustryUncheckedCreateNestedManyWithoutJobRoleInput
-  preferences?: Prisma.CareerPreferenceUncheckedCreateNestedManyWithoutPrimaryRoleInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutJobRoleInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedCreateNestedManyWithoutJobRoleInput
 }
 
 export type JobRoleCreateOrConnectWithoutBlueprintsInput = {
@@ -656,8 +592,8 @@ export type JobRoleUpdateWithoutBlueprintsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUpdateManyWithoutJobRoleNestedInput
 }
 
 export type JobRoleUncheckedUpdateWithoutBlueprintsInput = {
@@ -668,8 +604,72 @@ export type JobRoleUncheckedUpdateWithoutBlueprintsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.JobRoleIndustryUncheckedUpdateManyWithoutJobRoleNestedInput
-  preferences?: Prisma.CareerPreferenceUncheckedUpdateManyWithoutPrimaryRoleNestedInput
   frameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedUpdateManyWithoutJobRoleNestedInput
+}
+
+export type JobRoleCreateWithoutAssessmentTargetsInput = {
+  id?: string
+  title: string
+  description: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  industries?: Prisma.JobRoleIndustryCreateNestedManyWithoutJobRoleInput
+  frameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutJobRoleInput
+  blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutJobRoleInput
+}
+
+export type JobRoleUncheckedCreateWithoutAssessmentTargetsInput = {
+  id?: string
+  title: string
+  description: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  industries?: Prisma.JobRoleIndustryUncheckedCreateNestedManyWithoutJobRoleInput
+  frameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutJobRoleInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutJobRoleInput
+}
+
+export type JobRoleCreateOrConnectWithoutAssessmentTargetsInput = {
+  where: Prisma.JobRoleWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobRoleCreateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedCreateWithoutAssessmentTargetsInput>
+}
+
+export type JobRoleUpsertWithoutAssessmentTargetsInput = {
+  update: Prisma.XOR<Prisma.JobRoleUpdateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedUpdateWithoutAssessmentTargetsInput>
+  create: Prisma.XOR<Prisma.JobRoleCreateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedCreateWithoutAssessmentTargetsInput>
+  where?: Prisma.JobRoleWhereInput
+}
+
+export type JobRoleUpdateToOneWithWhereWithoutAssessmentTargetsInput = {
+  where?: Prisma.JobRoleWhereInput
+  data: Prisma.XOR<Prisma.JobRoleUpdateWithoutAssessmentTargetsInput, Prisma.JobRoleUncheckedUpdateWithoutAssessmentTargetsInput>
+}
+
+export type JobRoleUpdateWithoutAssessmentTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  industries?: Prisma.JobRoleIndustryUpdateManyWithoutJobRoleNestedInput
+  frameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutJobRoleNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutJobRoleNestedInput
+}
+
+export type JobRoleUncheckedUpdateWithoutAssessmentTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  industries?: Prisma.JobRoleIndustryUncheckedUpdateManyWithoutJobRoleNestedInput
+  frameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleNestedInput
 }
 
 
@@ -679,16 +679,16 @@ export type JobRoleUncheckedUpdateWithoutBlueprintsInput = {
 
 export type JobRoleCountOutputType = {
   industries: number
-  preferences: number
   frameworks: number
   blueprints: number
+  assessmentTargets: number
 }
 
 export type JobRoleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   industries?: boolean | JobRoleCountOutputTypeCountIndustriesArgs
-  preferences?: boolean | JobRoleCountOutputTypeCountPreferencesArgs
   frameworks?: boolean | JobRoleCountOutputTypeCountFrameworksArgs
   blueprints?: boolean | JobRoleCountOutputTypeCountBlueprintsArgs
+  assessmentTargets?: boolean | JobRoleCountOutputTypeCountAssessmentTargetsArgs
 }
 
 /**
@@ -711,13 +711,6 @@ export type JobRoleCountOutputTypeCountIndustriesArgs<ExtArgs extends runtime.Ty
 /**
  * JobRoleCountOutputType without action
  */
-export type JobRoleCountOutputTypeCountPreferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CareerPreferenceWhereInput
-}
-
-/**
- * JobRoleCountOutputType without action
- */
 export type JobRoleCountOutputTypeCountFrameworksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CompetencyFrameworkWhereInput
 }
@@ -729,6 +722,13 @@ export type JobRoleCountOutputTypeCountBlueprintsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.AssessmentBlueprintWhereInput
 }
 
+/**
+ * JobRoleCountOutputType without action
+ */
+export type JobRoleCountOutputTypeCountAssessmentTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AssessmentTargetWhereInput
+}
+
 
 export type JobRoleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -738,9 +738,9 @@ export type JobRoleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   industries?: boolean | Prisma.JobRole$industriesArgs<ExtArgs>
-  preferences?: boolean | Prisma.JobRole$preferencesArgs<ExtArgs>
   frameworks?: boolean | Prisma.JobRole$frameworksArgs<ExtArgs>
   blueprints?: boolean | Prisma.JobRole$blueprintsArgs<ExtArgs>
+  assessmentTargets?: boolean | Prisma.JobRole$assessmentTargetsArgs<ExtArgs>
   _count?: boolean | Prisma.JobRoleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["jobRole"]>
 
@@ -774,9 +774,9 @@ export type JobRoleSelectScalar = {
 export type JobRoleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["jobRole"]>
 export type JobRoleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   industries?: boolean | Prisma.JobRole$industriesArgs<ExtArgs>
-  preferences?: boolean | Prisma.JobRole$preferencesArgs<ExtArgs>
   frameworks?: boolean | Prisma.JobRole$frameworksArgs<ExtArgs>
   blueprints?: boolean | Prisma.JobRole$blueprintsArgs<ExtArgs>
+  assessmentTargets?: boolean | Prisma.JobRole$assessmentTargetsArgs<ExtArgs>
   _count?: boolean | Prisma.JobRoleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type JobRoleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -786,9 +786,9 @@ export type $JobRolePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "JobRole"
   objects: {
     industries: Prisma.$JobRoleIndustryPayload<ExtArgs>[]
-    preferences: Prisma.$CareerPreferencePayload<ExtArgs>[]
     frameworks: Prisma.$CompetencyFrameworkPayload<ExtArgs>[]
     blueprints: Prisma.$AssessmentBlueprintPayload<ExtArgs>[]
+    assessmentTargets: Prisma.$AssessmentTargetPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1192,9 +1192,9 @@ readonly fields: JobRoleFieldRefs;
 export interface Prisma__JobRoleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   industries<T extends Prisma.JobRole$industriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRole$industriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobRoleIndustryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  preferences<T extends Prisma.JobRole$preferencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRole$preferencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CareerPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   frameworks<T extends Prisma.JobRole$frameworksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRole$frameworksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompetencyFrameworkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blueprints<T extends Prisma.JobRole$blueprintsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRole$blueprintsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentBlueprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assessmentTargets<T extends Prisma.JobRole$assessmentTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRole$assessmentTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentTargetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1647,30 +1647,6 @@ export type JobRole$industriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * JobRole.preferences
- */
-export type JobRole$preferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CareerPreference
-   */
-  select?: Prisma.CareerPreferenceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CareerPreference
-   */
-  omit?: Prisma.CareerPreferenceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CareerPreferenceInclude<ExtArgs> | null
-  where?: Prisma.CareerPreferenceWhereInput
-  orderBy?: Prisma.CareerPreferenceOrderByWithRelationInput | Prisma.CareerPreferenceOrderByWithRelationInput[]
-  cursor?: Prisma.CareerPreferenceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.CareerPreferenceScalarFieldEnum | Prisma.CareerPreferenceScalarFieldEnum[]
-}
-
-/**
  * JobRole.frameworks
  */
 export type JobRole$frameworksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1716,6 +1692,30 @@ export type JobRole$blueprintsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.AssessmentBlueprintScalarFieldEnum | Prisma.AssessmentBlueprintScalarFieldEnum[]
+}
+
+/**
+ * JobRole.assessmentTargets
+ */
+export type JobRole$assessmentTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentTarget
+   */
+  select?: Prisma.AssessmentTargetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentTarget
+   */
+  omit?: Prisma.AssessmentTargetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentTargetInclude<ExtArgs> | null
+  where?: Prisma.AssessmentTargetWhereInput
+  orderBy?: Prisma.AssessmentTargetOrderByWithRelationInput | Prisma.AssessmentTargetOrderByWithRelationInput[]
+  cursor?: Prisma.AssessmentTargetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AssessmentTargetScalarFieldEnum | Prisma.AssessmentTargetScalarFieldEnum[]
 }
 
 /**

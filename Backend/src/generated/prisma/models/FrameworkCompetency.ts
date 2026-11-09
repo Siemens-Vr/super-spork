@@ -28,56 +28,74 @@ export type AggregateFrameworkCompetency = {
 
 export type FrameworkCompetencyAvgAggregateOutputType = {
   weight: number | null
+  requiredScore: number | null
 }
 
 export type FrameworkCompetencySumAggregateOutputType = {
   weight: number | null
+  requiredScore: number | null
 }
 
 export type FrameworkCompetencyMinAggregateOutputType = {
   frameworkId: string | null
   competencyId: string | null
   weight: number | null
+  requiredScore: number | null
+  learningObjective: string | null
 }
 
 export type FrameworkCompetencyMaxAggregateOutputType = {
   frameworkId: string | null
   competencyId: string | null
   weight: number | null
+  requiredScore: number | null
+  learningObjective: string | null
 }
 
 export type FrameworkCompetencyCountAggregateOutputType = {
   frameworkId: number
   competencyId: number
   weight: number
+  requiredScore: number
+  learningObjective: number
+  learningResources: number
   _all: number
 }
 
 
 export type FrameworkCompetencyAvgAggregateInputType = {
   weight?: true
+  requiredScore?: true
 }
 
 export type FrameworkCompetencySumAggregateInputType = {
   weight?: true
+  requiredScore?: true
 }
 
 export type FrameworkCompetencyMinAggregateInputType = {
   frameworkId?: true
   competencyId?: true
   weight?: true
+  requiredScore?: true
+  learningObjective?: true
 }
 
 export type FrameworkCompetencyMaxAggregateInputType = {
   frameworkId?: true
   competencyId?: true
   weight?: true
+  requiredScore?: true
+  learningObjective?: true
 }
 
 export type FrameworkCompetencyCountAggregateInputType = {
   frameworkId?: true
   competencyId?: true
   weight?: true
+  requiredScore?: true
+  learningObjective?: true
+  learningResources?: true
   _all?: true
 }
 
@@ -171,6 +189,9 @@ export type FrameworkCompetencyGroupByOutputType = {
   frameworkId: string
   competencyId: string
   weight: number
+  requiredScore: number
+  learningObjective: string | null
+  learningResources: string[]
   _count: FrameworkCompetencyCountAggregateOutputType | null
   _avg: FrameworkCompetencyAvgAggregateOutputType | null
   _sum: FrameworkCompetencySumAggregateOutputType | null
@@ -200,6 +221,9 @@ export type FrameworkCompetencyWhereInput = {
   frameworkId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   competencyId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   weight?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  requiredScore?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  learningObjective?: Prisma.StringNullableFilter<"FrameworkCompetency"> | string | null
+  learningResources?: Prisma.StringNullableListFilter<"FrameworkCompetency">
   framework?: Prisma.XOR<Prisma.CompetencyFrameworkScalarRelationFilter, Prisma.CompetencyFrameworkWhereInput>
   competency?: Prisma.XOR<Prisma.CompetencyScalarRelationFilter, Prisma.CompetencyWhereInput>
 }
@@ -208,6 +232,9 @@ export type FrameworkCompetencyOrderByWithRelationInput = {
   frameworkId?: Prisma.SortOrder
   competencyId?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
+  learningObjective?: Prisma.SortOrderInput | Prisma.SortOrder
+  learningResources?: Prisma.SortOrder
   framework?: Prisma.CompetencyFrameworkOrderByWithRelationInput
   competency?: Prisma.CompetencyOrderByWithRelationInput
 }
@@ -220,6 +247,9 @@ export type FrameworkCompetencyWhereUniqueInput = Prisma.AtLeast<{
   frameworkId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   competencyId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   weight?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  requiredScore?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  learningObjective?: Prisma.StringNullableFilter<"FrameworkCompetency"> | string | null
+  learningResources?: Prisma.StringNullableListFilter<"FrameworkCompetency">
   framework?: Prisma.XOR<Prisma.CompetencyFrameworkScalarRelationFilter, Prisma.CompetencyFrameworkWhereInput>
   competency?: Prisma.XOR<Prisma.CompetencyScalarRelationFilter, Prisma.CompetencyWhereInput>
 }, "frameworkId_competencyId">
@@ -228,6 +258,9 @@ export type FrameworkCompetencyOrderByWithAggregationInput = {
   frameworkId?: Prisma.SortOrder
   competencyId?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
+  learningObjective?: Prisma.SortOrderInput | Prisma.SortOrder
+  learningResources?: Prisma.SortOrder
   _count?: Prisma.FrameworkCompetencyCountOrderByAggregateInput
   _avg?: Prisma.FrameworkCompetencyAvgOrderByAggregateInput
   _max?: Prisma.FrameworkCompetencyMaxOrderByAggregateInput
@@ -242,10 +275,16 @@ export type FrameworkCompetencyScalarWhereWithAggregatesInput = {
   frameworkId?: Prisma.UuidWithAggregatesFilter<"FrameworkCompetency"> | string
   competencyId?: Prisma.UuidWithAggregatesFilter<"FrameworkCompetency"> | string
   weight?: Prisma.IntWithAggregatesFilter<"FrameworkCompetency"> | number
+  requiredScore?: Prisma.IntWithAggregatesFilter<"FrameworkCompetency"> | number
+  learningObjective?: Prisma.StringNullableWithAggregatesFilter<"FrameworkCompetency"> | string | null
+  learningResources?: Prisma.StringNullableListFilter<"FrameworkCompetency">
 }
 
 export type FrameworkCompetencyCreateInput = {
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutCompetenciesInput
   competency: Prisma.CompetencyCreateNestedOneWithoutFrameworksInput
 }
@@ -254,10 +293,16 @@ export type FrameworkCompetencyUncheckedCreateInput = {
   frameworkId: string
   competencyId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUpdateInput = {
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutCompetenciesNestedInput
   competency?: Prisma.CompetencyUpdateOneRequiredWithoutFrameworksNestedInput
 }
@@ -266,22 +311,34 @@ export type FrameworkCompetencyUncheckedUpdateInput = {
   frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
   competencyId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyCreateManyInput = {
   frameworkId: string
   competencyId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUpdateManyMutationInput = {
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUncheckedUpdateManyInput = {
   frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
   competencyId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyListRelationFilter = {
@@ -303,26 +360,35 @@ export type FrameworkCompetencyCountOrderByAggregateInput = {
   frameworkId?: Prisma.SortOrder
   competencyId?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
+  learningObjective?: Prisma.SortOrder
+  learningResources?: Prisma.SortOrder
 }
 
 export type FrameworkCompetencyAvgOrderByAggregateInput = {
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
 }
 
 export type FrameworkCompetencyMaxOrderByAggregateInput = {
   frameworkId?: Prisma.SortOrder
   competencyId?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
+  learningObjective?: Prisma.SortOrder
 }
 
 export type FrameworkCompetencyMinOrderByAggregateInput = {
   frameworkId?: Prisma.SortOrder
   competencyId?: Prisma.SortOrder
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
+  learningObjective?: Prisma.SortOrder
 }
 
 export type FrameworkCompetencySumOrderByAggregateInput = {
   weight?: Prisma.SortOrder
+  requiredScore?: Prisma.SortOrder
 }
 
 export type FrameworkCompetencyCreateNestedManyWithoutCompetencyInput = {
@@ -409,14 +475,29 @@ export type FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput = 
   deleteMany?: Prisma.FrameworkCompetencyScalarWhereInput | Prisma.FrameworkCompetencyScalarWhereInput[]
 }
 
+export type FrameworkCompetencyCreatelearningResourcesInput = {
+  set: string[]
+}
+
+export type FrameworkCompetencyUpdatelearningResourcesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 export type FrameworkCompetencyCreateWithoutCompetencyInput = {
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutCompetenciesInput
 }
 
 export type FrameworkCompetencyUncheckedCreateWithoutCompetencyInput = {
   frameworkId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyCreateOrConnectWithoutCompetencyInput = {
@@ -452,16 +533,25 @@ export type FrameworkCompetencyScalarWhereInput = {
   frameworkId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   competencyId?: Prisma.UuidFilter<"FrameworkCompetency"> | string
   weight?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  requiredScore?: Prisma.IntFilter<"FrameworkCompetency"> | number
+  learningObjective?: Prisma.StringNullableFilter<"FrameworkCompetency"> | string | null
+  learningResources?: Prisma.StringNullableListFilter<"FrameworkCompetency">
 }
 
 export type FrameworkCompetencyCreateWithoutFrameworkInput = {
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
   competency: Prisma.CompetencyCreateNestedOneWithoutFrameworksInput
 }
 
 export type FrameworkCompetencyUncheckedCreateWithoutFrameworkInput = {
   competencyId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyCreateOrConnectWithoutFrameworkInput = {
@@ -493,41 +583,65 @@ export type FrameworkCompetencyUpdateManyWithWhereWithoutFrameworkInput = {
 export type FrameworkCompetencyCreateManyCompetencyInput = {
   frameworkId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUpdateWithoutCompetencyInput = {
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutCompetenciesNestedInput
 }
 
 export type FrameworkCompetencyUncheckedUpdateWithoutCompetencyInput = {
   frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUncheckedUpdateManyWithoutCompetencyInput = {
   frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyCreateManyFrameworkInput = {
   competencyId: string
   weight: number
+  requiredScore?: number
+  learningObjective?: string | null
+  learningResources?: Prisma.FrameworkCompetencyCreatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUpdateWithoutFrameworkInput = {
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
   competency?: Prisma.CompetencyUpdateOneRequiredWithoutFrameworksNestedInput
 }
 
 export type FrameworkCompetencyUncheckedUpdateWithoutFrameworkInput = {
   competencyId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 export type FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkInput = {
   competencyId?: Prisma.StringFieldUpdateOperationsInput | string
   weight?: Prisma.IntFieldUpdateOperationsInput | number
+  requiredScore?: Prisma.IntFieldUpdateOperationsInput | number
+  learningObjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  learningResources?: Prisma.FrameworkCompetencyUpdatelearningResourcesInput | string[]
 }
 
 
@@ -536,6 +650,9 @@ export type FrameworkCompetencySelect<ExtArgs extends runtime.Types.Extensions.I
   frameworkId?: boolean
   competencyId?: boolean
   weight?: boolean
+  requiredScore?: boolean
+  learningObjective?: boolean
+  learningResources?: boolean
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   competency?: boolean | Prisma.CompetencyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["frameworkCompetency"]>
@@ -544,6 +661,9 @@ export type FrameworkCompetencySelectCreateManyAndReturn<ExtArgs extends runtime
   frameworkId?: boolean
   competencyId?: boolean
   weight?: boolean
+  requiredScore?: boolean
+  learningObjective?: boolean
+  learningResources?: boolean
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   competency?: boolean | Prisma.CompetencyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["frameworkCompetency"]>
@@ -552,6 +672,9 @@ export type FrameworkCompetencySelectUpdateManyAndReturn<ExtArgs extends runtime
   frameworkId?: boolean
   competencyId?: boolean
   weight?: boolean
+  requiredScore?: boolean
+  learningObjective?: boolean
+  learningResources?: boolean
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   competency?: boolean | Prisma.CompetencyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["frameworkCompetency"]>
@@ -560,9 +683,12 @@ export type FrameworkCompetencySelectScalar = {
   frameworkId?: boolean
   competencyId?: boolean
   weight?: boolean
+  requiredScore?: boolean
+  learningObjective?: boolean
+  learningResources?: boolean
 }
 
-export type FrameworkCompetencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"frameworkId" | "competencyId" | "weight", ExtArgs["result"]["frameworkCompetency"]>
+export type FrameworkCompetencyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"frameworkId" | "competencyId" | "weight" | "requiredScore" | "learningObjective" | "learningResources", ExtArgs["result"]["frameworkCompetency"]>
 export type FrameworkCompetencyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   competency?: boolean | Prisma.CompetencyDefaultArgs<ExtArgs>
@@ -586,6 +712,9 @@ export type $FrameworkCompetencyPayload<ExtArgs extends runtime.Types.Extensions
     frameworkId: string
     competencyId: string
     weight: number
+    requiredScore: number
+    learningObjective: string | null
+    learningResources: string[]
   }, ExtArgs["result"]["frameworkCompetency"]>
   composites: {}
 }
@@ -1014,6 +1143,9 @@ export interface FrameworkCompetencyFieldRefs {
   readonly frameworkId: Prisma.FieldRef<"FrameworkCompetency", 'String'>
   readonly competencyId: Prisma.FieldRef<"FrameworkCompetency", 'String'>
   readonly weight: Prisma.FieldRef<"FrameworkCompetency", 'Int'>
+  readonly requiredScore: Prisma.FieldRef<"FrameworkCompetency", 'Int'>
+  readonly learningObjective: Prisma.FieldRef<"FrameworkCompetency", 'String'>
+  readonly learningResources: Prisma.FieldRef<"FrameworkCompetency", 'String[]'>
 }
     
 

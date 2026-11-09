@@ -38,6 +38,30 @@ const schema = z
     ENABLE_SWAGGER: bool.default(true),
     DOCUMENT_RETENTION_DAYS: z.coerce.number().int().min(30).default(365),
     PRIVACY_NOTICE_VERSION: z.string().default('2026-11-01'),
+    AI_PROVIDER: z.enum(['disabled', 'compatible']).default('disabled'),
+    AI_BASE_URL: z.url().optional(),
+    AI_API_KEY: z.string().optional(),
+    AI_MODEL: z.string().optional(),
+    AI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120000).default(90000),
+    AI_TLS_MAX_VERSION: z.enum(['TLSv1.2', 'TLSv1.3']).default('TLSv1.3'),
+    AI_REASONING_EFFORT: z.enum(['none', 'low', 'medium', 'high']).optional(),
+    AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(256).max(8192).default(1024),
+    AI_KEEP_ALIVE: z
+      .string()
+      .regex(/^\d{1,3}[smh]$/)
+      .optional(),
+    STT_PROVIDER: z.enum(['disabled', 'browser', 'compatible']).default('browser'),
+    STT_BASE_URL: z.url().optional(),
+    STT_API_KEY: z.string().optional(),
+    STT_MODEL: z.string().optional(),
+    STT_LANGUAGE: z.string().min(2).max(20).default('en'),
+    TTS_PROVIDER: z.enum(['disabled', 'browser', 'compatible']).default('browser'),
+    TTS_BASE_URL: z.url().optional(),
+    TTS_API_KEY: z.string().optional(),
+    TTS_MODEL: z.string().optional(),
+    TTS_VOICE: z.string().default('alloy'),
+    MAX_AUDIO_MB: z.coerce.number().int().min(1).max(10).default(8),
+    MAX_AUDIO_SECONDS: z.coerce.number().int().min(10).max(300).default(180),
   })
   .superRefine((v, ctx) => {
     if (v.NODE_ENV === 'production' && !v.APP_URL.startsWith('https://'))

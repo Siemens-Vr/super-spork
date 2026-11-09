@@ -26,4 +26,6 @@ export interface AssessmentPlanner {
   plan(input: AssessmentPlanInput): Promise<ApprovedAssessmentPlan>;
 }
 // Future transports must authenticate per service and validate versioned payloads.
-// No assessment execution, fabricated findings, or scores are produced in this milestone.
+// The TypeScript interviewer adapter and LangGraph workflow are implemented in ../assessment-interview.
+// AI proposals are reviewed by authorised assessors before final results are published.
+export type { InterviewInput, InterviewOutput } from '../assessment-interview/provider.js';

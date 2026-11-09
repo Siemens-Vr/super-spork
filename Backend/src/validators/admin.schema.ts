@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { interactionPolicySchema } from './assessment-interaction.schema.js';
+import { institutionTypes } from './institution.schema.js';
 export const industrySchema = z
   .object({
     name: z.string().trim().min(2).max(200),
@@ -38,6 +40,8 @@ export const roleSchema = z
 export const institutionSchema = z
   .object({
     name: z.string().trim().min(2).max(200),
+    type: z.enum(institutionTypes).default('OTHER'),
+    offersTvet: z.boolean().default(false),
     country: z
       .string()
       .regex(/^[A-Z]{2}$/)
@@ -62,14 +66,42 @@ export const frameworkSchema = z
     version: z.number().int().min(1),
     title: z.string().min(3).max(200),
     approved: z.boolean().default(false),
+    scope: z.enum(['CORE', 'INDUSTRY', 'COMPANY', 'COURSE']).default('CORE'),
+    industryId: z.uuid().optional(),
+    companyId: z.uuid().optional(),
+    courseName: z.string().trim().min(2).max(200).optional(),
     competencies: z
       .array(
-        z.object({ competencyId: z.uuid(), weight: z.number().int().min(1).max(100) }).strict(),
+        z
+          .object({
+            competencyId: z.uuid(),
+            weight: z.number().int().min(1).max(100),
+            requiredScore: z.number().int().min(1).max(100).default(70),
+            learningObjective: z.string().trim().min(10).max(2000).optional(),
+            learningResources: z
+              .array(
+                z
+                  .url()
+                  .max(1000)
+                  .refine((url) => /^https?:\/\//.test(url), 'Use HTTP or HTTPS resources'),
+              )
+              .max(20)
+              .default([]),
+          })
+          .strict(),
       )
       .min(1)
       .max(100),
   })
   .strict()
+  .refine(
+    (v) =>
+      (v.scope === 'CORE' && !v.industryId && !v.companyId && !v.courseName) ||
+      (v.scope === 'INDUSTRY' && !!v.industryId && !v.companyId && !v.courseName) ||
+      (v.scope === 'COMPANY' && !!v.companyId && !v.industryId && !v.courseName) ||
+      (v.scope === 'COURSE' && !!v.courseName && !v.industryId && !v.companyId),
+    'Provide only the context field matching the framework scope',
+  )
   .refine(
     (v) => new Set(v.competencies.map((c) => c.competencyId)).size === v.competencies.length,
     'Duplicate competencies',
@@ -85,6 +117,14 @@ export const blueprintSchema = z
     version: z.number().int().min(1),
     title: z.string().min(3).max(200),
     durationMinutes: z.number().int().min(15).max(240),
+    interactionPolicy: interactionPolicySchema.default({
+      cameraRequired: false,
+      microphoneRequired: false,
+      allowText: true,
+      language: 'en',
+      accommodationInstructions:
+        'Contact an administrator to request an equipment exception before starting.',
+    }),
     instructions: z.string().min(10).max(4000),
     active: z.boolean().default(false),
     requiresAuthenticatedIdentity: z.boolean().default(false),

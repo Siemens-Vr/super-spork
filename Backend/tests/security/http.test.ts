@@ -6,6 +6,10 @@ import { prisma } from '../../src/config/prisma.js';
 const app = createApp();
 afterAll(() => prisma.$disconnect());
 describe('HTTP security without external services', () => {
+  it('does not expose the development assessment interface outside development', async () => {
+    expect((await request(app).get('/dev/assessments')).status).toBe(404);
+    expect((await request(app).get('/dev/assessment-login')).status).toBe(404);
+  });
   it('exposes liveness independently of the database', async () => {
     const r = await request(app).get('/health/live');
     expect(r.status).toBe(200);
@@ -39,8 +43,9 @@ describe('HTTP security without external services', () => {
   it('keeps Swagger request errors visible when CSRF fetching fails', async () => {
     const r = await request(app).get('/docs/swagger-ui-init.js');
     expect(r.status).toBe(200);
-    type SwaggerRequest = { method: string; headers: Record<string, string> };
+    type SwaggerRequest = { method?: string; headers: Record<string, string> };
     type SwaggerOptions = {
+      url: string;
       showMutatedRequest: boolean;
       requestInterceptor: (request: SwaggerRequest) => Promise<SwaggerRequest>;
     };
@@ -67,6 +72,7 @@ describe('HTTP security without external services', () => {
     });
     window.onload();
     expect(options?.showMutatedRequest).toBe(false);
+    expect(options?.url).toBe('/api/v1/openapi.json');
     if (!options) throw new Error('Swagger did not initialize');
     const intercept = options.requestInterceptor;
     await expect(intercept({ method: 'POST', headers: {} })).rejects.toThrow(
@@ -74,6 +80,8 @@ describe('HTTP security without external services', () => {
     );
     const getRequest = { method: 'GET', headers: {} };
     expect(await intercept(getRequest)).toBe(getRequest);
+    const schemaRequest = { headers: {} };
+    expect(await intercept(schemaRequest)).toBe(schemaRequest);
     csrfResponse = {
       ok: true,
       status: 200,
@@ -86,6 +94,23 @@ describe('HTTP security without external services', () => {
     const r = await request(app).get('/api/v1/openapi.json');
     expect(r.status).toBe(200);
     expect(r.body.openapi).toBe('3.1.0');
+    expect(Object.keys(r.body.components.schemas.ProfileUpdate.properties).sort()).toEqual([
+      'country',
+      'discipline',
+      'legalName',
+      'phone',
+    ]);
+    for (const key of [
+      'region',
+      'educationLevel',
+      'institution',
+      'professionalStatus',
+      'graduationYear',
+      'summary',
+    ])
+      expect(r.body.components.schemas.Profile.properties.profile.properties).not.toHaveProperty(
+        key,
+      );
     expect(
       r.body.paths['/assessments/bookings'].post.parameters.some(
         (p: { name: string }) => p.name === 'Idempotency-Key',
@@ -96,9 +121,65 @@ describe('HTTP security without external services', () => {
     ]);
     expect(Object.keys(r.body.paths).length).toBeGreaterThan(50);
     expect(r.body.paths['/institutions'].get).toBeDefined();
+    expect(r.body.paths['/applicants/me/career-preferences']).toBeUndefined();
+    expect(r.body.paths['/assessments/bookings/{id}/prepare']).toBeUndefined();
+    expect(r.body.components.schemas.Preferences).toBeUndefined();
+    for (const path of [
+      '/assessments/targets',
+      '/assessments/targets/{id}/prepare',
+      '/assessments/attempts/{id}/start',
+      '/admin/assessment-attempts/{id}/complete',
+      '/assessments/learning-plans/{id}',
+    ])
+      expect(r.body.paths[path]).toBeDefined();
+    expect(r.body.components.schemas.AssessmentTargetInput.required).toContain('jobRoleId');
+    expect(
+      r.body.components.schemas.CompleteAttemptInput.properties.results.items.properties.score
+        .maximum,
+    ).toBe(100);
+    expect(
+      r.body.paths['/admin/assessment-attempts/{id}/complete'].post.parameters.some(
+        (p: { name: string }) => p.name === 'Idempotency-Key',
+      ),
+    ).toBe(true);
     expect(r.body.components.schemas.IdentityUpload.required).toEqual(['category', 'file']);
     expect(r.body.components.schemas.IdentityUpload.properties.title).toBeUndefined();
     expect(r.body.components.schemas.Upload.properties.transcripts.items.format).toBe('binary');
-    expect(r.body.components.schemas.Upload.properties.title).toBeUndefined();
+    const upload = r.body.components.schemas.Upload;
+    expect(upload.properties.issuedAt.default).toBe('');
+    expect(upload.properties.expiresAt.example).toBe('');
+    for (const category of ['BACHELOR', 'MASTER', 'PHD', 'DIPLOMA']) {
+      const rule = upload.allOf.find(
+        (rule: { if: { properties: { category: { const: string } } } }) =>
+          rule.if.properties.category.const === category,
+      );
+      expect(rule.then.required).not.toContain('issuedAt');
+      expect(rule.then.required).not.toContain('expiresAt');
+    }
+    expect(upload.properties.category.enum).toEqual([
+      'BACHELOR',
+      'MASTER',
+      'PHD',
+      'DIPLOMA',
+      'TRANSCRIPT',
+      'SHORT_COURSE',
+      'INDUSTRY_CERTIFICATION',
+      'PROFESSIONAL_REGISTRATION',
+      'OTHER',
+    ]);
+    for (const field of [
+      'courseName',
+      'certificationName',
+      'issuer',
+      'issuedAt',
+      'expiresAt',
+      'title',
+    ])
+      expect(upload.properties[field]).toBeDefined();
+    const master = upload.allOf.find(
+      (rule: { if: { properties: { category: { const: string } } } }) =>
+        rule.if.properties.category.const === 'MASTER',
+    );
+    expect(master.then.required).toEqual(['courseName', 'transcripts']);
   });
 });

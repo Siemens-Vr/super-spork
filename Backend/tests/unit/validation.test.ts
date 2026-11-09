@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { registerSchema, resetSchema, phone } from '../../src/validators/auth.schema.js';
-import { careerSchema } from '../../src/validators/career.schema.js';
+import { targetSchema } from '../../src/validators/assessment-target.schema.js';
 import { reviewSchema } from '../../src/validators/document.schema.js';
 import { generateSlots } from '../../src/services/scheduling.service.js';
 import { encrypt, decrypt, verifier } from '../../src/utils/crypto.js';
@@ -45,25 +45,24 @@ describe('validation and cryptographic protections', () => {
     ).toBe(true));
   it('limits industries to three', () =>
     expect(
-      careerSchema.safeParse({
+      targetSchema.safeParse({
         industryIds: [uuid(), uuid(), uuid(), uuid()],
         companyIds: [],
-        primaryRoleId: uuid(),
+        jobRoleId: uuid(),
       }).success,
     ).toBe(false));
   it('limits companies to three', () =>
     expect(
-      careerSchema.safeParse({
+      targetSchema.safeParse({
         industryIds: [uuid()],
         companyIds: [uuid(), uuid(), uuid(), uuid()],
-        primaryRoleId: uuid(),
+        jobRoleId: uuid(),
       }).success,
     ).toBe(false));
-  it('rejects duplicate preferences', () => {
+  it('rejects duplicate target selections', () => {
     const id = uuid();
     expect(
-      careerSchema.safeParse({ industryIds: [id, id], companyIds: [], primaryRoleId: uuid() })
-        .success,
+      targetSchema.safeParse({ industryIds: [id, id], companyIds: [], jobRoleId: uuid() }).success,
     ).toBe(false);
   });
   it('does not permit AI to authenticate a credential', () =>

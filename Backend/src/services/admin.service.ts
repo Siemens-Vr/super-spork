@@ -86,6 +86,50 @@ export async function createCatalogue(kind: CatalogueKind, actorId: string, body
         }
         case 'frameworks': {
           const { competencies, ...data } = v.frameworkSchema.parse(body);
+          requireCondition(
+            await tx.jobRole.count({ where: { id: data.jobRoleId, active: true } }),
+            422,
+            'ROLE_INVALID',
+            'Select an active career',
+          );
+          if (data.industryId)
+            requireCondition(
+              await tx.jobRoleIndustry.count({
+                where: {
+                  jobRoleId: data.jobRoleId,
+                  industryId: data.industryId,
+                  industry: { active: true },
+                },
+              }),
+              422,
+              'INDUSTRY_INVALID',
+              'Industry framework must match a career industry',
+            );
+          if (data.companyId)
+            requireCondition(
+              await tx.company.count({
+                where: {
+                  id: data.companyId,
+                  active: true,
+                  industries: {
+                    some: {
+                      industry: { active: true, jobRoles: { some: { jobRoleId: data.jobRoleId } } },
+                    },
+                  },
+                },
+              }),
+              422,
+              'COMPANY_INVALID',
+              'Company framework must match a career industry',
+            );
+          requireCondition(
+            (await tx.competency.count({
+              where: { id: { in: competencies.map((c) => c.competencyId) } },
+            })) === competencies.length,
+            422,
+            'COMPETENCY_INVALID',
+            'Select existing competencies',
+          );
           return tx.competencyFramework.create({
             data: { ...data, competencies: { create: competencies } },
           });
@@ -94,7 +138,7 @@ export async function createCatalogue(kind: CatalogueKind, actorId: string, body
           const data = v.blueprintSchema.parse(body);
           const f = await tx.competencyFramework.findUnique({ where: { id: data.frameworkId } });
           requireCondition(
-            f?.approved && f.jobRoleId === data.jobRoleId,
+            f?.approved && f.scope === 'CORE' && f.jobRoleId === data.jobRoleId,
             422,
             'FRAMEWORK_INVALID',
             'Blueprint requires an approved framework for the same job role',

@@ -39,6 +39,7 @@ export type AssessmentBookingSumAggregateOutputType = {
 export type AssessmentBookingMinAggregateOutputType = {
   id: string | null
   applicantId: string | null
+  targetId: string | null
   blueprintId: string | null
   slotId: string | null
   seat: number | null
@@ -53,6 +54,7 @@ export type AssessmentBookingMinAggregateOutputType = {
 export type AssessmentBookingMaxAggregateOutputType = {
   id: string | null
   applicantId: string | null
+  targetId: string | null
   blueprintId: string | null
   slotId: string | null
   seat: number | null
@@ -67,6 +69,7 @@ export type AssessmentBookingMaxAggregateOutputType = {
 export type AssessmentBookingCountAggregateOutputType = {
   id: number
   applicantId: number
+  targetId: number
   blueprintId: number
   slotId: number
   seat: number
@@ -93,6 +96,7 @@ export type AssessmentBookingSumAggregateInputType = {
 export type AssessmentBookingMinAggregateInputType = {
   id?: true
   applicantId?: true
+  targetId?: true
   blueprintId?: true
   slotId?: true
   seat?: true
@@ -107,6 +111,7 @@ export type AssessmentBookingMinAggregateInputType = {
 export type AssessmentBookingMaxAggregateInputType = {
   id?: true
   applicantId?: true
+  targetId?: true
   blueprintId?: true
   slotId?: true
   seat?: true
@@ -121,6 +126,7 @@ export type AssessmentBookingMaxAggregateInputType = {
 export type AssessmentBookingCountAggregateInputType = {
   id?: true
   applicantId?: true
+  targetId?: true
   blueprintId?: true
   slotId?: true
   seat?: true
@@ -222,6 +228,7 @@ export type AssessmentBookingGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type AssessmentBookingGroupByOutputType = {
   id: string
   applicantId: string
+  targetId: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -259,6 +266,7 @@ export type AssessmentBookingWhereInput = {
   NOT?: Prisma.AssessmentBookingWhereInput | Prisma.AssessmentBookingWhereInput[]
   id?: Prisma.UuidFilter<"AssessmentBooking"> | string
   applicantId?: Prisma.UuidFilter<"AssessmentBooking"> | string
+  targetId?: Prisma.UuidNullableFilter<"AssessmentBooking"> | string | null
   blueprintId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
@@ -269,16 +277,19 @@ export type AssessmentBookingWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"AssessmentBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AssessmentBooking"> | Date | string
   applicant?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  target?: Prisma.XOR<Prisma.AssessmentTargetNullableScalarRelationFilter, Prisma.AssessmentTargetWhereInput> | null
   blueprint?: Prisma.XOR<Prisma.AssessmentBlueprintScalarRelationFilter, Prisma.AssessmentBlueprintWhereInput>
   slot?: Prisma.XOR<Prisma.AssessmentSlotScalarRelationFilter, Prisma.AssessmentSlotWhereInput>
   rescheduledFrom?: Prisma.XOR<Prisma.AssessmentBookingNullableScalarRelationFilter, Prisma.AssessmentBookingWhereInput> | null
   rescheduledTo?: Prisma.XOR<Prisma.AssessmentBookingNullableScalarRelationFilter, Prisma.AssessmentBookingWhereInput> | null
   events?: Prisma.AssessmentBookingEventListRelationFilter
+  interaction?: Prisma.XOR<Prisma.AssessmentInteractionSessionNullableScalarRelationFilter, Prisma.AssessmentInteractionSessionWhereInput> | null
 }
 
 export type AssessmentBookingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   applicantId?: Prisma.SortOrder
+  targetId?: Prisma.SortOrderInput | Prisma.SortOrder
   blueprintId?: Prisma.SortOrder
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
@@ -289,11 +300,13 @@ export type AssessmentBookingOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   applicant?: Prisma.UserOrderByWithRelationInput
+  target?: Prisma.AssessmentTargetOrderByWithRelationInput
   blueprint?: Prisma.AssessmentBlueprintOrderByWithRelationInput
   slot?: Prisma.AssessmentSlotOrderByWithRelationInput
   rescheduledFrom?: Prisma.AssessmentBookingOrderByWithRelationInput
   rescheduledTo?: Prisma.AssessmentBookingOrderByWithRelationInput
   events?: Prisma.AssessmentBookingEventOrderByRelationAggregateInput
+  interaction?: Prisma.AssessmentInteractionSessionOrderByWithRelationInput
 }
 
 export type AssessmentBookingWhereUniqueInput = Prisma.AtLeast<{
@@ -304,6 +317,7 @@ export type AssessmentBookingWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AssessmentBookingWhereInput[]
   NOT?: Prisma.AssessmentBookingWhereInput | Prisma.AssessmentBookingWhereInput[]
   applicantId?: Prisma.UuidFilter<"AssessmentBooking"> | string
+  targetId?: Prisma.UuidNullableFilter<"AssessmentBooking"> | string | null
   blueprintId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
@@ -313,16 +327,19 @@ export type AssessmentBookingWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"AssessmentBooking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AssessmentBooking"> | Date | string
   applicant?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  target?: Prisma.XOR<Prisma.AssessmentTargetNullableScalarRelationFilter, Prisma.AssessmentTargetWhereInput> | null
   blueprint?: Prisma.XOR<Prisma.AssessmentBlueprintScalarRelationFilter, Prisma.AssessmentBlueprintWhereInput>
   slot?: Prisma.XOR<Prisma.AssessmentSlotScalarRelationFilter, Prisma.AssessmentSlotWhereInput>
   rescheduledFrom?: Prisma.XOR<Prisma.AssessmentBookingNullableScalarRelationFilter, Prisma.AssessmentBookingWhereInput> | null
   rescheduledTo?: Prisma.XOR<Prisma.AssessmentBookingNullableScalarRelationFilter, Prisma.AssessmentBookingWhereInput> | null
   events?: Prisma.AssessmentBookingEventListRelationFilter
+  interaction?: Prisma.XOR<Prisma.AssessmentInteractionSessionNullableScalarRelationFilter, Prisma.AssessmentInteractionSessionWhereInput> | null
 }, "id" | "rescheduledFromId" | "applicantId_idempotencyKey">
 
 export type AssessmentBookingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   applicantId?: Prisma.SortOrder
+  targetId?: Prisma.SortOrderInput | Prisma.SortOrder
   blueprintId?: Prisma.SortOrder
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
@@ -345,6 +362,7 @@ export type AssessmentBookingScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AssessmentBookingScalarWhereWithAggregatesInput | Prisma.AssessmentBookingScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"AssessmentBooking"> | string
   applicantId?: Prisma.UuidWithAggregatesFilter<"AssessmentBooking"> | string
+  targetId?: Prisma.UuidNullableWithAggregatesFilter<"AssessmentBooking"> | string | null
   blueprintId?: Prisma.UuidWithAggregatesFilter<"AssessmentBooking"> | string
   slotId?: Prisma.UuidWithAggregatesFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntWithAggregatesFilter<"AssessmentBooking"> | number
@@ -365,16 +383,19 @@ export type AssessmentBookingCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -386,6 +407,7 @@ export type AssessmentBookingUncheckedCreateInput = {
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUpdateInput = {
@@ -397,16 +419,19 @@ export type AssessmentBookingUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -418,11 +443,13 @@ export type AssessmentBookingUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingCreateManyInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -447,6 +474,7 @@ export type AssessmentBookingUpdateManyMutationInput = {
 export type AssessmentBookingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -481,6 +509,7 @@ export type AssessmentBookingApplicantIdIdempotencyKeyCompoundUniqueInput = {
 export type AssessmentBookingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   applicantId?: Prisma.SortOrder
+  targetId?: Prisma.SortOrder
   blueprintId?: Prisma.SortOrder
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
@@ -500,6 +529,7 @@ export type AssessmentBookingAvgOrderByAggregateInput = {
 export type AssessmentBookingMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   applicantId?: Prisma.SortOrder
+  targetId?: Prisma.SortOrder
   blueprintId?: Prisma.SortOrder
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
@@ -514,6 +544,7 @@ export type AssessmentBookingMaxOrderByAggregateInput = {
 export type AssessmentBookingMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   applicantId?: Prisma.SortOrder
+  targetId?: Prisma.SortOrder
   blueprintId?: Prisma.SortOrder
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
@@ -713,6 +744,48 @@ export type AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBookingUpdateToOneWithWhereWithoutRescheduledFromInput, Prisma.AssessmentBookingUpdateWithoutRescheduledFromInput>, Prisma.AssessmentBookingUncheckedUpdateWithoutRescheduledFromInput>
 }
 
+export type AssessmentBookingCreateNestedManyWithoutTargetInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput> | Prisma.AssessmentBookingCreateWithoutTargetInput[] | Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput[]
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput | Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput[]
+  createMany?: Prisma.AssessmentBookingCreateManyTargetInputEnvelope
+  connect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+}
+
+export type AssessmentBookingUncheckedCreateNestedManyWithoutTargetInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput> | Prisma.AssessmentBookingCreateWithoutTargetInput[] | Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput[]
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput | Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput[]
+  createMany?: Prisma.AssessmentBookingCreateManyTargetInputEnvelope
+  connect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+}
+
+export type AssessmentBookingUpdateManyWithoutTargetNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput> | Prisma.AssessmentBookingCreateWithoutTargetInput[] | Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput[]
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput | Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput[]
+  upsert?: Prisma.AssessmentBookingUpsertWithWhereUniqueWithoutTargetInput | Prisma.AssessmentBookingUpsertWithWhereUniqueWithoutTargetInput[]
+  createMany?: Prisma.AssessmentBookingCreateManyTargetInputEnvelope
+  set?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  disconnect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  delete?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  connect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  update?: Prisma.AssessmentBookingUpdateWithWhereUniqueWithoutTargetInput | Prisma.AssessmentBookingUpdateWithWhereUniqueWithoutTargetInput[]
+  updateMany?: Prisma.AssessmentBookingUpdateManyWithWhereWithoutTargetInput | Prisma.AssessmentBookingUpdateManyWithWhereWithoutTargetInput[]
+  deleteMany?: Prisma.AssessmentBookingScalarWhereInput | Prisma.AssessmentBookingScalarWhereInput[]
+}
+
+export type AssessmentBookingUncheckedUpdateManyWithoutTargetNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput> | Prisma.AssessmentBookingCreateWithoutTargetInput[] | Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput[]
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput | Prisma.AssessmentBookingCreateOrConnectWithoutTargetInput[]
+  upsert?: Prisma.AssessmentBookingUpsertWithWhereUniqueWithoutTargetInput | Prisma.AssessmentBookingUpsertWithWhereUniqueWithoutTargetInput[]
+  createMany?: Prisma.AssessmentBookingCreateManyTargetInputEnvelope
+  set?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  disconnect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  delete?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  connect?: Prisma.AssessmentBookingWhereUniqueInput | Prisma.AssessmentBookingWhereUniqueInput[]
+  update?: Prisma.AssessmentBookingUpdateWithWhereUniqueWithoutTargetInput | Prisma.AssessmentBookingUpdateWithWhereUniqueWithoutTargetInput[]
+  updateMany?: Prisma.AssessmentBookingUpdateManyWithWhereWithoutTargetInput | Prisma.AssessmentBookingUpdateManyWithWhereWithoutTargetInput[]
+  deleteMany?: Prisma.AssessmentBookingScalarWhereInput | Prisma.AssessmentBookingScalarWhereInput[]
+}
+
 export type AssessmentBookingCreateNestedOneWithoutEventsInput = {
   create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutEventsInput, Prisma.AssessmentBookingUncheckedCreateWithoutEventsInput>
   connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutEventsInput
@@ -727,6 +800,20 @@ export type AssessmentBookingUpdateOneRequiredWithoutEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBookingUpdateToOneWithWhereWithoutEventsInput, Prisma.AssessmentBookingUpdateWithoutEventsInput>, Prisma.AssessmentBookingUncheckedUpdateWithoutEventsInput>
 }
 
+export type AssessmentBookingCreateNestedOneWithoutInteractionInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedCreateWithoutInteractionInput>
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutInteractionInput
+  connect?: Prisma.AssessmentBookingWhereUniqueInput
+}
+
+export type AssessmentBookingUpdateOneRequiredWithoutInteractionNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedCreateWithoutInteractionInput>
+  connectOrCreate?: Prisma.AssessmentBookingCreateOrConnectWithoutInteractionInput
+  upsert?: Prisma.AssessmentBookingUpsertWithoutInteractionInput
+  connect?: Prisma.AssessmentBookingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBookingUpdateToOneWithWhereWithoutInteractionInput, Prisma.AssessmentBookingUpdateWithoutInteractionInput>, Prisma.AssessmentBookingUncheckedUpdateWithoutInteractionInput>
+}
+
 export type AssessmentBookingCreateWithoutApplicantInput = {
   id?: string
   seat: number
@@ -735,15 +822,18 @@ export type AssessmentBookingCreateWithoutApplicantInput = {
   rescheduleCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateWithoutApplicantInput = {
   id?: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -755,6 +845,7 @@ export type AssessmentBookingUncheckedCreateWithoutApplicantInput = {
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutApplicantInput = {
@@ -789,6 +880,7 @@ export type AssessmentBookingScalarWhereInput = {
   NOT?: Prisma.AssessmentBookingScalarWhereInput | Prisma.AssessmentBookingScalarWhereInput[]
   id?: Prisma.UuidFilter<"AssessmentBooking"> | string
   applicantId?: Prisma.UuidFilter<"AssessmentBooking"> | string
+  targetId?: Prisma.UuidNullableFilter<"AssessmentBooking"> | string | null
   blueprintId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
@@ -809,15 +901,18 @@ export type AssessmentBookingCreateWithoutBlueprintInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateWithoutBlueprintInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
@@ -828,6 +923,7 @@ export type AssessmentBookingUncheckedCreateWithoutBlueprintInput = {
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutBlueprintInput = {
@@ -865,15 +961,18 @@ export type AssessmentBookingCreateWithoutSlotInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateWithoutSlotInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   seat: number
   status?: $Enums.BookingStatus
@@ -884,6 +983,7 @@ export type AssessmentBookingUncheckedCreateWithoutSlotInput = {
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutSlotInput = {
@@ -921,15 +1021,18 @@ export type AssessmentBookingCreateWithoutRescheduledToInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateWithoutRescheduledToInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -940,6 +1043,7 @@ export type AssessmentBookingUncheckedCreateWithoutRescheduledToInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutRescheduledToInput = {
@@ -956,15 +1060,18 @@ export type AssessmentBookingCreateWithoutRescheduledFromInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingUncheckedCreateWithoutRescheduledFromInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -975,6 +1082,7 @@ export type AssessmentBookingUncheckedCreateWithoutRescheduledFromInput = {
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
   events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutRescheduledFromInput = {
@@ -1002,15 +1110,18 @@ export type AssessmentBookingUpdateWithoutRescheduledToInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutRescheduledToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1021,6 +1132,7 @@ export type AssessmentBookingUncheckedUpdateWithoutRescheduledToInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUpsertWithoutRescheduledFromInput = {
@@ -1043,15 +1155,18 @@ export type AssessmentBookingUpdateWithoutRescheduledFromInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutRescheduledFromInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1062,9 +1177,10 @@ export type AssessmentBookingUncheckedUpdateWithoutRescheduledFromInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
-export type AssessmentBookingCreateWithoutEventsInput = {
+export type AssessmentBookingCreateWithoutTargetInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
@@ -1077,9 +1193,11 @@ export type AssessmentBookingCreateWithoutEventsInput = {
   slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
   rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
   rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
+  events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
 }
 
-export type AssessmentBookingUncheckedCreateWithoutEventsInput = {
+export type AssessmentBookingUncheckedCreateWithoutTargetInput = {
   id?: string
   applicantId: string
   blueprintId: string
@@ -1092,6 +1210,68 @@ export type AssessmentBookingUncheckedCreateWithoutEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
+  events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
+}
+
+export type AssessmentBookingCreateOrConnectWithoutTargetInput = {
+  where: Prisma.AssessmentBookingWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput>
+}
+
+export type AssessmentBookingCreateManyTargetInputEnvelope = {
+  data: Prisma.AssessmentBookingCreateManyTargetInput | Prisma.AssessmentBookingCreateManyTargetInput[]
+  skipDuplicates?: boolean
+}
+
+export type AssessmentBookingUpsertWithWhereUniqueWithoutTargetInput = {
+  where: Prisma.AssessmentBookingWhereUniqueInput
+  update: Prisma.XOR<Prisma.AssessmentBookingUpdateWithoutTargetInput, Prisma.AssessmentBookingUncheckedUpdateWithoutTargetInput>
+  create: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutTargetInput, Prisma.AssessmentBookingUncheckedCreateWithoutTargetInput>
+}
+
+export type AssessmentBookingUpdateWithWhereUniqueWithoutTargetInput = {
+  where: Prisma.AssessmentBookingWhereUniqueInput
+  data: Prisma.XOR<Prisma.AssessmentBookingUpdateWithoutTargetInput, Prisma.AssessmentBookingUncheckedUpdateWithoutTargetInput>
+}
+
+export type AssessmentBookingUpdateManyWithWhereWithoutTargetInput = {
+  where: Prisma.AssessmentBookingScalarWhereInput
+  data: Prisma.XOR<Prisma.AssessmentBookingUpdateManyMutationInput, Prisma.AssessmentBookingUncheckedUpdateManyWithoutTargetInput>
+}
+
+export type AssessmentBookingCreateWithoutEventsInput = {
+  id?: string
+  seat: number
+  status?: $Enums.BookingStatus
+  idempotencyKey: string
+  rescheduleCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
+  blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
+  slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
+  rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
+  rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutBookingInput
+}
+
+export type AssessmentBookingUncheckedCreateWithoutEventsInput = {
+  id?: string
+  applicantId: string
+  targetId?: string | null
+  blueprintId: string
+  slotId: string
+  seat: number
+  status?: $Enums.BookingStatus
+  idempotencyKey: string
+  rescheduleCount?: number
+  rescheduledFromId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutBookingInput
 }
 
 export type AssessmentBookingCreateOrConnectWithoutEventsInput = {
@@ -1119,15 +1299,18 @@ export type AssessmentBookingUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1138,10 +1321,96 @@ export type AssessmentBookingUncheckedUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
+}
+
+export type AssessmentBookingCreateWithoutInteractionInput = {
+  id?: string
+  seat: number
+  status?: $Enums.BookingStatus
+  idempotencyKey: string
+  rescheduleCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  applicant: Prisma.UserCreateNestedOneWithoutBookingsInput
+  target?: Prisma.AssessmentTargetCreateNestedOneWithoutBookingsInput
+  blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutBookingsInput
+  slot: Prisma.AssessmentSlotCreateNestedOneWithoutBookingsInput
+  rescheduledFrom?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledToInput
+  rescheduledTo?: Prisma.AssessmentBookingCreateNestedOneWithoutRescheduledFromInput
+  events?: Prisma.AssessmentBookingEventCreateNestedManyWithoutBookingInput
+}
+
+export type AssessmentBookingUncheckedCreateWithoutInteractionInput = {
+  id?: string
+  applicantId: string
+  targetId?: string | null
+  blueprintId: string
+  slotId: string
+  seat: number
+  status?: $Enums.BookingStatus
+  idempotencyKey: string
+  rescheduleCount?: number
+  rescheduledFromId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  rescheduledTo?: Prisma.AssessmentBookingUncheckedCreateNestedOneWithoutRescheduledFromInput
+  events?: Prisma.AssessmentBookingEventUncheckedCreateNestedManyWithoutBookingInput
+}
+
+export type AssessmentBookingCreateOrConnectWithoutInteractionInput = {
+  where: Prisma.AssessmentBookingWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedCreateWithoutInteractionInput>
+}
+
+export type AssessmentBookingUpsertWithoutInteractionInput = {
+  update: Prisma.XOR<Prisma.AssessmentBookingUpdateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedUpdateWithoutInteractionInput>
+  create: Prisma.XOR<Prisma.AssessmentBookingCreateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedCreateWithoutInteractionInput>
+  where?: Prisma.AssessmentBookingWhereInput
+}
+
+export type AssessmentBookingUpdateToOneWithWhereWithoutInteractionInput = {
+  where?: Prisma.AssessmentBookingWhereInput
+  data: Prisma.XOR<Prisma.AssessmentBookingUpdateWithoutInteractionInput, Prisma.AssessmentBookingUncheckedUpdateWithoutInteractionInput>
+}
+
+export type AssessmentBookingUpdateWithoutInteractionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  seat?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
+  blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
+  slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
+  rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
+  rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
+  events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+}
+
+export type AssessmentBookingUncheckedUpdateWithoutInteractionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
+  slotId?: Prisma.StringFieldUpdateOperationsInput | string
+  seat?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
+  events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
 }
 
 export type AssessmentBookingCreateManyApplicantInput = {
   id?: string
+  targetId?: string | null
   blueprintId: string
   slotId: string
   seat: number
@@ -1161,15 +1430,18 @@ export type AssessmentBookingUpdateWithoutApplicantInput = {
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1181,10 +1453,12 @@ export type AssessmentBookingUncheckedUpdateWithoutApplicantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateManyWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1199,6 +1473,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutApplicantInput = {
 export type AssessmentBookingCreateManyBlueprintInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
@@ -1218,15 +1493,18 @@ export type AssessmentBookingUpdateWithoutBlueprintInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutBlueprintInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
@@ -1237,11 +1515,13 @@ export type AssessmentBookingUncheckedUpdateWithoutBlueprintInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateManyWithoutBlueprintInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
@@ -1255,6 +1535,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutBlueprintInput = {
 export type AssessmentBookingCreateManySlotInput = {
   id?: string
   applicantId: string
+  targetId?: string | null
   blueprintId: string
   seat: number
   status?: $Enums.BookingStatus
@@ -1274,15 +1555,18 @@ export type AssessmentBookingUpdateWithoutSlotInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  target?: Prisma.AssessmentTargetUpdateOneWithoutBookingsNestedInput
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
   rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
   rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateWithoutSlotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
@@ -1293,12 +1577,76 @@ export type AssessmentBookingUncheckedUpdateWithoutSlotInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
   events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
 }
 
 export type AssessmentBookingUncheckedUpdateManyWithoutSlotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
+  seat?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AssessmentBookingCreateManyTargetInput = {
+  id?: string
+  applicantId: string
+  blueprintId: string
+  slotId: string
+  seat: number
+  status?: $Enums.BookingStatus
+  idempotencyKey: string
+  rescheduleCount?: number
+  rescheduledFromId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AssessmentBookingUpdateWithoutTargetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  seat?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applicant?: Prisma.UserUpdateOneRequiredWithoutBookingsNestedInput
+  blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput
+  slot?: Prisma.AssessmentSlotUpdateOneRequiredWithoutBookingsNestedInput
+  rescheduledFrom?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledToNestedInput
+  rescheduledTo?: Prisma.AssessmentBookingUpdateOneWithoutRescheduledFromNestedInput
+  events?: Prisma.AssessmentBookingEventUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutBookingNestedInput
+}
+
+export type AssessmentBookingUncheckedUpdateWithoutTargetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
+  slotId?: Prisma.StringFieldUpdateOperationsInput | string
+  seat?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
+  rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
+  rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  rescheduledTo?: Prisma.AssessmentBookingUncheckedUpdateOneWithoutRescheduledFromNestedInput
+  events?: Prisma.AssessmentBookingEventUncheckedUpdateManyWithoutBookingNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutBookingNestedInput
+}
+
+export type AssessmentBookingUncheckedUpdateManyWithoutTargetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
+  slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1342,6 +1690,7 @@ export type AssessmentBookingCountOutputTypeCountEventsArgs<ExtArgs extends runt
 export type AssessmentBookingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   applicantId?: boolean
+  targetId?: boolean
   blueprintId?: boolean
   slotId?: boolean
   seat?: boolean
@@ -1352,17 +1701,20 @@ export type AssessmentBookingSelect<ExtArgs extends runtime.Types.Extensions.Int
   createdAt?: boolean
   updatedAt?: boolean
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
   rescheduledTo?: boolean | Prisma.AssessmentBooking$rescheduledToArgs<ExtArgs>
   events?: boolean | Prisma.AssessmentBooking$eventsArgs<ExtArgs>
+  interaction?: boolean | Prisma.AssessmentBooking$interactionArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentBookingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["assessmentBooking"]>
 
 export type AssessmentBookingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   applicantId?: boolean
+  targetId?: boolean
   blueprintId?: boolean
   slotId?: boolean
   seat?: boolean
@@ -1373,6 +1725,7 @@ export type AssessmentBookingSelectCreateManyAndReturn<ExtArgs extends runtime.T
   createdAt?: boolean
   updatedAt?: boolean
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
@@ -1381,6 +1734,7 @@ export type AssessmentBookingSelectCreateManyAndReturn<ExtArgs extends runtime.T
 export type AssessmentBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   applicantId?: boolean
+  targetId?: boolean
   blueprintId?: boolean
   slotId?: boolean
   seat?: boolean
@@ -1391,6 +1745,7 @@ export type AssessmentBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   createdAt?: boolean
   updatedAt?: boolean
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
@@ -1399,6 +1754,7 @@ export type AssessmentBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.T
 export type AssessmentBookingSelectScalar = {
   id?: boolean
   applicantId?: boolean
+  targetId?: boolean
   blueprintId?: boolean
   slotId?: boolean
   seat?: boolean
@@ -1410,24 +1766,28 @@ export type AssessmentBookingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AssessmentBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "blueprintId" | "slotId" | "seat" | "status" | "idempotencyKey" | "rescheduleCount" | "rescheduledFromId" | "createdAt" | "updatedAt", ExtArgs["result"]["assessmentBooking"]>
+export type AssessmentBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "targetId" | "blueprintId" | "slotId" | "seat" | "status" | "idempotencyKey" | "rescheduleCount" | "rescheduledFromId" | "createdAt" | "updatedAt", ExtArgs["result"]["assessmentBooking"]>
 export type AssessmentBookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
   rescheduledTo?: boolean | Prisma.AssessmentBooking$rescheduledToArgs<ExtArgs>
   events?: boolean | Prisma.AssessmentBooking$eventsArgs<ExtArgs>
+  interaction?: boolean | Prisma.AssessmentBooking$interactionArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentBookingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AssessmentBookingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
 }
 export type AssessmentBookingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slot?: boolean | Prisma.AssessmentSlotDefaultArgs<ExtArgs>
   rescheduledFrom?: boolean | Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>
@@ -1437,15 +1797,18 @@ export type $AssessmentBookingPayload<ExtArgs extends runtime.Types.Extensions.I
   name: "AssessmentBooking"
   objects: {
     applicant: Prisma.$UserPayload<ExtArgs>
+    target: Prisma.$AssessmentTargetPayload<ExtArgs> | null
     blueprint: Prisma.$AssessmentBlueprintPayload<ExtArgs>
     slot: Prisma.$AssessmentSlotPayload<ExtArgs>
     rescheduledFrom: Prisma.$AssessmentBookingPayload<ExtArgs> | null
     rescheduledTo: Prisma.$AssessmentBookingPayload<ExtArgs> | null
     events: Prisma.$AssessmentBookingEventPayload<ExtArgs>[]
+    interaction: Prisma.$AssessmentInteractionSessionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     applicantId: string
+    targetId: string | null
     blueprintId: string
     slotId: string
     seat: number
@@ -1850,11 +2213,13 @@ readonly fields: AssessmentBookingFieldRefs;
 export interface Prisma__AssessmentBookingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   applicant<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  target<T extends Prisma.AssessmentBooking$targetArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBooking$targetArgs<ExtArgs>>): Prisma.Prisma__AssessmentTargetClient<runtime.Types.Result.GetResult<Prisma.$AssessmentTargetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blueprint<T extends Prisma.AssessmentBlueprintDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>>): Prisma.Prisma__AssessmentBlueprintClient<runtime.Types.Result.GetResult<Prisma.$AssessmentBlueprintPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   slot<T extends Prisma.AssessmentSlotDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentSlotDefaultArgs<ExtArgs>>): Prisma.Prisma__AssessmentSlotClient<runtime.Types.Result.GetResult<Prisma.$AssessmentSlotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   rescheduledFrom<T extends Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBooking$rescheduledFromArgs<ExtArgs>>): Prisma.Prisma__AssessmentBookingClient<runtime.Types.Result.GetResult<Prisma.$AssessmentBookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   rescheduledTo<T extends Prisma.AssessmentBooking$rescheduledToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBooking$rescheduledToArgs<ExtArgs>>): Prisma.Prisma__AssessmentBookingClient<runtime.Types.Result.GetResult<Prisma.$AssessmentBookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   events<T extends Prisma.AssessmentBooking$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBooking$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentBookingEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  interaction<T extends Prisma.AssessmentBooking$interactionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBooking$interactionArgs<ExtArgs>>): Prisma.Prisma__AssessmentInteractionSessionClient<runtime.Types.Result.GetResult<Prisma.$AssessmentInteractionSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1886,6 +2251,7 @@ export interface Prisma__AssessmentBookingClient<T, Null = never, ExtArgs extend
 export interface AssessmentBookingFieldRefs {
   readonly id: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly applicantId: Prisma.FieldRef<"AssessmentBooking", 'String'>
+  readonly targetId: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly blueprintId: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly slotId: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly seat: Prisma.FieldRef<"AssessmentBooking", 'Int'>
@@ -2296,6 +2662,25 @@ export type AssessmentBookingDeleteManyArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
+ * AssessmentBooking.target
+ */
+export type AssessmentBooking$targetArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentTarget
+   */
+  select?: Prisma.AssessmentTargetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentTarget
+   */
+  omit?: Prisma.AssessmentTargetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentTargetInclude<ExtArgs> | null
+  where?: Prisma.AssessmentTargetWhereInput
+}
+
+/**
  * AssessmentBooking.rescheduledFrom
  */
 export type AssessmentBooking$rescheduledFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2355,6 +2740,25 @@ export type AssessmentBooking$eventsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.AssessmentBookingEventScalarFieldEnum | Prisma.AssessmentBookingEventScalarFieldEnum[]
+}
+
+/**
+ * AssessmentBooking.interaction
+ */
+export type AssessmentBooking$interactionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentInteractionSession
+   */
+  select?: Prisma.AssessmentInteractionSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentInteractionSession
+   */
+  omit?: Prisma.AssessmentInteractionSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentInteractionSessionInclude<ExtArgs> | null
+  where?: Prisma.AssessmentInteractionSessionWhereInput
 }
 
 /**

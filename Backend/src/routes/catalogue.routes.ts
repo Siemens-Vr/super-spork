@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { prisma } from '../config/prisma.js';
 import { authenticate, verified, applicant } from '../middleware/authenticate.js';
-import { pagination, suggestionSchema } from '../validators/career.schema.js';
+import { pagination, suggestionSchema, catalogueQuery } from '../validators/career.schema.js';
+import { institutionQuery } from '../validators/institution.schema.js';
 import { uuid } from '../validators/auth.schema.js';
 import { validate } from '../middleware/validate.js';
 import { rateLimit } from '../middleware/security.js';
@@ -9,18 +10,27 @@ import { requireCondition } from '../errors/app-error.js';
 export const catalogueRouter = Router();
 catalogueRouter.use(authenticate, verified);
 catalogueRouter.get('/institutions', async (req, res) => {
-  const p = pagination.parse(req.query);
+  const p = institutionQuery.parse(req.query);
   const where = {
     active: true,
-    ...(p.search ? { name: { contains: p.search, mode: 'insensitive' as const } } : {}),
+    ...(p.type ? { type: p.type } : {}),
+    ...(p.offersTvet !== undefined ? { offersTvet: p.offersTvet } : {}),
+    ...(p.search
+      ? {
+          OR: [
+            { name: { contains: p.search, mode: 'insensitive' as const } },
+            { aliases: { some: { name: { contains: p.search, mode: 'insensitive' as const } } } },
+          ],
+        }
+      : {}),
   };
   const [data, total] = await Promise.all([
     prisma.institution.findMany({
       where,
       skip: (p.page - 1) * p.limit,
       take: p.limit,
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true, country: true, website: true },
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      select: { id: true, name: true, country: true, website: true, type: true, offersTvet: true },
     }),
     prisma.institution.count({ where }),
   ]);
@@ -44,9 +54,12 @@ catalogueRouter.get('/industries', async (req, res) => {
   res.json({ data, meta: { ...p, total } });
 });
 catalogueRouter.get('/companies', async (req, res) => {
-  const p = pagination.parse(req.query);
+  const p = catalogueQuery.parse(req.query);
   const where = {
     active: true,
+    ...(p.industryIds
+      ? { industries: { some: { industryId: { in: p.industryIds }, industry: { active: true } } } }
+      : {}),
     ...(p.search ? { name: { contains: p.search, mode: 'insensitive' as const } } : {}),
   };
   const [data, total] = await Promise.all([
@@ -75,9 +88,16 @@ catalogueRouter.post(
   },
 );
 catalogueRouter.get('/careers', async (req, res) => {
-  const p = pagination.parse(req.query);
+  const p = catalogueQuery.parse(req.query);
   const where = {
     active: true,
+    ...(p.industryIds
+      ? {
+          AND: p.industryIds.map((industryId) => ({
+            industries: { some: { industryId, industry: { active: true } } },
+          })),
+        }
+      : {}),
     ...(p.search ? { title: { contains: p.search, mode: 'insensitive' as const } } : {}),
   };
   const [data, total] = await Promise.all([

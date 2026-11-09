@@ -21,14 +21,21 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:industries": "tsx prisma/seed-industries.ts",
+    "db:seed:companies": "tsx prisma/seed-companies.ts",
+    "db:seed:institutions": "tsx prisma/seed-institutions.ts",
     "admin:bootstrap": "tsx scripts/bootstrap-admin.ts",
     "docs:generate": "tsx scripts/generate-openapi.ts",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "retention:report": "tsx scripts/retention-report.ts",
-    "jobs:retry": "tsx scripts/retry-jobs.ts"
+    "jobs:retry": "tsx scripts/retry-jobs.ts",
+    "ai:check": "tsx scripts/check-assessment-provider.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.922.0",
+    "@langchain/core": "^1.3.5",
+    "@langchain/langgraph": "^1.7.2",
+    "@langchain/langgraph-checkpoint": "^1.2.2",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "argon2": "^0.44.0",
@@ -49,6 +56,7 @@
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
     "swagger-ui-express": "^5.0.1",
+    "undici": "^7.30.2",
     "yaml": "^2.8.1",
     "zod": "^4.1.12"
   },

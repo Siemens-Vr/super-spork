@@ -29,6 +29,9 @@ export type InstitutionMinAggregateOutputType = {
   name: string | null
   country: string | null
   website: string | null
+  type: $Enums.InstitutionType | null
+  offersTvet: boolean | null
+  sourceUrl: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +42,9 @@ export type InstitutionMaxAggregateOutputType = {
   name: string | null
   country: string | null
   website: string | null
+  type: $Enums.InstitutionType | null
+  offersTvet: boolean | null
+  sourceUrl: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +55,9 @@ export type InstitutionCountAggregateOutputType = {
   name: number
   country: number
   website: number
+  type: number
+  offersTvet: number
+  sourceUrl: number
   active: number
   createdAt: number
   updatedAt: number
@@ -61,6 +70,9 @@ export type InstitutionMinAggregateInputType = {
   name?: true
   country?: true
   website?: true
+  type?: true
+  offersTvet?: true
+  sourceUrl?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -71,6 +83,9 @@ export type InstitutionMaxAggregateInputType = {
   name?: true
   country?: true
   website?: true
+  type?: true
+  offersTvet?: true
+  sourceUrl?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +96,9 @@ export type InstitutionCountAggregateInputType = {
   name?: true
   country?: true
   website?: true
+  type?: true
+  offersTvet?: true
+  sourceUrl?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -164,6 +182,9 @@ export type InstitutionGroupByOutputType = {
   name: string
   country: string
   website: string | null
+  type: $Enums.InstitutionType
+  offersTvet: boolean
+  sourceUrl: string | null
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -195,9 +216,13 @@ export type InstitutionWhereInput = {
   name?: Prisma.StringFilter<"Institution"> | string
   country?: Prisma.StringFilter<"Institution"> | string
   website?: Prisma.StringNullableFilter<"Institution"> | string | null
+  type?: Prisma.EnumInstitutionTypeFilter<"Institution"> | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFilter<"Institution"> | boolean
+  sourceUrl?: Prisma.StringNullableFilter<"Institution"> | string | null
   active?: Prisma.BoolFilter<"Institution"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Institution"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Institution"> | Date | string
+  aliases?: Prisma.InstitutionAliasListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
 }
 
@@ -206,9 +231,13 @@ export type InstitutionOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   country?: Prisma.SortOrder
   website?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  offersTvet?: Prisma.SortOrder
+  sourceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  aliases?: Prisma.InstitutionAliasOrderByRelationAggregateInput
   documents?: Prisma.DocumentOrderByRelationAggregateInput
 }
 
@@ -220,9 +249,13 @@ export type InstitutionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.InstitutionWhereInput | Prisma.InstitutionWhereInput[]
   country?: Prisma.StringFilter<"Institution"> | string
   website?: Prisma.StringNullableFilter<"Institution"> | string | null
+  type?: Prisma.EnumInstitutionTypeFilter<"Institution"> | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFilter<"Institution"> | boolean
+  sourceUrl?: Prisma.StringNullableFilter<"Institution"> | string | null
   active?: Prisma.BoolFilter<"Institution"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Institution"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Institution"> | Date | string
+  aliases?: Prisma.InstitutionAliasListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
 }, "id" | "name">
 
@@ -231,6 +264,9 @@ export type InstitutionOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   country?: Prisma.SortOrder
   website?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
+  offersTvet?: Prisma.SortOrder
+  sourceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -247,6 +283,9 @@ export type InstitutionScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Institution"> | string
   country?: Prisma.StringWithAggregatesFilter<"Institution"> | string
   website?: Prisma.StringNullableWithAggregatesFilter<"Institution"> | string | null
+  type?: Prisma.EnumInstitutionTypeWithAggregatesFilter<"Institution"> | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolWithAggregatesFilter<"Institution"> | boolean
+  sourceUrl?: Prisma.StringNullableWithAggregatesFilter<"Institution"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"Institution"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Institution"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Institution"> | Date | string
@@ -257,9 +296,13 @@ export type InstitutionCreateInput = {
   name: string
   country?: string
   website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  aliases?: Prisma.InstitutionAliasCreateNestedManyWithoutInstitutionInput
   documents?: Prisma.DocumentCreateNestedManyWithoutInstitutionInput
 }
 
@@ -268,9 +311,13 @@ export type InstitutionUncheckedCreateInput = {
   name: string
   country?: string
   website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  aliases?: Prisma.InstitutionAliasUncheckedCreateNestedManyWithoutInstitutionInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutInstitutionInput
 }
 
@@ -279,9 +326,13 @@ export type InstitutionUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aliases?: Prisma.InstitutionAliasUpdateManyWithoutInstitutionNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutInstitutionNestedInput
 }
 
@@ -290,9 +341,13 @@ export type InstitutionUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aliases?: Prisma.InstitutionAliasUncheckedUpdateManyWithoutInstitutionNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutInstitutionNestedInput
 }
 
@@ -301,6 +356,9 @@ export type InstitutionCreateManyInput = {
   name: string
   country?: string
   website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -311,6 +369,9 @@ export type InstitutionUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -321,6 +382,9 @@ export type InstitutionUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -331,6 +395,9 @@ export type InstitutionCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   country?: Prisma.SortOrder
   website?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  offersTvet?: Prisma.SortOrder
+  sourceUrl?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -341,6 +408,9 @@ export type InstitutionMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   country?: Prisma.SortOrder
   website?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  offersTvet?: Prisma.SortOrder
+  sourceUrl?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -351,9 +421,17 @@ export type InstitutionMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   country?: Prisma.SortOrder
   website?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  offersTvet?: Prisma.SortOrder
+  sourceUrl?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type InstitutionScalarRelationFilter = {
+  is?: Prisma.InstitutionWhereInput
+  isNot?: Prisma.InstitutionWhereInput
 }
 
 export type InstitutionNullableScalarRelationFilter = {
@@ -361,8 +439,26 @@ export type InstitutionNullableScalarRelationFilter = {
   isNot?: Prisma.InstitutionWhereInput | null
 }
 
+export type EnumInstitutionTypeFieldUpdateOperationsInput = {
+  set?: $Enums.InstitutionType
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type InstitutionCreateNestedOneWithoutAliasesInput = {
+  create?: Prisma.XOR<Prisma.InstitutionCreateWithoutAliasesInput, Prisma.InstitutionUncheckedCreateWithoutAliasesInput>
+  connectOrCreate?: Prisma.InstitutionCreateOrConnectWithoutAliasesInput
+  connect?: Prisma.InstitutionWhereUniqueInput
+}
+
+export type InstitutionUpdateOneRequiredWithoutAliasesNestedInput = {
+  create?: Prisma.XOR<Prisma.InstitutionCreateWithoutAliasesInput, Prisma.InstitutionUncheckedCreateWithoutAliasesInput>
+  connectOrCreate?: Prisma.InstitutionCreateOrConnectWithoutAliasesInput
+  upsert?: Prisma.InstitutionUpsertWithoutAliasesInput
+  connect?: Prisma.InstitutionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InstitutionUpdateToOneWithWhereWithoutAliasesInput, Prisma.InstitutionUpdateWithoutAliasesInput>, Prisma.InstitutionUncheckedUpdateWithoutAliasesInput>
 }
 
 export type InstitutionCreateNestedOneWithoutDocumentsInput = {
@@ -381,14 +477,90 @@ export type InstitutionUpdateOneWithoutDocumentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InstitutionUpdateToOneWithWhereWithoutDocumentsInput, Prisma.InstitutionUpdateWithoutDocumentsInput>, Prisma.InstitutionUncheckedUpdateWithoutDocumentsInput>
 }
 
+export type InstitutionCreateWithoutAliasesInput = {
+  id?: string
+  name: string
+  country?: string
+  website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutInstitutionInput
+}
+
+export type InstitutionUncheckedCreateWithoutAliasesInput = {
+  id?: string
+  name: string
+  country?: string
+  website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutInstitutionInput
+}
+
+export type InstitutionCreateOrConnectWithoutAliasesInput = {
+  where: Prisma.InstitutionWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstitutionCreateWithoutAliasesInput, Prisma.InstitutionUncheckedCreateWithoutAliasesInput>
+}
+
+export type InstitutionUpsertWithoutAliasesInput = {
+  update: Prisma.XOR<Prisma.InstitutionUpdateWithoutAliasesInput, Prisma.InstitutionUncheckedUpdateWithoutAliasesInput>
+  create: Prisma.XOR<Prisma.InstitutionCreateWithoutAliasesInput, Prisma.InstitutionUncheckedCreateWithoutAliasesInput>
+  where?: Prisma.InstitutionWhereInput
+}
+
+export type InstitutionUpdateToOneWithWhereWithoutAliasesInput = {
+  where?: Prisma.InstitutionWhereInput
+  data: Prisma.XOR<Prisma.InstitutionUpdateWithoutAliasesInput, Prisma.InstitutionUncheckedUpdateWithoutAliasesInput>
+}
+
+export type InstitutionUpdateWithoutAliasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutInstitutionNestedInput
+}
+
+export type InstitutionUncheckedUpdateWithoutAliasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutInstitutionNestedInput
+}
+
 export type InstitutionCreateWithoutDocumentsInput = {
   id?: string
   name: string
   country?: string
   website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  aliases?: Prisma.InstitutionAliasCreateNestedManyWithoutInstitutionInput
 }
 
 export type InstitutionUncheckedCreateWithoutDocumentsInput = {
@@ -396,9 +568,13 @@ export type InstitutionUncheckedCreateWithoutDocumentsInput = {
   name: string
   country?: string
   website?: string | null
+  type?: $Enums.InstitutionType
+  offersTvet?: boolean
+  sourceUrl?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  aliases?: Prisma.InstitutionAliasUncheckedCreateNestedManyWithoutInstitutionInput
 }
 
 export type InstitutionCreateOrConnectWithoutDocumentsInput = {
@@ -422,9 +598,13 @@ export type InstitutionUpdateWithoutDocumentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aliases?: Prisma.InstitutionAliasUpdateManyWithoutInstitutionNestedInput
 }
 
 export type InstitutionUncheckedUpdateWithoutDocumentsInput = {
@@ -432,9 +612,13 @@ export type InstitutionUncheckedUpdateWithoutDocumentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumInstitutionTypeFieldUpdateOperationsInput | $Enums.InstitutionType
+  offersTvet?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  aliases?: Prisma.InstitutionAliasUncheckedUpdateManyWithoutInstitutionNestedInput
 }
 
 
@@ -443,10 +627,12 @@ export type InstitutionUncheckedUpdateWithoutDocumentsInput = {
  */
 
 export type InstitutionCountOutputType = {
+  aliases: number
   documents: number
 }
 
 export type InstitutionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  aliases?: boolean | InstitutionCountOutputTypeCountAliasesArgs
   documents?: boolean | InstitutionCountOutputTypeCountDocumentsArgs
 }
 
@@ -463,6 +649,13 @@ export type InstitutionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.
 /**
  * InstitutionCountOutputType without action
  */
+export type InstitutionCountOutputTypeCountAliasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InstitutionAliasWhereInput
+}
+
+/**
+ * InstitutionCountOutputType without action
+ */
 export type InstitutionCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentWhereInput
 }
@@ -473,9 +666,13 @@ export type InstitutionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   name?: boolean
   country?: boolean
   website?: boolean
+  type?: boolean
+  offersTvet?: boolean
+  sourceUrl?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  aliases?: boolean | Prisma.Institution$aliasesArgs<ExtArgs>
   documents?: boolean | Prisma.Institution$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.InstitutionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["institution"]>
@@ -485,6 +682,9 @@ export type InstitutionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   country?: boolean
   website?: boolean
+  type?: boolean
+  offersTvet?: boolean
+  sourceUrl?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -495,6 +695,9 @@ export type InstitutionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   country?: boolean
   website?: boolean
+  type?: boolean
+  offersTvet?: boolean
+  sourceUrl?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -505,13 +708,17 @@ export type InstitutionSelectScalar = {
   name?: boolean
   country?: boolean
   website?: boolean
+  type?: boolean
+  offersTvet?: boolean
+  sourceUrl?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InstitutionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "country" | "website" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["institution"]>
+export type InstitutionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "country" | "website" | "type" | "offersTvet" | "sourceUrl" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["institution"]>
 export type InstitutionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  aliases?: boolean | Prisma.Institution$aliasesArgs<ExtArgs>
   documents?: boolean | Prisma.Institution$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.InstitutionCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -521,6 +728,7 @@ export type InstitutionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type $InstitutionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Institution"
   objects: {
+    aliases: Prisma.$InstitutionAliasPayload<ExtArgs>[]
     documents: Prisma.$DocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -528,6 +736,9 @@ export type $InstitutionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     name: string
     country: string
     website: string | null
+    type: $Enums.InstitutionType
+    offersTvet: boolean
+    sourceUrl: string | null
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -925,6 +1136,7 @@ readonly fields: InstitutionFieldRefs;
  */
 export interface Prisma__InstitutionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  aliases<T extends Prisma.Institution$aliasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Institution$aliasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InstitutionAliasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   documents<T extends Prisma.Institution$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Institution$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -959,6 +1171,9 @@ export interface InstitutionFieldRefs {
   readonly name: Prisma.FieldRef<"Institution", 'String'>
   readonly country: Prisma.FieldRef<"Institution", 'String'>
   readonly website: Prisma.FieldRef<"Institution", 'String'>
+  readonly type: Prisma.FieldRef<"Institution", 'InstitutionType'>
+  readonly offersTvet: Prisma.FieldRef<"Institution", 'Boolean'>
+  readonly sourceUrl: Prisma.FieldRef<"Institution", 'String'>
   readonly active: Prisma.FieldRef<"Institution", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Institution", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Institution", 'DateTime'>
@@ -1352,6 +1567,30 @@ export type InstitutionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many Institutions to delete.
    */
   limit?: number
+}
+
+/**
+ * Institution.aliases
+ */
+export type Institution$aliasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InstitutionAlias
+   */
+  select?: Prisma.InstitutionAliasSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InstitutionAlias
+   */
+  omit?: Prisma.InstitutionAliasOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstitutionAliasInclude<ExtArgs> | null
+  where?: Prisma.InstitutionAliasWhereInput
+  orderBy?: Prisma.InstitutionAliasOrderByWithRelationInput | Prisma.InstitutionAliasOrderByWithRelationInput[]
+  cursor?: Prisma.InstitutionAliasWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InstitutionAliasScalarFieldEnum | Prisma.InstitutionAliasScalarFieldEnum[]
 }
 
 /**

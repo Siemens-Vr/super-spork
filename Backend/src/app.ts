@@ -21,6 +21,11 @@ import { documentRouter, identityRouter } from './routes/document.routes.js';
 import { catalogueRouter } from './routes/catalogue.routes.js';
 import { assessmentRouter } from './routes/assessment.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
+import {
+  assessmentSessionRouter,
+  assessmentInteractionAdminRouter,
+} from './routes/assessment-session.routes.js';
+import { developmentAssessmentRouter } from './routes/assessment-dev.routes.js';
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
@@ -73,22 +78,25 @@ export function createApp() {
     }
   });
   if (env.ENABLE_SWAGGER) {
-    const spec = YAML.parse(readFileSync(resolve('docs/openapi.yaml'), 'utf8'));
-    app.get('/api/v1/openapi.json', (_req, res) => res.json(spec));
+    // Load the generated schema per request so docs:generate is reflected on refresh.
+    app.get('/api/v1/openapi.json', (_req, res) =>
+      res.json(YAML.parse(readFileSync(resolve('docs/openapi.yaml'), 'utf8'))),
+    );
     app.use(
       '/docs',
       swaggerUi.serve,
-      swaggerUi.setup(spec, {
+      swaggerUi.setup(undefined, {
         swaggerOptions: {
+          url: '/api/v1/openapi.json',
           persistAuthorization: false,
           // An interceptor failure leaves Swagger's mutated request empty.
           // Render the original request so the underlying error stays visible.
           showMutatedRequest: false,
           requestInterceptor: async (request: {
-            method: string;
+            method?: string;
             headers: Record<string, string>;
           }) => {
-            if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method.toUpperCase())) {
+            if (!['GET', 'HEAD', 'OPTIONS'].includes((request.method ?? 'GET').toUpperCase())) {
               const response = await fetch('/api/v1/auth/csrf', { credentials: 'same-origin' });
               const body = (await response.json()) as {
                 data?: { csrfToken?: string };
@@ -127,6 +135,9 @@ export function createApp() {
   app.use('/api/v1/documents', documentRouter);
   app.use('/api/v1/assessments', assessmentRouter);
   app.use('/api/v1/admin', adminRouter);
+  app.use('/api/v1/admin', assessmentInteractionAdminRouter);
+  app.use('/api/v1/assessment-sessions', assessmentSessionRouter);
+  if (env.NODE_ENV === 'development') app.use(developmentAssessmentRouter);
   app.use('/api/v1', catalogueRouter);
   app.use(() => {
     throw new AppError(404, 'NOT_FOUND', 'Endpoint not found');

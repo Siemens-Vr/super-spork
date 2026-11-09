@@ -75,6 +75,7 @@ export type AssessmentBlueprintCountAggregateOutputType = {
   active: number
   requiresAuthenticatedIdentity: number
   requiresAuthenticatedAcademic: number
+  interactionPolicy: number
   createdAt: number
   _all: number
 }
@@ -129,6 +130,7 @@ export type AssessmentBlueprintCountAggregateInputType = {
   active?: true
   requiresAuthenticatedIdentity?: true
   requiresAuthenticatedAcademic?: true
+  interactionPolicy?: true
   createdAt?: true
   _all?: true
 }
@@ -230,6 +232,7 @@ export type AssessmentBlueprintGroupByOutputType = {
   active: boolean
   requiresAuthenticatedIdentity: boolean
   requiresAuthenticatedAcademic: boolean
+  interactionPolicy: runtime.JsonValue
   createdAt: Date
   _count: AssessmentBlueprintCountAggregateOutputType | null
   _avg: AssessmentBlueprintAvgAggregateOutputType | null
@@ -267,11 +270,14 @@ export type AssessmentBlueprintWhereInput = {
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
   framework?: Prisma.XOR<Prisma.CompetencyFrameworkScalarRelationFilter, Prisma.CompetencyFrameworkWhereInput>
   availability?: Prisma.AssessmentAvailabilityListRelationFilter
   bookings?: Prisma.AssessmentBookingListRelationFilter
+  attempts?: Prisma.AssessmentAttemptListRelationFilter
+  scenarios?: Prisma.BlueprintScenarioListRelationFilter
 }
 
 export type AssessmentBlueprintOrderByWithRelationInput = {
@@ -285,11 +291,14 @@ export type AssessmentBlueprintOrderByWithRelationInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   jobRole?: Prisma.JobRoleOrderByWithRelationInput
   framework?: Prisma.CompetencyFrameworkOrderByWithRelationInput
   availability?: Prisma.AssessmentAvailabilityOrderByRelationAggregateInput
   bookings?: Prisma.AssessmentBookingOrderByRelationAggregateInput
+  attempts?: Prisma.AssessmentAttemptOrderByRelationAggregateInput
+  scenarios?: Prisma.BlueprintScenarioOrderByRelationAggregateInput
 }
 
 export type AssessmentBlueprintWhereUniqueInput = Prisma.AtLeast<{
@@ -307,11 +316,14 @@ export type AssessmentBlueprintWhereUniqueInput = Prisma.AtLeast<{
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
   framework?: Prisma.XOR<Prisma.CompetencyFrameworkScalarRelationFilter, Prisma.CompetencyFrameworkWhereInput>
   availability?: Prisma.AssessmentAvailabilityListRelationFilter
   bookings?: Prisma.AssessmentBookingListRelationFilter
+  attempts?: Prisma.AssessmentAttemptListRelationFilter
+  scenarios?: Prisma.BlueprintScenarioListRelationFilter
 }, "id" | "jobRoleId_version">
 
 export type AssessmentBlueprintOrderByWithAggregationInput = {
@@ -325,6 +337,7 @@ export type AssessmentBlueprintOrderByWithAggregationInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AssessmentBlueprintCountOrderByAggregateInput
   _avg?: Prisma.AssessmentBlueprintAvgOrderByAggregateInput
@@ -347,6 +360,7 @@ export type AssessmentBlueprintScalarWhereWithAggregatesInput = {
   active?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
+  interactionPolicy?: Prisma.JsonWithAggregatesFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AssessmentBlueprint"> | Date | string
 }
 
@@ -359,11 +373,14 @@ export type AssessmentBlueprintCreateInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
   availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUncheckedCreateInput = {
@@ -377,9 +394,12 @@ export type AssessmentBlueprintUncheckedCreateInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUpdateInput = {
@@ -391,11 +411,14 @@ export type AssessmentBlueprintUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
   availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateInput = {
@@ -409,9 +432,12 @@ export type AssessmentBlueprintUncheckedUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintCreateManyInput = {
@@ -425,6 +451,7 @@ export type AssessmentBlueprintCreateManyInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -437,6 +464,7 @@ export type AssessmentBlueprintUpdateManyMutationInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -451,6 +479,7 @@ export type AssessmentBlueprintUncheckedUpdateManyInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -480,6 +509,7 @@ export type AssessmentBlueprintCountOrderByAggregateInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -638,6 +668,34 @@ export type AssessmentBlueprintUpdateOneRequiredWithoutBookingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBlueprintUpdateToOneWithWhereWithoutBookingsInput, Prisma.AssessmentBlueprintUpdateWithoutBookingsInput>, Prisma.AssessmentBlueprintUncheckedUpdateWithoutBookingsInput>
 }
 
+export type AssessmentBlueprintCreateNestedOneWithoutAttemptsInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutAttemptsInput>
+  connectOrCreate?: Prisma.AssessmentBlueprintCreateOrConnectWithoutAttemptsInput
+  connect?: Prisma.AssessmentBlueprintWhereUniqueInput
+}
+
+export type AssessmentBlueprintUpdateOneRequiredWithoutAttemptsNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutAttemptsInput>
+  connectOrCreate?: Prisma.AssessmentBlueprintCreateOrConnectWithoutAttemptsInput
+  upsert?: Prisma.AssessmentBlueprintUpsertWithoutAttemptsInput
+  connect?: Prisma.AssessmentBlueprintWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBlueprintUpdateToOneWithWhereWithoutAttemptsInput, Prisma.AssessmentBlueprintUpdateWithoutAttemptsInput>, Prisma.AssessmentBlueprintUncheckedUpdateWithoutAttemptsInput>
+}
+
+export type AssessmentBlueprintCreateNestedOneWithoutScenariosInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutScenariosInput>
+  connectOrCreate?: Prisma.AssessmentBlueprintCreateOrConnectWithoutScenariosInput
+  connect?: Prisma.AssessmentBlueprintWhereUniqueInput
+}
+
+export type AssessmentBlueprintUpdateOneRequiredWithoutScenariosNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutScenariosInput>
+  connectOrCreate?: Prisma.AssessmentBlueprintCreateOrConnectWithoutScenariosInput
+  upsert?: Prisma.AssessmentBlueprintUpsertWithoutScenariosInput
+  connect?: Prisma.AssessmentBlueprintWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentBlueprintUpdateToOneWithWhereWithoutScenariosInput, Prisma.AssessmentBlueprintUpdateWithoutScenariosInput>, Prisma.AssessmentBlueprintUncheckedUpdateWithoutScenariosInput>
+}
+
 export type AssessmentBlueprintCreateWithoutJobRoleInput = {
   id?: string
   version: number
@@ -647,10 +705,13 @@ export type AssessmentBlueprintCreateWithoutJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
   availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUncheckedCreateWithoutJobRoleInput = {
@@ -663,9 +724,12 @@ export type AssessmentBlueprintUncheckedCreateWithoutJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintCreateOrConnectWithoutJobRoleInput = {
@@ -708,6 +772,7 @@ export type AssessmentBlueprintScalarWhereInput = {
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
 }
 
@@ -720,10 +785,13 @@ export type AssessmentBlueprintCreateWithoutFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
   availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUncheckedCreateWithoutFrameworkInput = {
@@ -736,9 +804,12 @@ export type AssessmentBlueprintUncheckedCreateWithoutFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintCreateOrConnectWithoutFrameworkInput = {
@@ -776,10 +847,13 @@ export type AssessmentBlueprintCreateWithoutAvailabilityInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUncheckedCreateWithoutAvailabilityInput = {
@@ -793,8 +867,11 @@ export type AssessmentBlueprintUncheckedCreateWithoutAvailabilityInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintCreateOrConnectWithoutAvailabilityInput = {
@@ -822,10 +899,13 @@ export type AssessmentBlueprintUpdateWithoutAvailabilityInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateWithoutAvailabilityInput = {
@@ -839,8 +919,11 @@ export type AssessmentBlueprintUncheckedUpdateWithoutAvailabilityInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintCreateWithoutBookingsInput = {
@@ -852,10 +935,13 @@ export type AssessmentBlueprintCreateWithoutBookingsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
   availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintUncheckedCreateWithoutBookingsInput = {
@@ -869,8 +955,11 @@ export type AssessmentBlueprintUncheckedCreateWithoutBookingsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
 }
 
 export type AssessmentBlueprintCreateOrConnectWithoutBookingsInput = {
@@ -898,10 +987,13 @@ export type AssessmentBlueprintUpdateWithoutBookingsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
   availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateWithoutBookingsInput = {
@@ -915,8 +1007,187 @@ export type AssessmentBlueprintUncheckedUpdateWithoutBookingsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
+}
+
+export type AssessmentBlueprintCreateWithoutAttemptsInput = {
+  id?: string
+  version: number
+  title: string
+  durationMinutes: number
+  instructions: string
+  active?: boolean
+  requiresAuthenticatedIdentity?: boolean
+  requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
+  framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
+  availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
+  bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioCreateNestedManyWithoutBlueprintInput
+}
+
+export type AssessmentBlueprintUncheckedCreateWithoutAttemptsInput = {
+  id?: string
+  jobRoleId: string
+  frameworkId: string
+  version: number
+  title: string
+  durationMinutes: number
+  instructions: string
+  active?: boolean
+  requiresAuthenticatedIdentity?: boolean
+  requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
+  bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedCreateNestedManyWithoutBlueprintInput
+}
+
+export type AssessmentBlueprintCreateOrConnectWithoutAttemptsInput = {
+  where: Prisma.AssessmentBlueprintWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutAttemptsInput>
+}
+
+export type AssessmentBlueprintUpsertWithoutAttemptsInput = {
+  update: Prisma.XOR<Prisma.AssessmentBlueprintUpdateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedUpdateWithoutAttemptsInput>
+  create: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutAttemptsInput>
+  where?: Prisma.AssessmentBlueprintWhereInput
+}
+
+export type AssessmentBlueprintUpdateToOneWithWhereWithoutAttemptsInput = {
+  where?: Prisma.AssessmentBlueprintWhereInput
+  data: Prisma.XOR<Prisma.AssessmentBlueprintUpdateWithoutAttemptsInput, Prisma.AssessmentBlueprintUncheckedUpdateWithoutAttemptsInput>
+}
+
+export type AssessmentBlueprintUpdateWithoutAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  instructions?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
+  framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
+  availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
+  bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
+}
+
+export type AssessmentBlueprintUncheckedUpdateWithoutAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  instructions?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
+  bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
+}
+
+export type AssessmentBlueprintCreateWithoutScenariosInput = {
+  id?: string
+  version: number
+  title: string
+  durationMinutes: number
+  instructions: string
+  active?: boolean
+  requiresAuthenticatedIdentity?: boolean
+  requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
+  framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
+  availability?: Prisma.AssessmentAvailabilityCreateNestedManyWithoutBlueprintInput
+  bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutBlueprintInput
+}
+
+export type AssessmentBlueprintUncheckedCreateWithoutScenariosInput = {
+  id?: string
+  jobRoleId: string
+  frameworkId: string
+  version: number
+  title: string
+  durationMinutes: number
+  instructions: string
+  active?: boolean
+  requiresAuthenticatedIdentity?: boolean
+  requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
+  bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
+  attempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutBlueprintInput
+}
+
+export type AssessmentBlueprintCreateOrConnectWithoutScenariosInput = {
+  where: Prisma.AssessmentBlueprintWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutScenariosInput>
+}
+
+export type AssessmentBlueprintUpsertWithoutScenariosInput = {
+  update: Prisma.XOR<Prisma.AssessmentBlueprintUpdateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedUpdateWithoutScenariosInput>
+  create: Prisma.XOR<Prisma.AssessmentBlueprintCreateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedCreateWithoutScenariosInput>
+  where?: Prisma.AssessmentBlueprintWhereInput
+}
+
+export type AssessmentBlueprintUpdateToOneWithWhereWithoutScenariosInput = {
+  where?: Prisma.AssessmentBlueprintWhereInput
+  data: Prisma.XOR<Prisma.AssessmentBlueprintUpdateWithoutScenariosInput, Prisma.AssessmentBlueprintUncheckedUpdateWithoutScenariosInput>
+}
+
+export type AssessmentBlueprintUpdateWithoutScenariosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  instructions?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
+  framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
+  availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
+  bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+}
+
+export type AssessmentBlueprintUncheckedUpdateWithoutScenariosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  frameworkId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  durationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  instructions?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
+  bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintCreateManyJobRoleInput = {
@@ -929,6 +1200,7 @@ export type AssessmentBlueprintCreateManyJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -941,10 +1213,13 @@ export type AssessmentBlueprintUpdateWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
   availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateWithoutJobRoleInput = {
@@ -957,9 +1232,12 @@ export type AssessmentBlueprintUncheckedUpdateWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleInput = {
@@ -972,6 +1250,7 @@ export type AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -985,6 +1264,7 @@ export type AssessmentBlueprintCreateManyFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -997,10 +1277,13 @@ export type AssessmentBlueprintUpdateWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
   availability?: Prisma.AssessmentAvailabilityUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateWithoutFrameworkInput = {
@@ -1013,9 +1296,12 @@ export type AssessmentBlueprintUncheckedUpdateWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
+  attempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutBlueprintNestedInput
+  scenarios?: Prisma.BlueprintScenarioUncheckedUpdateManyWithoutBlueprintNestedInput
 }
 
 export type AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkInput = {
@@ -1028,6 +1314,7 @@ export type AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1039,11 +1326,15 @@ export type AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkInput = {
 export type AssessmentBlueprintCountOutputType = {
   availability: number
   bookings: number
+  attempts: number
+  scenarios: number
 }
 
 export type AssessmentBlueprintCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   availability?: boolean | AssessmentBlueprintCountOutputTypeCountAvailabilityArgs
   bookings?: boolean | AssessmentBlueprintCountOutputTypeCountBookingsArgs
+  attempts?: boolean | AssessmentBlueprintCountOutputTypeCountAttemptsArgs
+  scenarios?: boolean | AssessmentBlueprintCountOutputTypeCountScenariosArgs
 }
 
 /**
@@ -1070,6 +1361,20 @@ export type AssessmentBlueprintCountOutputTypeCountBookingsArgs<ExtArgs extends 
   where?: Prisma.AssessmentBookingWhereInput
 }
 
+/**
+ * AssessmentBlueprintCountOutputType without action
+ */
+export type AssessmentBlueprintCountOutputTypeCountAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AssessmentAttemptWhereInput
+}
+
+/**
+ * AssessmentBlueprintCountOutputType without action
+ */
+export type AssessmentBlueprintCountOutputTypeCountScenariosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlueprintScenarioWhereInput
+}
+
 
 export type AssessmentBlueprintSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1082,11 +1387,14 @@ export type AssessmentBlueprintSelect<ExtArgs extends runtime.Types.Extensions.I
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   availability?: boolean | Prisma.AssessmentBlueprint$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.AssessmentBlueprint$bookingsArgs<ExtArgs>
+  attempts?: boolean | Prisma.AssessmentBlueprint$attemptsArgs<ExtArgs>
+  scenarios?: boolean | Prisma.AssessmentBlueprint$scenariosArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentBlueprintCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["assessmentBlueprint"]>
 
@@ -1101,6 +1409,7 @@ export type AssessmentBlueprintSelectCreateManyAndReturn<ExtArgs extends runtime
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
@@ -1117,6 +1426,7 @@ export type AssessmentBlueprintSelectUpdateManyAndReturn<ExtArgs extends runtime
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
@@ -1133,15 +1443,18 @@ export type AssessmentBlueprintSelectScalar = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  interactionPolicy?: boolean
   createdAt?: boolean
 }
 
-export type AssessmentBlueprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "frameworkId" | "version" | "title" | "durationMinutes" | "instructions" | "active" | "requiresAuthenticatedIdentity" | "requiresAuthenticatedAcademic" | "createdAt", ExtArgs["result"]["assessmentBlueprint"]>
+export type AssessmentBlueprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "frameworkId" | "version" | "title" | "durationMinutes" | "instructions" | "active" | "requiresAuthenticatedIdentity" | "requiresAuthenticatedAcademic" | "interactionPolicy" | "createdAt", ExtArgs["result"]["assessmentBlueprint"]>
 export type AssessmentBlueprintInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
   availability?: boolean | Prisma.AssessmentBlueprint$availabilityArgs<ExtArgs>
   bookings?: boolean | Prisma.AssessmentBlueprint$bookingsArgs<ExtArgs>
+  attempts?: boolean | Prisma.AssessmentBlueprint$attemptsArgs<ExtArgs>
+  scenarios?: boolean | Prisma.AssessmentBlueprint$scenariosArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentBlueprintCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AssessmentBlueprintIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1160,6 +1473,8 @@ export type $AssessmentBlueprintPayload<ExtArgs extends runtime.Types.Extensions
     framework: Prisma.$CompetencyFrameworkPayload<ExtArgs>
     availability: Prisma.$AssessmentAvailabilityPayload<ExtArgs>[]
     bookings: Prisma.$AssessmentBookingPayload<ExtArgs>[]
+    attempts: Prisma.$AssessmentAttemptPayload<ExtArgs>[]
+    scenarios: Prisma.$BlueprintScenarioPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1172,6 +1487,7 @@ export type $AssessmentBlueprintPayload<ExtArgs extends runtime.Types.Extensions
     active: boolean
     requiresAuthenticatedIdentity: boolean
     requiresAuthenticatedAcademic: boolean
+    interactionPolicy: runtime.JsonValue
     createdAt: Date
   }, ExtArgs["result"]["assessmentBlueprint"]>
   composites: {}
@@ -1571,6 +1887,8 @@ export interface Prisma__AssessmentBlueprintClient<T, Null = never, ExtArgs exte
   framework<T extends Prisma.CompetencyFrameworkDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>>): Prisma.Prisma__CompetencyFrameworkClient<runtime.Types.Result.GetResult<Prisma.$CompetencyFrameworkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   availability<T extends Prisma.AssessmentBlueprint$availabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBlueprint$availabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookings<T extends Prisma.AssessmentBlueprint$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBlueprint$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attempts<T extends Prisma.AssessmentBlueprint$attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBlueprint$attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  scenarios<T extends Prisma.AssessmentBlueprint$scenariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentBlueprint$scenariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlueprintScenarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1610,6 +1928,7 @@ export interface AssessmentBlueprintFieldRefs {
   readonly active: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
   readonly requiresAuthenticatedIdentity: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
   readonly requiresAuthenticatedAcademic: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
+  readonly interactionPolicy: Prisma.FieldRef<"AssessmentBlueprint", 'Json'>
   readonly createdAt: Prisma.FieldRef<"AssessmentBlueprint", 'DateTime'>
 }
     
@@ -2057,6 +2376,54 @@ export type AssessmentBlueprint$bookingsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.AssessmentBookingScalarFieldEnum | Prisma.AssessmentBookingScalarFieldEnum[]
+}
+
+/**
+ * AssessmentBlueprint.attempts
+ */
+export type AssessmentBlueprint$attemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentAttempt
+   */
+  select?: Prisma.AssessmentAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentAttempt
+   */
+  omit?: Prisma.AssessmentAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentAttemptInclude<ExtArgs> | null
+  where?: Prisma.AssessmentAttemptWhereInput
+  orderBy?: Prisma.AssessmentAttemptOrderByWithRelationInput | Prisma.AssessmentAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.AssessmentAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AssessmentAttemptScalarFieldEnum | Prisma.AssessmentAttemptScalarFieldEnum[]
+}
+
+/**
+ * AssessmentBlueprint.scenarios
+ */
+export type AssessmentBlueprint$scenariosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlueprintScenario
+   */
+  select?: Prisma.BlueprintScenarioSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlueprintScenario
+   */
+  omit?: Prisma.BlueprintScenarioOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlueprintScenarioInclude<ExtArgs> | null
+  where?: Prisma.BlueprintScenarioWhereInput
+  orderBy?: Prisma.BlueprintScenarioOrderByWithRelationInput | Prisma.BlueprintScenarioOrderByWithRelationInput[]
+  cursor?: Prisma.BlueprintScenarioWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlueprintScenarioScalarFieldEnum | Prisma.BlueprintScenarioScalarFieldEnum[]
 }
 
 /**

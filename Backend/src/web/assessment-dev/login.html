@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>VML assessment development sign-in</title>
+  <body>
+    <main>
+      <h1>Assessment development sign-in</h1>
+      <p>
+        This interface is available only in development. Use your existing verified applicant
+        account.
+      </p>
+      <form id="login">
+        <p>
+          <label>Email <input id="email" type="email" autocomplete="username" required /></label>
+        </p>
+        <p>
+          <label
+            >Password <input id="password" type="password" autocomplete="current-password" required
+          /></label>
+        </p>
+        <button>Sign in</button>
+      </form>
+      <p id="status" role="status"></p>
+    </main>
+    <script type="module" src="/dev/assessment-login.mjs"></script>
+  </body>
+</html>

@@ -85,3 +85,42 @@ export const BookingStatus = {
 } as const
 
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const AssessmentTargetStatus = {
+  DRAFT: 'DRAFT',
+  PREPARED: 'PREPARED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type AssessmentTargetStatus = (typeof AssessmentTargetStatus)[keyof typeof AssessmentTargetStatus]
+
+
+export const RequirementScope = {
+  CORE: 'CORE',
+  INDUSTRY: 'INDUSTRY',
+  COMPANY: 'COMPANY',
+  COURSE: 'COURSE'
+} as const
+
+export type RequirementScope = (typeof RequirementScope)[keyof typeof RequirementScope]
+
+
+export const LearningStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type LearningStatus = (typeof LearningStatus)[keyof typeof LearningStatus]
+
+
+export const InstitutionType = {
+  UNIVERSITY: 'UNIVERSITY',
+  COLLEGE: 'COLLEGE',
+  TRAINING_INSTITUTE: 'TRAINING_INSTITUTE',
+  OTHER: 'OTHER'
+} as const
+
+export type InstitutionType = (typeof InstitutionType)[keyof typeof InstitutionType]

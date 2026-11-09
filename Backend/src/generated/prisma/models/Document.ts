@@ -39,6 +39,8 @@ export type DocumentMinAggregateOutputType = {
   applicantId: string | null
   category: $Enums.DocumentCategory | null
   title: string | null
+  courseName: string | null
+  certificationName: string | null
   issuer: string | null
   institutionId: string | null
   institutionName: string | null
@@ -63,6 +65,8 @@ export type DocumentMaxAggregateOutputType = {
   applicantId: string | null
   category: $Enums.DocumentCategory | null
   title: string | null
+  courseName: string | null
+  certificationName: string | null
   issuer: string | null
   institutionId: string | null
   institutionName: string | null
@@ -87,6 +91,8 @@ export type DocumentCountAggregateOutputType = {
   applicantId: number
   category: number
   title: number
+  courseName: number
+  certificationName: number
   issuer: number
   institutionId: number
   institutionName: number
@@ -121,6 +127,8 @@ export type DocumentMinAggregateInputType = {
   applicantId?: true
   category?: true
   title?: true
+  courseName?: true
+  certificationName?: true
   issuer?: true
   institutionId?: true
   institutionName?: true
@@ -145,6 +153,8 @@ export type DocumentMaxAggregateInputType = {
   applicantId?: true
   category?: true
   title?: true
+  courseName?: true
+  certificationName?: true
   issuer?: true
   institutionId?: true
   institutionName?: true
@@ -169,6 +179,8 @@ export type DocumentCountAggregateInputType = {
   applicantId?: true
   category?: true
   title?: true
+  courseName?: true
+  certificationName?: true
   issuer?: true
   institutionId?: true
   institutionName?: true
@@ -280,6 +292,8 @@ export type DocumentGroupByOutputType = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName: string | null
+  certificationName: string | null
   issuer: string | null
   institutionId: string | null
   institutionName: string | null
@@ -327,6 +341,8 @@ export type DocumentWhereInput = {
   applicantId?: Prisma.UuidFilter<"Document"> | string
   category?: Prisma.EnumDocumentCategoryFilter<"Document"> | $Enums.DocumentCategory
   title?: Prisma.StringFilter<"Document"> | string
+  courseName?: Prisma.StringNullableFilter<"Document"> | string | null
+  certificationName?: Prisma.StringNullableFilter<"Document"> | string | null
   issuer?: Prisma.StringNullableFilter<"Document"> | string | null
   institutionId?: Prisma.UuidNullableFilter<"Document"> | string | null
   institutionName?: Prisma.StringNullableFilter<"Document"> | string | null
@@ -354,6 +370,7 @@ export type DocumentWhereInput = {
   evidence?: Prisma.VerificationEvidenceListRelationFilter
   history?: Prisma.VerificationStatusHistoryListRelationFilter
   analysisJobs?: Prisma.DocumentAnalysisJobListRelationFilter
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationListRelationFilter
 }
 
 export type DocumentOrderByWithRelationInput = {
@@ -361,6 +378,8 @@ export type DocumentOrderByWithRelationInput = {
   applicantId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  courseName?: Prisma.SortOrderInput | Prisma.SortOrder
+  certificationName?: Prisma.SortOrderInput | Prisma.SortOrder
   issuer?: Prisma.SortOrderInput | Prisma.SortOrder
   institutionId?: Prisma.SortOrderInput | Prisma.SortOrder
   institutionName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -388,6 +407,7 @@ export type DocumentOrderByWithRelationInput = {
   evidence?: Prisma.VerificationEvidenceOrderByRelationAggregateInput
   history?: Prisma.VerificationStatusHistoryOrderByRelationAggregateInput
   analysisJobs?: Prisma.DocumentAnalysisJobOrderByRelationAggregateInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationOrderByRelationAggregateInput
 }
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -400,6 +420,8 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   applicantId?: Prisma.UuidFilter<"Document"> | string
   category?: Prisma.EnumDocumentCategoryFilter<"Document"> | $Enums.DocumentCategory
   title?: Prisma.StringFilter<"Document"> | string
+  courseName?: Prisma.StringNullableFilter<"Document"> | string | null
+  certificationName?: Prisma.StringNullableFilter<"Document"> | string | null
   issuer?: Prisma.StringNullableFilter<"Document"> | string | null
   institutionId?: Prisma.UuidNullableFilter<"Document"> | string | null
   institutionName?: Prisma.StringNullableFilter<"Document"> | string | null
@@ -425,6 +447,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   evidence?: Prisma.VerificationEvidenceListRelationFilter
   history?: Prisma.VerificationStatusHistoryListRelationFilter
   analysisJobs?: Prisma.DocumentAnalysisJobListRelationFilter
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationListRelationFilter
 }, "id" | "storageKey" | "replacesId">
 
 export type DocumentOrderByWithAggregationInput = {
@@ -432,6 +455,8 @@ export type DocumentOrderByWithAggregationInput = {
   applicantId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  courseName?: Prisma.SortOrderInput | Prisma.SortOrder
+  certificationName?: Prisma.SortOrderInput | Prisma.SortOrder
   issuer?: Prisma.SortOrderInput | Prisma.SortOrder
   institutionId?: Prisma.SortOrderInput | Prisma.SortOrder
   institutionName?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -464,6 +489,8 @@ export type DocumentScalarWhereWithAggregatesInput = {
   applicantId?: Prisma.UuidWithAggregatesFilter<"Document"> | string
   category?: Prisma.EnumDocumentCategoryWithAggregatesFilter<"Document"> | $Enums.DocumentCategory
   title?: Prisma.StringWithAggregatesFilter<"Document"> | string
+  courseName?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  certificationName?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   issuer?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   institutionId?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
   institutionName?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
@@ -487,6 +514,8 @@ export type DocumentCreateInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -511,6 +540,7 @@ export type DocumentCreateInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateInput = {
@@ -518,6 +548,8 @@ export type DocumentUncheckedCreateInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -541,12 +573,15 @@ export type DocumentUncheckedCreateInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -571,6 +606,7 @@ export type DocumentUpdateInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateInput = {
@@ -578,6 +614,8 @@ export type DocumentUncheckedUpdateInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -601,6 +639,7 @@ export type DocumentUncheckedUpdateInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -608,6 +647,8 @@ export type DocumentCreateManyInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -631,6 +672,8 @@ export type DocumentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -652,6 +695,8 @@ export type DocumentUncheckedUpdateManyInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -691,6 +736,8 @@ export type DocumentCountOrderByAggregateInput = {
   applicantId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
+  certificationName?: Prisma.SortOrder
   issuer?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   institutionName?: Prisma.SortOrder
@@ -719,6 +766,8 @@ export type DocumentMaxOrderByAggregateInput = {
   applicantId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
+  certificationName?: Prisma.SortOrder
   issuer?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   institutionName?: Prisma.SortOrder
@@ -743,6 +792,8 @@ export type DocumentMinOrderByAggregateInput = {
   applicantId?: Prisma.SortOrder
   category?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
+  certificationName?: Prisma.SortOrder
   issuer?: Prisma.SortOrder
   institutionId?: Prisma.SortOrder
   institutionName?: Prisma.SortOrder
@@ -1029,10 +1080,26 @@ export type DocumentUpdateOneRequiredWithoutAnalysisJobsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutAnalysisJobsInput, Prisma.DocumentUpdateWithoutAnalysisJobsInput>, Prisma.DocumentUncheckedUpdateWithoutAnalysisJobsInput>
 }
 
+export type DocumentCreateNestedOneWithoutAssessmentQualificationsInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedCreateWithoutAssessmentQualificationsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAssessmentQualificationsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutAssessmentQualificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedCreateWithoutAssessmentQualificationsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAssessmentQualificationsInput
+  upsert?: Prisma.DocumentUpsertWithoutAssessmentQualificationsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutAssessmentQualificationsInput, Prisma.DocumentUpdateWithoutAssessmentQualificationsInput>, Prisma.DocumentUncheckedUpdateWithoutAssessmentQualificationsInput>
+}
+
 export type DocumentCreateWithoutApplicantInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1056,12 +1123,15 @@ export type DocumentCreateWithoutApplicantInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutApplicantInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1085,6 +1155,7 @@ export type DocumentUncheckedCreateWithoutApplicantInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutApplicantInput = {
@@ -1121,6 +1192,8 @@ export type DocumentScalarWhereInput = {
   applicantId?: Prisma.UuidFilter<"Document"> | string
   category?: Prisma.EnumDocumentCategoryFilter<"Document"> | $Enums.DocumentCategory
   title?: Prisma.StringFilter<"Document"> | string
+  courseName?: Prisma.StringNullableFilter<"Document"> | string | null
+  certificationName?: Prisma.StringNullableFilter<"Document"> | string | null
   issuer?: Prisma.StringNullableFilter<"Document"> | string | null
   institutionId?: Prisma.UuidNullableFilter<"Document"> | string | null
   institutionName?: Prisma.StringNullableFilter<"Document"> | string | null
@@ -1144,6 +1217,8 @@ export type DocumentCreateWithoutInstitutionInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1167,6 +1242,7 @@ export type DocumentCreateWithoutInstitutionInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutInstitutionInput = {
@@ -1174,6 +1250,8 @@ export type DocumentUncheckedCreateWithoutInstitutionInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1196,6 +1274,7 @@ export type DocumentUncheckedCreateWithoutInstitutionInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutInstitutionInput = {
@@ -1228,6 +1307,8 @@ export type DocumentCreateWithoutReplacementInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1251,6 +1332,7 @@ export type DocumentCreateWithoutReplacementInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutReplacementInput = {
@@ -1258,6 +1340,8 @@ export type DocumentUncheckedCreateWithoutReplacementInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1280,6 +1364,7 @@ export type DocumentUncheckedCreateWithoutReplacementInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutReplacementInput = {
@@ -1291,6 +1376,8 @@ export type DocumentCreateWithoutReplacesInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1314,6 +1401,7 @@ export type DocumentCreateWithoutReplacesInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutReplacesInput = {
@@ -1321,6 +1409,8 @@ export type DocumentUncheckedCreateWithoutReplacesInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1343,6 +1433,7 @@ export type DocumentUncheckedCreateWithoutReplacesInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutReplacesInput = {
@@ -1354,6 +1445,8 @@ export type DocumentCreateWithoutTranscriptsInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1377,6 +1470,7 @@ export type DocumentCreateWithoutTranscriptsInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutTranscriptsInput = {
@@ -1384,6 +1478,8 @@ export type DocumentUncheckedCreateWithoutTranscriptsInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1406,6 +1502,7 @@ export type DocumentUncheckedCreateWithoutTranscriptsInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutTranscriptsInput = {
@@ -1417,6 +1514,8 @@ export type DocumentCreateWithoutQualificationInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1440,6 +1539,7 @@ export type DocumentCreateWithoutQualificationInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutQualificationInput = {
@@ -1447,6 +1547,8 @@ export type DocumentUncheckedCreateWithoutQualificationInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1469,6 +1571,7 @@ export type DocumentUncheckedCreateWithoutQualificationInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutQualificationInput = {
@@ -1496,6 +1599,8 @@ export type DocumentUpdateWithoutReplacementInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1519,6 +1624,7 @@ export type DocumentUpdateWithoutReplacementInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutReplacementInput = {
@@ -1526,6 +1632,8 @@ export type DocumentUncheckedUpdateWithoutReplacementInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1548,6 +1656,7 @@ export type DocumentUncheckedUpdateWithoutReplacementInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUpsertWithoutReplacesInput = {
@@ -1565,6 +1674,8 @@ export type DocumentUpdateWithoutReplacesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1588,6 +1699,7 @@ export type DocumentUpdateWithoutReplacesInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutReplacesInput = {
@@ -1595,6 +1707,8 @@ export type DocumentUncheckedUpdateWithoutReplacesInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1617,6 +1731,7 @@ export type DocumentUncheckedUpdateWithoutReplacesInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUpsertWithoutTranscriptsInput = {
@@ -1634,6 +1749,8 @@ export type DocumentUpdateWithoutTranscriptsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1657,6 +1774,7 @@ export type DocumentUpdateWithoutTranscriptsInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutTranscriptsInput = {
@@ -1664,6 +1782,8 @@ export type DocumentUncheckedUpdateWithoutTranscriptsInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1686,6 +1806,7 @@ export type DocumentUncheckedUpdateWithoutTranscriptsInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUpsertWithWhereUniqueWithoutQualificationInput = {
@@ -1708,6 +1829,8 @@ export type DocumentCreateWithoutReviewsInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1731,6 +1854,7 @@ export type DocumentCreateWithoutReviewsInput = {
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutReviewsInput = {
@@ -1738,6 +1862,8 @@ export type DocumentUncheckedCreateWithoutReviewsInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1760,6 +1886,7 @@ export type DocumentUncheckedCreateWithoutReviewsInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutReviewsInput = {
@@ -1782,6 +1909,8 @@ export type DocumentUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1805,6 +1934,7 @@ export type DocumentUpdateWithoutReviewsInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutReviewsInput = {
@@ -1812,6 +1942,8 @@ export type DocumentUncheckedUpdateWithoutReviewsInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1834,12 +1966,15 @@ export type DocumentUncheckedUpdateWithoutReviewsInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutEvidenceInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1863,6 +1998,7 @@ export type DocumentCreateWithoutEvidenceInput = {
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutEvidenceInput = {
@@ -1870,6 +2006,8 @@ export type DocumentUncheckedCreateWithoutEvidenceInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -1892,6 +2030,7 @@ export type DocumentUncheckedCreateWithoutEvidenceInput = {
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEvidenceInput = {
@@ -1914,6 +2053,8 @@ export type DocumentUpdateWithoutEvidenceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1937,6 +2078,7 @@ export type DocumentUpdateWithoutEvidenceInput = {
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutEvidenceInput = {
@@ -1944,6 +2086,8 @@ export type DocumentUncheckedUpdateWithoutEvidenceInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1966,12 +2110,15 @@ export type DocumentUncheckedUpdateWithoutEvidenceInput = {
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutHistoryInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -1995,6 +2142,7 @@ export type DocumentCreateWithoutHistoryInput = {
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutHistoryInput = {
@@ -2002,6 +2150,8 @@ export type DocumentUncheckedCreateWithoutHistoryInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -2024,6 +2174,7 @@ export type DocumentUncheckedCreateWithoutHistoryInput = {
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutHistoryInput = {
@@ -2046,6 +2197,8 @@ export type DocumentUpdateWithoutHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2069,6 +2222,7 @@ export type DocumentUpdateWithoutHistoryInput = {
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutHistoryInput = {
@@ -2076,6 +2230,8 @@ export type DocumentUncheckedUpdateWithoutHistoryInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2098,12 +2254,15 @@ export type DocumentUncheckedUpdateWithoutHistoryInput = {
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutAnalysisJobsInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -2127,6 +2286,7 @@ export type DocumentCreateWithoutAnalysisJobsInput = {
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutAnalysisJobsInput = {
@@ -2134,6 +2294,8 @@ export type DocumentUncheckedCreateWithoutAnalysisJobsInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -2156,6 +2318,7 @@ export type DocumentUncheckedCreateWithoutAnalysisJobsInput = {
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
   history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutAnalysisJobsInput = {
@@ -2178,6 +2341,8 @@ export type DocumentUpdateWithoutAnalysisJobsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2201,6 +2366,7 @@ export type DocumentUpdateWithoutAnalysisJobsInput = {
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutAnalysisJobsInput = {
@@ -2208,6 +2374,8 @@ export type DocumentUncheckedUpdateWithoutAnalysisJobsInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2230,12 +2398,159 @@ export type DocumentUncheckedUpdateWithoutAnalysisJobsInput = {
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutAssessmentQualificationsInput = {
+  id?: string
+  category: $Enums.DocumentCategory
+  title: string
+  courseName?: string | null
+  certificationName?: string | null
+  issuer?: string | null
+  institutionName?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  encryptedCredentialNumber?: string | null
+  verificationUrl?: string | null
+  storageKey: string
+  mimeType: string
+  size: number
+  sha256: string
+  scanStatus?: $Enums.ScanStatus
+  status?: $Enums.VerificationStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  applicant: Prisma.UserCreateNestedOneWithoutDocumentsInput
+  institution?: Prisma.InstitutionCreateNestedOneWithoutDocumentsInput
+  replaces?: Prisma.DocumentCreateNestedOneWithoutReplacementInput
+  replacement?: Prisma.DocumentCreateNestedOneWithoutReplacesInput
+  qualification?: Prisma.DocumentCreateNestedOneWithoutTranscriptsInput
+  transcripts?: Prisma.DocumentCreateNestedManyWithoutQualificationInput
+  reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutDocumentInput
+  history?: Prisma.VerificationStatusHistoryCreateNestedManyWithoutDocumentInput
+  analysisJobs?: Prisma.DocumentAnalysisJobCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutAssessmentQualificationsInput = {
+  id?: string
+  applicantId: string
+  category: $Enums.DocumentCategory
+  title: string
+  courseName?: string | null
+  certificationName?: string | null
+  issuer?: string | null
+  institutionId?: string | null
+  institutionName?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  encryptedCredentialNumber?: string | null
+  verificationUrl?: string | null
+  storageKey: string
+  mimeType: string
+  size: number
+  sha256: string
+  scanStatus?: $Enums.ScanStatus
+  status?: $Enums.VerificationStatus
+  replacesId?: string | null
+  qualificationId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  replacement?: Prisma.DocumentUncheckedCreateNestedOneWithoutReplacesInput
+  transcripts?: Prisma.DocumentUncheckedCreateNestedManyWithoutQualificationInput
+  reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  history?: Prisma.VerificationStatusHistoryUncheckedCreateNestedManyWithoutDocumentInput
+  analysisJobs?: Prisma.DocumentAnalysisJobUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutAssessmentQualificationsInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedCreateWithoutAssessmentQualificationsInput>
+}
+
+export type DocumentUpsertWithoutAssessmentQualificationsInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedUpdateWithoutAssessmentQualificationsInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedCreateWithoutAssessmentQualificationsInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutAssessmentQualificationsInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutAssessmentQualificationsInput, Prisma.DocumentUncheckedUpdateWithoutAssessmentQualificationsInput>
+}
+
+export type DocumentUpdateWithoutAssessmentQualificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encryptedCredentialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  sha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scanStatus?: Prisma.EnumScanStatusFieldUpdateOperationsInput | $Enums.ScanStatus
+  status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applicant?: Prisma.UserUpdateOneRequiredWithoutDocumentsNestedInput
+  institution?: Prisma.InstitutionUpdateOneWithoutDocumentsNestedInput
+  replaces?: Prisma.DocumentUpdateOneWithoutReplacementNestedInput
+  replacement?: Prisma.DocumentUpdateOneWithoutReplacesNestedInput
+  qualification?: Prisma.DocumentUpdateOneWithoutTranscriptsNestedInput
+  transcripts?: Prisma.DocumentUpdateManyWithoutQualificationNestedInput
+  reviews?: Prisma.DocumentVerificationUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
+  history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
+  analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutAssessmentQualificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  applicantId?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encryptedCredentialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  sha256?: Prisma.StringFieldUpdateOperationsInput | string
+  scanStatus?: Prisma.EnumScanStatusFieldUpdateOperationsInput | $Enums.ScanStatus
+  status?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  replacesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualificationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  replacement?: Prisma.DocumentUncheckedUpdateOneWithoutReplacesNestedInput
+  transcripts?: Prisma.DocumentUncheckedUpdateManyWithoutQualificationNestedInput
+  reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
+  analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyApplicantInput = {
   id?: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -2259,6 +2574,8 @@ export type DocumentUpdateWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2282,12 +2599,15 @@ export type DocumentUpdateWithoutApplicantInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2311,12 +2631,15 @@ export type DocumentUncheckedUpdateWithoutApplicantInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2341,6 +2664,8 @@ export type DocumentCreateManyInstitutionInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionName?: string | null
   issuedAt?: Date | string | null
@@ -2363,6 +2688,8 @@ export type DocumentUpdateWithoutInstitutionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2386,6 +2713,7 @@ export type DocumentUpdateWithoutInstitutionInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutInstitutionInput = {
@@ -2393,6 +2721,8 @@ export type DocumentUncheckedUpdateWithoutInstitutionInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2415,6 +2745,7 @@ export type DocumentUncheckedUpdateWithoutInstitutionInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutInstitutionInput = {
@@ -2422,6 +2753,8 @@ export type DocumentUncheckedUpdateManyWithoutInstitutionInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2445,6 +2778,8 @@ export type DocumentCreateManyQualificationInput = {
   applicantId: string
   category: $Enums.DocumentCategory
   title: string
+  courseName?: string | null
+  certificationName?: string | null
   issuer?: string | null
   institutionId?: string | null
   institutionName?: string | null
@@ -2467,6 +2802,8 @@ export type DocumentUpdateWithoutQualificationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2490,6 +2827,7 @@ export type DocumentUpdateWithoutQualificationInput = {
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutQualificationInput = {
@@ -2497,6 +2835,8 @@ export type DocumentUncheckedUpdateWithoutQualificationInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2519,6 +2859,7 @@ export type DocumentUncheckedUpdateWithoutQualificationInput = {
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutDocumentNestedInput
   history?: Prisma.VerificationStatusHistoryUncheckedUpdateManyWithoutDocumentNestedInput
   analysisJobs?: Prisma.DocumentAnalysisJobUncheckedUpdateManyWithoutDocumentNestedInput
+  assessmentQualifications?: Prisma.AssessmentTargetQualificationUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutQualificationInput = {
@@ -2526,6 +2867,8 @@ export type DocumentUncheckedUpdateManyWithoutQualificationInput = {
   applicantId?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.EnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  certificationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuer?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institutionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2555,6 +2898,7 @@ export type DocumentCountOutputType = {
   evidence: number
   history: number
   analysisJobs: number
+  assessmentQualifications: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2563,6 +2907,7 @@ export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   evidence?: boolean | DocumentCountOutputTypeCountEvidenceArgs
   history?: boolean | DocumentCountOutputTypeCountHistoryArgs
   analysisJobs?: boolean | DocumentCountOutputTypeCountAnalysisJobsArgs
+  assessmentQualifications?: boolean | DocumentCountOutputTypeCountAssessmentQualificationsArgs
 }
 
 /**
@@ -2610,12 +2955,21 @@ export type DocumentCountOutputTypeCountAnalysisJobsArgs<ExtArgs extends runtime
   where?: Prisma.DocumentAnalysisJobWhereInput
 }
 
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountAssessmentQualificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AssessmentTargetQualificationWhereInput
+}
+
 
 export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   applicantId?: boolean
   category?: boolean
   title?: boolean
+  courseName?: boolean
+  certificationName?: boolean
   issuer?: boolean
   institutionId?: boolean
   institutionName?: boolean
@@ -2643,6 +2997,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   evidence?: boolean | Prisma.Document$evidenceArgs<ExtArgs>
   history?: boolean | Prisma.Document$historyArgs<ExtArgs>
   analysisJobs?: boolean | Prisma.Document$analysisJobsArgs<ExtArgs>
+  assessmentQualifications?: boolean | Prisma.Document$assessmentQualificationsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
@@ -2651,6 +3006,8 @@ export type DocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   applicantId?: boolean
   category?: boolean
   title?: boolean
+  courseName?: boolean
+  certificationName?: boolean
   issuer?: boolean
   institutionId?: boolean
   institutionName?: boolean
@@ -2679,6 +3036,8 @@ export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   applicantId?: boolean
   category?: boolean
   title?: boolean
+  courseName?: boolean
+  certificationName?: boolean
   issuer?: boolean
   institutionId?: boolean
   institutionName?: boolean
@@ -2707,6 +3066,8 @@ export type DocumentSelectScalar = {
   applicantId?: boolean
   category?: boolean
   title?: boolean
+  courseName?: boolean
+  certificationName?: boolean
   issuer?: boolean
   institutionId?: boolean
   institutionName?: boolean
@@ -2726,7 +3087,7 @@ export type DocumentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "category" | "title" | "issuer" | "institutionId" | "institutionName" | "issuedAt" | "expiresAt" | "encryptedCredentialNumber" | "verificationUrl" | "storageKey" | "mimeType" | "size" | "sha256" | "scanStatus" | "status" | "replacesId" | "qualificationId" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
+export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "category" | "title" | "courseName" | "certificationName" | "issuer" | "institutionId" | "institutionName" | "issuedAt" | "expiresAt" | "encryptedCredentialNumber" | "verificationUrl" | "storageKey" | "mimeType" | "size" | "sha256" | "scanStatus" | "status" | "replacesId" | "qualificationId" | "createdAt" | "updatedAt", ExtArgs["result"]["document"]>
 export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   institution?: boolean | Prisma.Document$institutionArgs<ExtArgs>
@@ -2738,6 +3099,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   evidence?: boolean | Prisma.Document$evidenceArgs<ExtArgs>
   history?: boolean | Prisma.Document$historyArgs<ExtArgs>
   analysisJobs?: boolean | Prisma.Document$analysisJobsArgs<ExtArgs>
+  assessmentQualifications?: boolean | Prisma.Document$assessmentQualificationsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2766,12 +3128,15 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     evidence: Prisma.$VerificationEvidencePayload<ExtArgs>[]
     history: Prisma.$VerificationStatusHistoryPayload<ExtArgs>[]
     analysisJobs: Prisma.$DocumentAnalysisJobPayload<ExtArgs>[]
+    assessmentQualifications: Prisma.$AssessmentTargetQualificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     applicantId: string
     category: $Enums.DocumentCategory
     title: string
+    courseName: string | null
+    certificationName: string | null
     issuer: string | null
     institutionId: string | null
     institutionName: string | null
@@ -3193,6 +3558,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   evidence<T extends Prisma.Document$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationEvidencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   history<T extends Prisma.Document$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   analysisJobs<T extends Prisma.Document$analysisJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$analysisJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentAnalysisJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assessmentQualifications<T extends Prisma.Document$assessmentQualificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$assessmentQualificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentTargetQualificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3226,6 +3592,8 @@ export interface DocumentFieldRefs {
   readonly applicantId: Prisma.FieldRef<"Document", 'String'>
   readonly category: Prisma.FieldRef<"Document", 'DocumentCategory'>
   readonly title: Prisma.FieldRef<"Document", 'String'>
+  readonly courseName: Prisma.FieldRef<"Document", 'String'>
+  readonly certificationName: Prisma.FieldRef<"Document", 'String'>
   readonly issuer: Prisma.FieldRef<"Document", 'String'>
   readonly institutionId: Prisma.FieldRef<"Document", 'String'>
   readonly institutionName: Prisma.FieldRef<"Document", 'String'>
@@ -3837,6 +4205,30 @@ export type Document$analysisJobsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.DocumentAnalysisJobScalarFieldEnum | Prisma.DocumentAnalysisJobScalarFieldEnum[]
+}
+
+/**
+ * Document.assessmentQualifications
+ */
+export type Document$assessmentQualificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentTargetQualification
+   */
+  select?: Prisma.AssessmentTargetQualificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentTargetQualification
+   */
+  omit?: Prisma.AssessmentTargetQualificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentTargetQualificationInclude<ExtArgs> | null
+  where?: Prisma.AssessmentTargetQualificationWhereInput
+  orderBy?: Prisma.AssessmentTargetQualificationOrderByWithRelationInput | Prisma.AssessmentTargetQualificationOrderByWithRelationInput[]
+  cursor?: Prisma.AssessmentTargetQualificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AssessmentTargetQualificationScalarFieldEnum | Prisma.AssessmentTargetQualificationScalarFieldEnum[]
 }
 
 /**

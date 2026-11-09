@@ -7,6 +7,9 @@
 - [x] Scheduling: policy eligibility, generated UTC slots, capacity locks, idempotency, cancellation and rescheduling history.
 - [x] Delivery: encrypted notification outbox, retrying workers, Docker infrastructure, Swagger/OpenAPI, meaningful automated checks.
 
-Implementation stops at assessment scheduling. There is no interview or scoring engine.
+- [x] Assessment targets: one active career per applicant, linked qualifications, frozen education/employer/industry context and contextual approved rubrics.
+- [x] Results and upskilling: assessor-only completion with evidence, deterministic weighted scores and competency gaps, immutable history and self-reported learning progress.
+
+The AI interviewer, approved scenario delivery, speech adapters and development browser harness are implemented; AI proposals require assessor review. A production frontend and course delivery remain separate. See [assessment targets](assessment-targets.md) and [the interaction audit](assessment-interaction-audit.md).
 
 Validation results and external deployment limits are recorded in [validation.md](validation.md).

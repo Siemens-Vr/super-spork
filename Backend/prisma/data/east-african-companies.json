@@ -1,0 +1,396 @@
+{
+  "reviewedAt": "2026-11-09",
+  "coverageCountries": ["KE", "UG", "TZ", "RW"],
+  "notes": "Curated employer preference directory, not an exhaustive business register. Country identifies the listed regional entity or headquarters, not every operating market. Industry mappings are application classifications based on public activities. Includes public utilities and a public research institute. Inclusion does not imply vacancies, partnership or approved employer assessment requirements.",
+  "companies": [
+    {
+      "name": "Kenya Electricity Generating Company (KenGen)",
+      "country": "KE",
+      "description": "Electricity producer operating geothermal, hydro, wind and thermal generation facilities in Kenya.",
+      "website": "https://www.kengen.co.ke/",
+      "industryNames": ["Energy and Power"],
+      "sourceUrls": ["https://www.kengen.co.ke/"]
+    },
+    {
+      "name": "Kenya Power and Lighting Company",
+      "country": "KE",
+      "description": "Electricity distribution and retail utility serving customers in Kenya.",
+      "website": "https://www.kplc.co.ke/",
+      "industryNames": ["Energy and Power"],
+      "sourceUrls": ["https://www.kplc.co.ke/"]
+    },
+    {
+      "name": "Isuzu East Africa",
+      "country": "KE",
+      "description": "Commercial vehicle business supplying trucks, buses, pickups, parts and aftersales services.",
+      "website": "https://www.isuzu.co.ke/",
+      "industryNames": ["Automotive and Electric Mobility"],
+      "sourceUrls": ["https://www.isuzu.co.ke/"]
+    },
+    {
+      "name": "BasiGo",
+      "country": "KE",
+      "description": "Electric bus company providing vehicles, charging infrastructure and fleet support in East Africa.",
+      "website": "https://www.basi-go.com/",
+      "industryNames": ["Automotive and Electric Mobility", "Energy and Power"],
+      "sourceUrls": ["https://www.basi-go.com/"]
+    },
+    {
+      "name": "Roam Electric",
+      "country": "KE",
+      "description": "Kenyan electric mobility business developing electric motorcycles and charging solutions.",
+      "website": "https://www.roam-electric.com/",
+      "industryNames": ["Automotive and Electric Mobility", "Energy and Power"],
+      "sourceUrls": ["https://www.roam-electric.com/"]
+    },
+    {
+      "name": "Kiira Motors Corporation",
+      "country": "UG",
+      "description": "Ugandan vehicle manufacturer producing buses and providing mobility engineering and product support services.",
+      "website": "https://kiiramotors.com/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Automotive and Electric Mobility",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://kiiramotors.com/"]
+    },
+    {
+      "name": "Kenya Pipeline Company",
+      "country": "KE",
+      "description": "Petroleum pipeline and storage operator also providing fibre connectivity and laboratory testing services.",
+      "website": "https://www.kpc.co.ke/",
+      "industryNames": [
+        "Oil, Gas and Petroleum",
+        "Telecommunications and Networking",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://www.kpc.co.ke/"]
+    },
+    {
+      "name": "Vivo Energy Kenya",
+      "country": "KE",
+      "description": "Fuels and lubricants supplier with petroleum storage terminals and a lubricant blending plant in Kenya.",
+      "website": "https://www.vivoenergy.com/en/where-we-operate/kenya",
+      "industryNames": ["Oil, Gas and Petroleum", "Chemicals, Plastics and Process Manufacturing"],
+      "sourceUrls": ["https://www.vivoenergy.com/en/where-we-operate/kenya"]
+    },
+    {
+      "name": "H Young & Co. (E.A.) Ltd",
+      "country": "KE",
+      "description": "Engineering contractor delivering civil works, transport infrastructure and structural and electromechanical installations.",
+      "website": "https://hyoung.com/",
+      "industryNames": [
+        "Construction and Real Estate Development",
+        "Roads, Railways and Transport Infrastructure",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://hyoung.com/"]
+    },
+    {
+      "name": "Davis & Shirtliff",
+      "country": "KE",
+      "description": "Water and energy equipment business supplying pumps, treatment systems, solar equipment and irrigation solutions.",
+      "website": "https://www.davisandshirtliff.com/",
+      "industryNames": [
+        "Energy and Power",
+        "Water, Wastewater and Sanitation",
+        "Agriculture and Agricultural Technology"
+      ],
+      "sourceUrls": ["https://www.davisandshirtliff.com/"]
+    },
+    {
+      "name": "Sheffield Africa",
+      "country": "KE",
+      "description": "Commercial equipment company providing kitchen, ventilation, refrigeration and cold storage solutions.",
+      "website": "https://sheffieldafrica.com/faq",
+      "industryNames": [
+        "Building Services and Facilities Management",
+        "Food and Beverage Processing",
+        "Logistics, Warehousing and Supply Chain"
+      ],
+      "sourceUrls": ["https://sheffieldafrica.com/faq"]
+    },
+    {
+      "name": "TakaTaka Solutions",
+      "country": "KE",
+      "description": "Kenyan waste management business providing collection, sorting and plastics recycling services.",
+      "website": "https://takatakasolutions.com/waste-recovery/",
+      "industryNames": ["Environmental Services and Waste Management"],
+      "sourceUrls": ["https://takatakasolutions.com/waste-recovery/"]
+    },
+    {
+      "name": "Gearbox Europlacer",
+      "country": "KE",
+      "description": "Nairobi electronics manufacturer offering circuit board assembly, product development, testing and technical training.",
+      "website": "https://www.gearbox-europlacer.com/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Electronics and Semiconductor Technology",
+        "Engineering Consultancy, Testing and Technical Services",
+        "Education, Research and Development"
+      ],
+      "sourceUrls": ["https://www.gearbox-europlacer.com/"]
+    },
+    {
+      "name": "Ndume Limited",
+      "country": "KE",
+      "description": "Agricultural machinery manufacturer based in Gilgil, producing farm implements and associated equipment.",
+      "website": "https://ndumekenya.com/about-us/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Agriculture and Agricultural Technology"
+      ],
+      "sourceUrls": ["https://ndumekenya.com/about-us/"]
+    },
+    {
+      "name": "East African Breweries PLC",
+      "country": "KE",
+      "description": "East African beverage producer with brewing and spirits operations across the region.",
+      "website": "https://www.eabl.com/our-business",
+      "industryNames": ["Manufacturing and Industrial Production", "Food and Beverage Processing"],
+      "sourceUrls": ["https://www.eabl.com/our-business"]
+    },
+    {
+      "name": "Bakhresa Food Products Limited",
+      "country": "TZ",
+      "description": "Tanzanian manufacturer and distributor of food and beverage products under the Azam and Uhai brands.",
+      "website": "https://bakhresa.com/bakhresa-food-products-ltd/",
+      "industryNames": ["Manufacturing and Industrial Production", "Food and Beverage Processing"],
+      "sourceUrls": ["https://bakhresa.com/bakhresa-food-products-ltd/"]
+    },
+    {
+      "name": "Geita Gold Mining Limited",
+      "country": "TZ",
+      "description": "Gold mining company operating the Geita mine in north-western Tanzania.",
+      "website": "https://www.geitamine.com/about/",
+      "industryNames": ["Mining and Mineral Processing"],
+      "sourceUrls": ["https://www.geitamine.com/about/"]
+    },
+    {
+      "name": "Devki Steel Mills Limited",
+      "country": "KE",
+      "description": "Kenyan steel manufacturer producing construction and industrial steel products.",
+      "website": "https://devkisteel.com/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Metals and Construction Materials"
+      ],
+      "sourceUrls": ["https://devkisteel.com/"]
+    },
+    {
+      "name": "Roofings Group",
+      "country": "UG",
+      "description": "Ugandan manufacturing group producing steel construction materials.",
+      "website": "https://roofingsgroup.com/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Metals and Construction Materials"
+      ],
+      "sourceUrls": [
+        "https://roofingsgroup.com/wp-content/uploads/2023/10/2022-Sustainability-Report-web.pdf"
+      ]
+    },
+    {
+      "name": "CIMERWA PLC",
+      "country": "RW",
+      "description": "Rwandan cement producer supplying cement for building and infrastructure projects.",
+      "website": "https://cimerwa.rw/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Metals and Construction Materials"
+      ],
+      "sourceUrls": ["https://cimerwa.rw/"]
+    },
+    {
+      "name": "Crown Paints Kenya PLC",
+      "country": "KE",
+      "description": "Kenyan manufacturer of decorative, automotive, industrial and protective paints and related coatings.",
+      "website": "https://www.crownpaints.co.ke/public/about?tab=report",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Chemicals, Plastics and Process Manufacturing"
+      ],
+      "sourceUrls": ["https://www.crownpaints.co.ke/public/about?tab=report"]
+    },
+    {
+      "name": "Dawa Life Sciences",
+      "country": "KE",
+      "description": "Kenyan life sciences business manufacturing pharmaceuticals and animal health products.",
+      "website": "https://dawalifesciences.com/manufacturing/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Pharmaceuticals and Biotechnology"
+      ],
+      "sourceUrls": ["https://dawalifesciences.com/manufacturing/"]
+    },
+    {
+      "name": "Cosmos Limited",
+      "country": "KE",
+      "description": "Kenyan pharmaceutical manufacturer supplying medicines to East and Central African markets.",
+      "website": "https://www.cosmos-pharm.com/about/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Pharmaceuticals and Biotechnology"
+      ],
+      "sourceUrls": ["https://www.cosmos-pharm.com/about/"]
+    },
+    {
+      "name": "Crown Healthcare",
+      "country": "KE",
+      "description": "Medical equipment and healthcare solutions provider offering installation and biomedical engineering support.",
+      "website": "https://www.crownkenya.com/",
+      "industryNames": ["Healthcare and Medical Devices"],
+      "sourceUrls": ["https://www.crownkenya.com/"]
+    },
+    {
+      "name": "Kenya Airways",
+      "country": "KE",
+      "description": "Kenyan airline operating an aircraft maintenance, repair and overhaul centre in Nairobi.",
+      "website": "https://corporate.kenya-airways.com/en/maintenance-repair-and-overhaul-mro/",
+      "industryNames": [
+        "Aviation and Aerospace",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://corporate.kenya-airways.com/en/maintenance-repair-and-overhaul-mro/"]
+    },
+    {
+      "name": "RwandAir",
+      "country": "RW",
+      "description": "Rwandan airline providing passenger and cargo air transport from its Kigali hub.",
+      "website": "https://www.rwandair.com/us-en/about",
+      "industryNames": ["Aviation and Aerospace"],
+      "sourceUrls": ["https://www.rwandair.com/us-en/about"]
+    },
+    {
+      "name": "Kenya Shipyards Limited",
+      "country": "KE",
+      "description": "Kenyan shipbuilder providing vessel construction, repair, maintenance and other maritime services.",
+      "website": "https://kenyashipyards.co.ke/about/",
+      "industryNames": ["Maritime, Ports and Shipbuilding"],
+      "sourceUrls": ["https://kenyashipyards.co.ke/about/"]
+    },
+    {
+      "name": "Mitchell Cotts Kenya",
+      "country": "KE",
+      "description": "Logistics provider offering freight handling, warehousing, distribution and project cargo services.",
+      "website": "https://www.mitchellcottsgroup.com/kenya/",
+      "industryNames": ["Logistics, Warehousing and Supply Chain"],
+      "sourceUrls": ["https://www.mitchellcottsgroup.com/kenya/"]
+    },
+    {
+      "name": "Rivatex East Africa Limited",
+      "country": "KE",
+      "description": "Kenyan textile manufacturer converting cotton into yarn, fabric and garments.",
+      "website": "https://rivatex.ecitizen.go.ke/",
+      "industryNames": [
+        "Manufacturing and Industrial Production",
+        "Textiles, Apparel and Leather Manufacturing"
+      ],
+      "sourceUrls": ["https://rivatex.ecitizen.go.ke/"]
+    },
+    {
+      "name": "East African Packaging Industries Limited",
+      "country": "KE",
+      "description": "Kenyan manufacturer designing and producing corrugated packaging solutions.",
+      "website": "https://www.eapi.co.ke/",
+      "industryNames": ["Manufacturing and Industrial Production", "Paper, Printing and Packaging"],
+      "sourceUrls": ["https://www.eapi.co.ke/"]
+    },
+    {
+      "name": "Securex Agencies",
+      "country": "KE",
+      "description": "East African security provider offering technology-based security systems and services.",
+      "website": "https://securexafrica.com/",
+      "industryNames": ["Defence and Security Technology"],
+      "sourceUrls": ["https://securexafrica.com/"]
+    },
+    {
+      "name": "Kenya Industrial Research and Development Institute (KIRDI)",
+      "country": "KE",
+      "description": "Public industrial research institute providing engineering research, equipment development, fabrication and technical support.",
+      "website": "https://www.kirdi.go.ke/",
+      "industryNames": [
+        "Engineering Consultancy, Testing and Technical Services",
+        "Education, Research and Development"
+      ],
+      "sourceUrls": ["https://www.kirdi.go.ke/"]
+    },
+    {
+      "name": "SGS Kenya",
+      "country": "KE",
+      "description": "Testing, inspection and certification provider serving industrial assets, materials and management systems.",
+      "website": "https://www.sgs.com/en-ke/our-company/about-sgs/sgs-in-kenya",
+      "industryNames": ["Engineering Consultancy, Testing and Technical Services"],
+      "sourceUrls": ["https://www.sgs.com/en-ke/our-company/about-sgs/sgs-in-kenya"]
+    },
+    {
+      "name": "Safaricom PLC",
+      "country": "KE",
+      "description": "Kenyan telecommunications operator providing mobile connectivity and digital services.",
+      "website": "https://www.safaricom.co.ke/",
+      "industryNames": ["Telecommunications and Networking"],
+      "sourceUrls": [
+        "https://www.safaricom.co.ke/annualreport_2024/wp-content/uploads/2024/07/safaricom-annual-report.pdf"
+      ]
+    },
+    {
+      "name": "MTN Uganda",
+      "country": "UG",
+      "description": "Ugandan telecommunications operator providing voice, data, digital and mobile financial services.",
+      "website": "https://www.mtn.co.ug/about-mtn/",
+      "industryNames": ["Telecommunications and Networking"],
+      "sourceUrls": ["https://www.mtn.co.ug/about-mtn/"]
+    },
+    {
+      "name": "Liquid Intelligent Technologies Kenya",
+      "country": "KE",
+      "description": "Data communications and digital infrastructure provider offering connectivity, infrastructure and co-location services.",
+      "website": "https://liquid.tech/local-offices/country/kenya/",
+      "industryNames": [
+        "Telecommunications and Networking",
+        "Software, Computing and Digital Infrastructure"
+      ],
+      "sourceUrls": ["https://liquid.tech/local-offices/country/kenya/"]
+    },
+    {
+      "name": "National Water and Sewerage Corporation",
+      "country": "UG",
+      "description": "Ugandan public utility providing water treatment, distribution, sewerage and utility consultancy services.",
+      "website": "https://www.nwsc.co.ug/about-the-corporation/",
+      "industryNames": [
+        "Water, Wastewater and Sanitation",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://www.nwsc.co.ug/about-the-corporation/"]
+    },
+    {
+      "name": "AKS East Africa",
+      "country": "KE",
+      "description": "Nairobi engineering business delivering fibre and power networks, renewable installations and industrial equipment services.",
+      "website": "https://www.aksea.co.ke/",
+      "industryNames": [
+        "Energy and Power",
+        "Telecommunications and Networking",
+        "Engineering Consultancy, Testing and Technical Services"
+      ],
+      "sourceUrls": ["https://www.aksea.co.ke/"]
+    },
+    {
+      "name": "Telkom Kenya",
+      "country": "KE",
+      "description": "Kenyan telecommunications company providing voice, data connectivity and fibre network services.",
+      "website": "https://telkom.co.ke/about-us/who-we-are/",
+      "industryNames": ["Telecommunications and Networking"],
+      "sourceUrls": ["https://telkom.co.ke/about-us/who-we-are/"]
+    },
+    {
+      "name": "Karebe Gold Mining Limited",
+      "country": "KE",
+      "description": "Gold mining business operating mines in western Kenya.",
+      "website": "https://karebe.com/",
+      "industryNames": ["Mining and Mineral Processing"],
+      "sourceUrls": ["https://karebe.com/"]
+    }
+  ]
+}

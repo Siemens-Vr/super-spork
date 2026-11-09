@@ -40,6 +40,10 @@ export type CompetencyFrameworkMinAggregateOutputType = {
   version: number | null
   title: string | null
   approved: boolean | null
+  scope: $Enums.RequirementScope | null
+  industryId: string | null
+  companyId: string | null
+  courseName: string | null
   createdAt: Date | null
 }
 
@@ -49,6 +53,10 @@ export type CompetencyFrameworkMaxAggregateOutputType = {
   version: number | null
   title: string | null
   approved: boolean | null
+  scope: $Enums.RequirementScope | null
+  industryId: string | null
+  companyId: string | null
+  courseName: string | null
   createdAt: Date | null
 }
 
@@ -58,6 +66,10 @@ export type CompetencyFrameworkCountAggregateOutputType = {
   version: number
   title: number
   approved: number
+  scope: number
+  industryId: number
+  companyId: number
+  courseName: number
   createdAt: number
   _all: number
 }
@@ -77,6 +89,10 @@ export type CompetencyFrameworkMinAggregateInputType = {
   version?: true
   title?: true
   approved?: true
+  scope?: true
+  industryId?: true
+  companyId?: true
+  courseName?: true
   createdAt?: true
 }
 
@@ -86,6 +102,10 @@ export type CompetencyFrameworkMaxAggregateInputType = {
   version?: true
   title?: true
   approved?: true
+  scope?: true
+  industryId?: true
+  companyId?: true
+  courseName?: true
   createdAt?: true
 }
 
@@ -95,6 +115,10 @@ export type CompetencyFrameworkCountAggregateInputType = {
   version?: true
   title?: true
   approved?: true
+  scope?: true
+  industryId?: true
+  companyId?: true
+  courseName?: true
   createdAt?: true
   _all?: true
 }
@@ -191,6 +215,10 @@ export type CompetencyFrameworkGroupByOutputType = {
   version: number
   title: string
   approved: boolean
+  scope: $Enums.RequirementScope
+  industryId: string | null
+  companyId: string | null
+  courseName: string | null
   createdAt: Date
   _count: CompetencyFrameworkCountAggregateOutputType | null
   _avg: CompetencyFrameworkAvgAggregateOutputType | null
@@ -223,8 +251,14 @@ export type CompetencyFrameworkWhereInput = {
   version?: Prisma.IntFilter<"CompetencyFramework"> | number
   title?: Prisma.StringFilter<"CompetencyFramework"> | string
   approved?: Prisma.BoolFilter<"CompetencyFramework"> | boolean
+  scope?: Prisma.EnumRequirementScopeFilter<"CompetencyFramework"> | $Enums.RequirementScope
+  industryId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  companyId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  courseName?: Prisma.StringNullableFilter<"CompetencyFramework"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetencyFramework"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
+  industry?: Prisma.XOR<Prisma.IndustryNullableScalarRelationFilter, Prisma.IndustryWhereInput> | null
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   competencies?: Prisma.FrameworkCompetencyListRelationFilter
   blueprints?: Prisma.AssessmentBlueprintListRelationFilter
 }
@@ -235,8 +269,14 @@ export type CompetencyFrameworkOrderByWithRelationInput = {
   version?: Prisma.SortOrder
   title?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  industryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   jobRole?: Prisma.JobRoleOrderByWithRelationInput
+  industry?: Prisma.IndustryOrderByWithRelationInput
+  company?: Prisma.CompanyOrderByWithRelationInput
   competencies?: Prisma.FrameworkCompetencyOrderByRelationAggregateInput
   blueprints?: Prisma.AssessmentBlueprintOrderByRelationAggregateInput
 }
@@ -251,8 +291,14 @@ export type CompetencyFrameworkWhereUniqueInput = Prisma.AtLeast<{
   version?: Prisma.IntFilter<"CompetencyFramework"> | number
   title?: Prisma.StringFilter<"CompetencyFramework"> | string
   approved?: Prisma.BoolFilter<"CompetencyFramework"> | boolean
+  scope?: Prisma.EnumRequirementScopeFilter<"CompetencyFramework"> | $Enums.RequirementScope
+  industryId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  companyId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  courseName?: Prisma.StringNullableFilter<"CompetencyFramework"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CompetencyFramework"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
+  industry?: Prisma.XOR<Prisma.IndustryNullableScalarRelationFilter, Prisma.IndustryWhereInput> | null
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   competencies?: Prisma.FrameworkCompetencyListRelationFilter
   blueprints?: Prisma.AssessmentBlueprintListRelationFilter
 }, "id" | "jobRoleId_version">
@@ -263,6 +309,10 @@ export type CompetencyFrameworkOrderByWithAggregationInput = {
   version?: Prisma.SortOrder
   title?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  industryId?: Prisma.SortOrderInput | Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  courseName?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CompetencyFrameworkCountOrderByAggregateInput
   _avg?: Prisma.CompetencyFrameworkAvgOrderByAggregateInput
@@ -280,6 +330,10 @@ export type CompetencyFrameworkScalarWhereWithAggregatesInput = {
   version?: Prisma.IntWithAggregatesFilter<"CompetencyFramework"> | number
   title?: Prisma.StringWithAggregatesFilter<"CompetencyFramework"> | string
   approved?: Prisma.BoolWithAggregatesFilter<"CompetencyFramework"> | boolean
+  scope?: Prisma.EnumRequirementScopeWithAggregatesFilter<"CompetencyFramework"> | $Enums.RequirementScope
+  industryId?: Prisma.UuidNullableWithAggregatesFilter<"CompetencyFramework"> | string | null
+  companyId?: Prisma.UuidNullableWithAggregatesFilter<"CompetencyFramework"> | string | null
+  courseName?: Prisma.StringNullableWithAggregatesFilter<"CompetencyFramework"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CompetencyFramework"> | Date | string
 }
 
@@ -288,8 +342,12 @@ export type CompetencyFrameworkCreateInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutFrameworksInput
+  industry?: Prisma.IndustryCreateNestedOneWithoutRequirementFrameworksInput
+  company?: Prisma.CompanyCreateNestedOneWithoutRequirementFrameworksInput
   competencies?: Prisma.FrameworkCompetencyCreateNestedManyWithoutFrameworkInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutFrameworkInput
 }
@@ -300,6 +358,10 @@ export type CompetencyFrameworkUncheckedCreateInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedCreateNestedManyWithoutFrameworkInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutFrameworkInput
@@ -310,8 +372,12 @@ export type CompetencyFrameworkUpdateInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutFrameworksNestedInput
+  industry?: Prisma.IndustryUpdateOneWithoutRequirementFrameworksNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutRequirementFrameworksNestedInput
   competencies?: Prisma.FrameworkCompetencyUpdateManyWithoutFrameworkNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutFrameworkNestedInput
 }
@@ -322,6 +388,10 @@ export type CompetencyFrameworkUncheckedUpdateInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkNestedInput
@@ -333,6 +403,10 @@ export type CompetencyFrameworkCreateManyInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
 }
 
@@ -341,6 +415,8 @@ export type CompetencyFrameworkUpdateManyMutationInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -350,6 +426,10 @@ export type CompetencyFrameworkUncheckedUpdateManyInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -374,6 +454,10 @@ export type CompetencyFrameworkCountOrderByAggregateInput = {
   version?: Prisma.SortOrder
   title?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  industryId?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -387,6 +471,10 @@ export type CompetencyFrameworkMaxOrderByAggregateInput = {
   version?: Prisma.SortOrder
   title?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  industryId?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -396,6 +484,10 @@ export type CompetencyFrameworkMinOrderByAggregateInput = {
   version?: Prisma.SortOrder
   title?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  scope?: Prisma.SortOrder
+  industryId?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+  courseName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -406,6 +498,90 @@ export type CompetencyFrameworkSumOrderByAggregateInput = {
 export type CompetencyFrameworkScalarRelationFilter = {
   is?: Prisma.CompetencyFrameworkWhereInput
   isNot?: Prisma.CompetencyFrameworkWhereInput
+}
+
+export type CompetencyFrameworkCreateNestedManyWithoutIndustryInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput> | Prisma.CompetencyFrameworkCreateWithoutIndustryInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyIndustryInputEnvelope
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+}
+
+export type CompetencyFrameworkUncheckedCreateNestedManyWithoutIndustryInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput> | Prisma.CompetencyFrameworkCreateWithoutIndustryInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyIndustryInputEnvelope
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+}
+
+export type CompetencyFrameworkUpdateManyWithoutIndustryNestedInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput> | Prisma.CompetencyFrameworkCreateWithoutIndustryInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput[]
+  upsert?: Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutIndustryInput | Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutIndustryInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyIndustryInputEnvelope
+  set?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  disconnect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  delete?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  update?: Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutIndustryInput | Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutIndustryInput[]
+  updateMany?: Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutIndustryInput | Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutIndustryInput[]
+  deleteMany?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
+}
+
+export type CompetencyFrameworkUncheckedUpdateManyWithoutIndustryNestedInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput> | Prisma.CompetencyFrameworkCreateWithoutIndustryInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutIndustryInput[]
+  upsert?: Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutIndustryInput | Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutIndustryInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyIndustryInputEnvelope
+  set?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  disconnect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  delete?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  update?: Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutIndustryInput | Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutIndustryInput[]
+  updateMany?: Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutIndustryInput | Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutIndustryInput[]
+  deleteMany?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
+}
+
+export type CompetencyFrameworkCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput> | Prisma.CompetencyFrameworkCreateWithoutCompanyInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyCompanyInputEnvelope
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+}
+
+export type CompetencyFrameworkUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput> | Prisma.CompetencyFrameworkCreateWithoutCompanyInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyCompanyInputEnvelope
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+}
+
+export type CompetencyFrameworkUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput> | Prisma.CompetencyFrameworkCreateWithoutCompanyInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutCompanyInput | Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyCompanyInputEnvelope
+  set?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  disconnect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  delete?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  update?: Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutCompanyInput | Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutCompanyInput | Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
+}
+
+export type CompetencyFrameworkUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput> | Prisma.CompetencyFrameworkCreateWithoutCompanyInput[] | Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput | Prisma.CompetencyFrameworkCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutCompanyInput | Prisma.CompetencyFrameworkUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.CompetencyFrameworkCreateManyCompanyInputEnvelope
+  set?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  disconnect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  delete?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  connect?: Prisma.CompetencyFrameworkWhereUniqueInput | Prisma.CompetencyFrameworkWhereUniqueInput[]
+  update?: Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutCompanyInput | Prisma.CompetencyFrameworkUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutCompanyInput | Prisma.CompetencyFrameworkUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
 }
 
 export type CompetencyFrameworkCreateNestedManyWithoutJobRoleInput = {
@@ -450,6 +626,10 @@ export type CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleNestedInput = {
   deleteMany?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
 }
 
+export type EnumRequirementScopeFieldUpdateOperationsInput = {
+  set?: $Enums.RequirementScope
+}
+
 export type CompetencyFrameworkCreateNestedOneWithoutCompetenciesInput = {
   create?: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompetenciesInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompetenciesInput>
   connectOrCreate?: Prisma.CompetencyFrameworkCreateOrConnectWithoutCompetenciesInput
@@ -478,12 +658,140 @@ export type CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompetencyFrameworkUpdateToOneWithWhereWithoutBlueprintsInput, Prisma.CompetencyFrameworkUpdateWithoutBlueprintsInput>, Prisma.CompetencyFrameworkUncheckedUpdateWithoutBlueprintsInput>
 }
 
+export type CompetencyFrameworkCreateWithoutIndustryInput = {
+  id?: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
+  createdAt?: Date | string
+  jobRole: Prisma.JobRoleCreateNestedOneWithoutFrameworksInput
+  company?: Prisma.CompanyCreateNestedOneWithoutRequirementFrameworksInput
+  competencies?: Prisma.FrameworkCompetencyCreateNestedManyWithoutFrameworkInput
+  blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutFrameworkInput
+}
+
+export type CompetencyFrameworkUncheckedCreateWithoutIndustryInput = {
+  id?: string
+  jobRoleId: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  companyId?: string | null
+  courseName?: string | null
+  createdAt?: Date | string
+  competencies?: Prisma.FrameworkCompetencyUncheckedCreateNestedManyWithoutFrameworkInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutFrameworkInput
+}
+
+export type CompetencyFrameworkCreateOrConnectWithoutIndustryInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput>
+}
+
+export type CompetencyFrameworkCreateManyIndustryInputEnvelope = {
+  data: Prisma.CompetencyFrameworkCreateManyIndustryInput | Prisma.CompetencyFrameworkCreateManyIndustryInput[]
+  skipDuplicates?: boolean
+}
+
+export type CompetencyFrameworkUpsertWithWhereUniqueWithoutIndustryInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  update: Prisma.XOR<Prisma.CompetencyFrameworkUpdateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedUpdateWithoutIndustryInput>
+  create: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutIndustryInput>
+}
+
+export type CompetencyFrameworkUpdateWithWhereUniqueWithoutIndustryInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  data: Prisma.XOR<Prisma.CompetencyFrameworkUpdateWithoutIndustryInput, Prisma.CompetencyFrameworkUncheckedUpdateWithoutIndustryInput>
+}
+
+export type CompetencyFrameworkUpdateManyWithWhereWithoutIndustryInput = {
+  where: Prisma.CompetencyFrameworkScalarWhereInput
+  data: Prisma.XOR<Prisma.CompetencyFrameworkUpdateManyMutationInput, Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutIndustryInput>
+}
+
+export type CompetencyFrameworkScalarWhereInput = {
+  AND?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
+  OR?: Prisma.CompetencyFrameworkScalarWhereInput[]
+  NOT?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
+  id?: Prisma.UuidFilter<"CompetencyFramework"> | string
+  jobRoleId?: Prisma.UuidFilter<"CompetencyFramework"> | string
+  version?: Prisma.IntFilter<"CompetencyFramework"> | number
+  title?: Prisma.StringFilter<"CompetencyFramework"> | string
+  approved?: Prisma.BoolFilter<"CompetencyFramework"> | boolean
+  scope?: Prisma.EnumRequirementScopeFilter<"CompetencyFramework"> | $Enums.RequirementScope
+  industryId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  companyId?: Prisma.UuidNullableFilter<"CompetencyFramework"> | string | null
+  courseName?: Prisma.StringNullableFilter<"CompetencyFramework"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"CompetencyFramework"> | Date | string
+}
+
+export type CompetencyFrameworkCreateWithoutCompanyInput = {
+  id?: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
+  createdAt?: Date | string
+  jobRole: Prisma.JobRoleCreateNestedOneWithoutFrameworksInput
+  industry?: Prisma.IndustryCreateNestedOneWithoutRequirementFrameworksInput
+  competencies?: Prisma.FrameworkCompetencyCreateNestedManyWithoutFrameworkInput
+  blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutFrameworkInput
+}
+
+export type CompetencyFrameworkUncheckedCreateWithoutCompanyInput = {
+  id?: string
+  jobRoleId: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  courseName?: string | null
+  createdAt?: Date | string
+  competencies?: Prisma.FrameworkCompetencyUncheckedCreateNestedManyWithoutFrameworkInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutFrameworkInput
+}
+
+export type CompetencyFrameworkCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput>
+}
+
+export type CompetencyFrameworkCreateManyCompanyInputEnvelope = {
+  data: Prisma.CompetencyFrameworkCreateManyCompanyInput | Prisma.CompetencyFrameworkCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type CompetencyFrameworkUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  update: Prisma.XOR<Prisma.CompetencyFrameworkUpdateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.CompetencyFrameworkCreateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedCreateWithoutCompanyInput>
+}
+
+export type CompetencyFrameworkUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.CompetencyFrameworkWhereUniqueInput
+  data: Prisma.XOR<Prisma.CompetencyFrameworkUpdateWithoutCompanyInput, Prisma.CompetencyFrameworkUncheckedUpdateWithoutCompanyInput>
+}
+
+export type CompetencyFrameworkUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.CompetencyFrameworkScalarWhereInput
+  data: Prisma.XOR<Prisma.CompetencyFrameworkUpdateManyMutationInput, Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutCompanyInput>
+}
+
 export type CompetencyFrameworkCreateWithoutJobRoleInput = {
   id?: string
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
   createdAt?: Date | string
+  industry?: Prisma.IndustryCreateNestedOneWithoutRequirementFrameworksInput
+  company?: Prisma.CompanyCreateNestedOneWithoutRequirementFrameworksInput
   competencies?: Prisma.FrameworkCompetencyCreateNestedManyWithoutFrameworkInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutFrameworkInput
 }
@@ -493,6 +801,10 @@ export type CompetencyFrameworkUncheckedCreateWithoutJobRoleInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedCreateNestedManyWithoutFrameworkInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutFrameworkInput
@@ -524,25 +836,17 @@ export type CompetencyFrameworkUpdateManyWithWhereWithoutJobRoleInput = {
   data: Prisma.XOR<Prisma.CompetencyFrameworkUpdateManyMutationInput, Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleInput>
 }
 
-export type CompetencyFrameworkScalarWhereInput = {
-  AND?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
-  OR?: Prisma.CompetencyFrameworkScalarWhereInput[]
-  NOT?: Prisma.CompetencyFrameworkScalarWhereInput | Prisma.CompetencyFrameworkScalarWhereInput[]
-  id?: Prisma.UuidFilter<"CompetencyFramework"> | string
-  jobRoleId?: Prisma.UuidFilter<"CompetencyFramework"> | string
-  version?: Prisma.IntFilter<"CompetencyFramework"> | number
-  title?: Prisma.StringFilter<"CompetencyFramework"> | string
-  approved?: Prisma.BoolFilter<"CompetencyFramework"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"CompetencyFramework"> | Date | string
-}
-
 export type CompetencyFrameworkCreateWithoutCompetenciesInput = {
   id?: string
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutFrameworksInput
+  industry?: Prisma.IndustryCreateNestedOneWithoutRequirementFrameworksInput
+  company?: Prisma.CompanyCreateNestedOneWithoutRequirementFrameworksInput
   blueprints?: Prisma.AssessmentBlueprintCreateNestedManyWithoutFrameworkInput
 }
 
@@ -552,6 +856,10 @@ export type CompetencyFrameworkUncheckedCreateWithoutCompetenciesInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
   blueprints?: Prisma.AssessmentBlueprintUncheckedCreateNestedManyWithoutFrameworkInput
 }
@@ -577,8 +885,12 @@ export type CompetencyFrameworkUpdateWithoutCompetenciesInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutFrameworksNestedInput
+  industry?: Prisma.IndustryUpdateOneWithoutRequirementFrameworksNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutRequirementFrameworksNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutFrameworkNestedInput
 }
 
@@ -588,6 +900,10 @@ export type CompetencyFrameworkUncheckedUpdateWithoutCompetenciesInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkNestedInput
 }
@@ -597,8 +913,12 @@ export type CompetencyFrameworkCreateWithoutBlueprintsInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  courseName?: string | null
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutFrameworksInput
+  industry?: Prisma.IndustryCreateNestedOneWithoutRequirementFrameworksInput
+  company?: Prisma.CompanyCreateNestedOneWithoutRequirementFrameworksInput
   competencies?: Prisma.FrameworkCompetencyCreateNestedManyWithoutFrameworkInput
 }
 
@@ -608,6 +928,10 @@ export type CompetencyFrameworkUncheckedCreateWithoutBlueprintsInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedCreateNestedManyWithoutFrameworkInput
 }
@@ -633,8 +957,12 @@ export type CompetencyFrameworkUpdateWithoutBlueprintsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutFrameworksNestedInput
+  industry?: Prisma.IndustryUpdateOneWithoutRequirementFrameworksNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutRequirementFrameworksNestedInput
   competencies?: Prisma.FrameworkCompetencyUpdateManyWithoutFrameworkNestedInput
 }
 
@@ -644,8 +972,116 @@ export type CompetencyFrameworkUncheckedUpdateWithoutBlueprintsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput
+}
+
+export type CompetencyFrameworkCreateManyIndustryInput = {
+  id?: string
+  jobRoleId: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  companyId?: string | null
+  courseName?: string | null
+  createdAt?: Date | string
+}
+
+export type CompetencyFrameworkUpdateWithoutIndustryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutFrameworksNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutRequirementFrameworksNestedInput
+  competencies?: Prisma.FrameworkCompetencyUpdateManyWithoutFrameworkNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutFrameworkNestedInput
+}
+
+export type CompetencyFrameworkUncheckedUpdateWithoutIndustryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  competencies?: Prisma.FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkNestedInput
+}
+
+export type CompetencyFrameworkUncheckedUpdateManyWithoutIndustryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CompetencyFrameworkCreateManyCompanyInput = {
+  id?: string
+  jobRoleId: string
+  version: number
+  title: string
+  approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  courseName?: string | null
+  createdAt?: Date | string
+}
+
+export type CompetencyFrameworkUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutFrameworksNestedInput
+  industry?: Prisma.IndustryUpdateOneWithoutRequirementFrameworksNestedInput
+  competencies?: Prisma.FrameworkCompetencyUpdateManyWithoutFrameworkNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutFrameworkNestedInput
+}
+
+export type CompetencyFrameworkUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  competencies?: Prisma.FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput
+  blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkNestedInput
+}
+
+export type CompetencyFrameworkUncheckedUpdateManyWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  jobRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CompetencyFrameworkCreateManyJobRoleInput = {
@@ -653,6 +1089,10 @@ export type CompetencyFrameworkCreateManyJobRoleInput = {
   version: number
   title: string
   approved?: boolean
+  scope?: $Enums.RequirementScope
+  industryId?: string | null
+  companyId?: string | null
+  courseName?: string | null
   createdAt?: Date | string
 }
 
@@ -661,7 +1101,11 @@ export type CompetencyFrameworkUpdateWithoutJobRoleInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  industry?: Prisma.IndustryUpdateOneWithoutRequirementFrameworksNestedInput
+  company?: Prisma.CompanyUpdateOneWithoutRequirementFrameworksNestedInput
   competencies?: Prisma.FrameworkCompetencyUpdateManyWithoutFrameworkNestedInput
   blueprints?: Prisma.AssessmentBlueprintUpdateManyWithoutFrameworkNestedInput
 }
@@ -671,6 +1115,10 @@ export type CompetencyFrameworkUncheckedUpdateWithoutJobRoleInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   competencies?: Prisma.FrameworkCompetencyUncheckedUpdateManyWithoutFrameworkNestedInput
   blueprints?: Prisma.AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkNestedInput
@@ -681,6 +1129,10 @@ export type CompetencyFrameworkUncheckedUpdateManyWithoutJobRoleInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   title?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scope?: Prisma.EnumRequirementScopeFieldUpdateOperationsInput | $Enums.RequirementScope
+  industryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -730,8 +1182,14 @@ export type CompetencyFrameworkSelect<ExtArgs extends runtime.Types.Extensions.I
   version?: boolean
   title?: boolean
   approved?: boolean
+  scope?: boolean
+  industryId?: boolean
+  companyId?: boolean
+  courseName?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
   competencies?: boolean | Prisma.CompetencyFramework$competenciesArgs<ExtArgs>
   blueprints?: boolean | Prisma.CompetencyFramework$blueprintsArgs<ExtArgs>
   _count?: boolean | Prisma.CompetencyFrameworkCountOutputTypeDefaultArgs<ExtArgs>
@@ -743,8 +1201,14 @@ export type CompetencyFrameworkSelectCreateManyAndReturn<ExtArgs extends runtime
   version?: boolean
   title?: boolean
   approved?: boolean
+  scope?: boolean
+  industryId?: boolean
+  companyId?: boolean
+  courseName?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
 }, ExtArgs["result"]["competencyFramework"]>
 
 export type CompetencyFrameworkSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -753,8 +1217,14 @@ export type CompetencyFrameworkSelectUpdateManyAndReturn<ExtArgs extends runtime
   version?: boolean
   title?: boolean
   approved?: boolean
+  scope?: boolean
+  industryId?: boolean
+  companyId?: boolean
+  courseName?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
 }, ExtArgs["result"]["competencyFramework"]>
 
 export type CompetencyFrameworkSelectScalar = {
@@ -763,27 +1233,39 @@ export type CompetencyFrameworkSelectScalar = {
   version?: boolean
   title?: boolean
   approved?: boolean
+  scope?: boolean
+  industryId?: boolean
+  companyId?: boolean
+  courseName?: boolean
   createdAt?: boolean
 }
 
-export type CompetencyFrameworkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "version" | "title" | "approved" | "createdAt", ExtArgs["result"]["competencyFramework"]>
+export type CompetencyFrameworkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "version" | "title" | "approved" | "scope" | "industryId" | "companyId" | "courseName" | "createdAt", ExtArgs["result"]["competencyFramework"]>
 export type CompetencyFrameworkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
   competencies?: boolean | Prisma.CompetencyFramework$competenciesArgs<ExtArgs>
   blueprints?: boolean | Prisma.CompetencyFramework$blueprintsArgs<ExtArgs>
   _count?: boolean | Prisma.CompetencyFrameworkCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompetencyFrameworkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
 }
 export type CompetencyFrameworkIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
+  industry?: boolean | Prisma.CompetencyFramework$industryArgs<ExtArgs>
+  company?: boolean | Prisma.CompetencyFramework$companyArgs<ExtArgs>
 }
 
 export type $CompetencyFrameworkPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CompetencyFramework"
   objects: {
     jobRole: Prisma.$JobRolePayload<ExtArgs>
+    industry: Prisma.$IndustryPayload<ExtArgs> | null
+    company: Prisma.$CompanyPayload<ExtArgs> | null
     competencies: Prisma.$FrameworkCompetencyPayload<ExtArgs>[]
     blueprints: Prisma.$AssessmentBlueprintPayload<ExtArgs>[]
   }
@@ -793,6 +1275,10 @@ export type $CompetencyFrameworkPayload<ExtArgs extends runtime.Types.Extensions
     version: number
     title: string
     approved: boolean
+    scope: $Enums.RequirementScope
+    industryId: string | null
+    companyId: string | null
+    courseName: string | null
     createdAt: Date
   }, ExtArgs["result"]["competencyFramework"]>
   composites: {}
@@ -1189,6 +1675,8 @@ readonly fields: CompetencyFrameworkFieldRefs;
 export interface Prisma__CompetencyFrameworkClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   jobRole<T extends Prisma.JobRoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobRoleDefaultArgs<ExtArgs>>): Prisma.Prisma__JobRoleClient<runtime.Types.Result.GetResult<Prisma.$JobRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  industry<T extends Prisma.CompetencyFramework$industryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetencyFramework$industryArgs<ExtArgs>>): Prisma.Prisma__IndustryClient<runtime.Types.Result.GetResult<Prisma.$IndustryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  company<T extends Prisma.CompetencyFramework$companyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetencyFramework$companyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   competencies<T extends Prisma.CompetencyFramework$competenciesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetencyFramework$competenciesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FrameworkCompetencyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blueprints<T extends Prisma.CompetencyFramework$blueprintsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompetencyFramework$blueprintsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentBlueprintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1225,6 +1713,10 @@ export interface CompetencyFrameworkFieldRefs {
   readonly version: Prisma.FieldRef<"CompetencyFramework", 'Int'>
   readonly title: Prisma.FieldRef<"CompetencyFramework", 'String'>
   readonly approved: Prisma.FieldRef<"CompetencyFramework", 'Boolean'>
+  readonly scope: Prisma.FieldRef<"CompetencyFramework", 'RequirementScope'>
+  readonly industryId: Prisma.FieldRef<"CompetencyFramework", 'String'>
+  readonly companyId: Prisma.FieldRef<"CompetencyFramework", 'String'>
+  readonly courseName: Prisma.FieldRef<"CompetencyFramework", 'String'>
   readonly createdAt: Prisma.FieldRef<"CompetencyFramework", 'DateTime'>
 }
     
@@ -1624,6 +2116,44 @@ export type CompetencyFrameworkDeleteManyArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many CompetencyFrameworks to delete.
    */
   limit?: number
+}
+
+/**
+ * CompetencyFramework.industry
+ */
+export type CompetencyFramework$industryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Industry
+   */
+  select?: Prisma.IndustrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Industry
+   */
+  omit?: Prisma.IndustryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IndustryInclude<ExtArgs> | null
+  where?: Prisma.IndustryWhereInput
+}
+
+/**
+ * CompetencyFramework.company
+ */
+export type CompetencyFramework$companyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
 }
 
 /**

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>VML assessment development console</title>
+    <link rel="stylesheet" href="/dev/assessment-assets/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">VML NEXUS · Development only</p>
+        <h1>Take an assessment</h1>
+        <p>Test the booking, device setup and controlled interview flow with the actual backend.</p>
+      </header>
+      <p id="status" role="status" aria-live="polite">Loading your bookings…</p>
+      <section>
+        <h2>1. Select your booking</h2>
+        <label
+          >Assessment booking
+          <select id="bookings"></select
+        ></label>
+        <button id="reload">Refresh bookings</button>
+        <button id="preflight">Take Assessment</button>
+        <pre id="booking-info"></pre>
+      </section>
+      <section id="setup" hidden>
+        <h2>2. Equipment and privacy</h2>
+        <p id="privacy"></p>
+        <p id="policy"></p>
+        <p id="provider"></p>
+        <div class="devices">
+          <div>
+            <h3>Camera</h3>
+            <video
+              id="preview"
+              autoplay
+              muted
+              playsinline
+              aria-label="Local camera preview"
+            ></video>
+            <p id="camera-status">Not requested</p>
+            <label
+              >Camera
+              <select id="camera-select"></select></label
+            ><button id="camera">Enable camera preview</button
+            ><button id="stop-camera">Stop camera</button>
+          </div>
+          <div>
+            <h3>Microphone</h3>
+            <p id="microphone-status">Not requested</p>
+            <label
+              >Microphone
+              <select id="microphone-select"></select></label
+            ><button id="microphone">Enable microphone</button
+            ><button id="mute-microphone">Mute / unmute</button
+            ><button id="stop-microphone">Stop microphone</button
+            ><label>Input level <meter id="level" min="0" max="100" value="0"></meter></label
+            ><button id="mic-test">Record a 3-second local microphone test</button
+            ><button id="play-test" disabled>Play microphone test</button>
+            <p>Microphone tests remain in browser memory and are discarded on leaving.</p>
+          </div>
+        </div>
+        <h3>Speaker</h3>
+        <button id="speaker-test">Play speaker test</button
+        ><label><input id="speaker-confirmed" type="checkbox" /> I heard the test sound</label>
+        <p>
+          <label
+            >Interaction mode
+            <select id="mode">
+              <option value="TEXT">Text</option>
+              <option value="VOICE">Voice with transcript confirmation</option>
+            </select></label
+          >
+        </p>
+        <p>
+          <label
+            ><input id="privacy-ack" type="checkbox" /> I understand how media and transcripts are
+            processed</label
+          >
+        </p>
+        <p>
+          <label
+            ><input id="audio-consent" type="checkbox" /> I allow audio processing for voice input.
+            Browser recognition may transmit audio to the browser vendor; configured server
+            transcription sends audio to its configured provider. Raw audio is not retained by this
+            application.</label
+          >
+        </p>
+        <p>
+          <label
+            ><input id="start-confirmed" type="checkbox" /> I am ready to start this timed
+            assessment</label
+          >
+        </p>
+        <button id="start">Confirm and start assessment</button>
+        <p>
+          Video is never recorded or uploaded. Camera permission does not authorize recording.
+          Readiness checks are browser reports, not identity verification.
+        </p>
+      </section>
+      <section id="interview" hidden>
+        <h2>3. Assessment conversation</h2>
+        <p id="progress"></p>
+        <div id="messages" aria-live="polite"></div>
+        <button id="replay">Replay current prompt</button
+        ><label><input id="mute-ai" type="checkbox" /> Mute AI speech</label>
+        <p>
+          <button id="speak">Speak response</button
+          ><button id="finish-speaking" disabled>Finish speaking</button
+          ><span id="recording" role="status"></span>
+        </p>
+        <p id="partial"></p>
+        <label
+          >Review your transcript or type your answer
+          <textarea id="answer" rows="6" maxlength="12000"></textarea>
+        </label>
+        <p id="transcription-info"></p>
+        <label
+          ><input id="answer-confirmed" type="checkbox" /> This is my complete, confirmed
+          answer</label
+        >
+        <p>
+          <button id="submit">Submit confirmed response</button
+          ><button id="resume">Resume / reconnect</button
+          ><button id="results">View competency report</button>
+        </p>
+        <pre id="report"></pre>
+      </section>
+      <footer>
+        <button id="stop-devices">Stop all devices and audio</button> <a href="/docs/">Swagger</a>
+        <p>
+          Technical understanding is assessed. Accent, emotion, gaze and voice characteristics are
+          not scored. Final AI-proposed scores require an authorised assessor’s review.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="/dev/assessment-assets/app.mjs"></script>
+  </body>
+</html>

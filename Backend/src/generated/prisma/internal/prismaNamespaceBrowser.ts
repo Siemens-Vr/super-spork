@@ -63,6 +63,7 @@ export const ModelName = {
   AdminMfaCredential: 'AdminMfaCredential',
   AuditLog: 'AuditLog',
   Institution: 'Institution',
+  InstitutionAlias: 'InstitutionAlias',
   Document: 'Document',
   DocumentVerification: 'DocumentVerification',
   VerificationEvidence: 'VerificationEvidence',
@@ -74,9 +75,6 @@ export const ModelName = {
   CompanySuggestion: 'CompanySuggestion',
   JobRole: 'JobRole',
   JobRoleIndustry: 'JobRoleIndustry',
-  CareerPreference: 'CareerPreference',
-  IndustryPreference: 'IndustryPreference',
-  CompanyPreference: 'CompanyPreference',
   Competency: 'Competency',
   CompetencyFramework: 'CompetencyFramework',
   FrameworkCompetency: 'FrameworkCompetency',
@@ -84,9 +82,30 @@ export const ModelName = {
   AssessmentAvailability: 'AssessmentAvailability',
   AssessmentSlot: 'AssessmentSlot',
   AssessmentBooking: 'AssessmentBooking',
+  AssessmentTarget: 'AssessmentTarget',
+  AssessmentTargetIndustry: 'AssessmentTargetIndustry',
+  AssessmentTargetCompany: 'AssessmentTargetCompany',
+  AssessmentTargetQualification: 'AssessmentTargetQualification',
+  AssessmentAttempt: 'AssessmentAttempt',
+  AssessmentRequirement: 'AssessmentRequirement',
+  AssessmentCompetencyResult: 'AssessmentCompetencyResult',
+  LearningPlan: 'LearningPlan',
+  LearningPlanItem: 'LearningPlanItem',
   AssessmentBookingEvent: 'AssessmentBookingEvent',
   NotificationOutbox: 'NotificationOutbox',
-  RateLimitBucket: 'RateLimitBucket'
+  RateLimitBucket: 'RateLimitBucket',
+  AssessmentScenario: 'AssessmentScenario',
+  BlueprintScenario: 'BlueprintScenario',
+  AssessmentAccommodation: 'AssessmentAccommodation',
+  AssessmentInteractionSession: 'AssessmentInteractionSession',
+  AssessmentConversationMessage: 'AssessmentConversationMessage',
+  AssessmentResponse: 'AssessmentResponse',
+  AssessmentTranscription: 'AssessmentTranscription',
+  TranscriptCorrection: 'TranscriptCorrection',
+  AssessmentSpeech: 'AssessmentSpeech',
+  AssessmentSessionEvent: 'AssessmentSessionEvent',
+  AssessmentGraphCheckpoint: 'AssessmentGraphCheckpoint',
+  AssessmentGraphWrite: 'AssessmentGraphWrite'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -239,6 +258,9 @@ export const InstitutionScalarFieldEnum = {
   name: 'name',
   country: 'country',
   website: 'website',
+  type: 'type',
+  offersTvet: 'offersTvet',
+  sourceUrl: 'sourceUrl',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -247,11 +269,22 @@ export const InstitutionScalarFieldEnum = {
 export type InstitutionScalarFieldEnum = (typeof InstitutionScalarFieldEnum)[keyof typeof InstitutionScalarFieldEnum]
 
 
+export const InstitutionAliasScalarFieldEnum = {
+  id: 'id',
+  institutionId: 'institutionId',
+  name: 'name'
+} as const
+
+export type InstitutionAliasScalarFieldEnum = (typeof InstitutionAliasScalarFieldEnum)[keyof typeof InstitutionAliasScalarFieldEnum]
+
+
 export const DocumentScalarFieldEnum = {
   id: 'id',
   applicantId: 'applicantId',
   category: 'category',
   title: 'title',
+  courseName: 'courseName',
+  certificationName: 'certificationName',
   issuer: 'issuer',
   institutionId: 'institutionId',
   institutionName: 'institutionName',
@@ -393,34 +426,6 @@ export const JobRoleIndustryScalarFieldEnum = {
 export type JobRoleIndustryScalarFieldEnum = (typeof JobRoleIndustryScalarFieldEnum)[keyof typeof JobRoleIndustryScalarFieldEnum]
 
 
-export const CareerPreferenceScalarFieldEnum = {
-  id: 'id',
-  applicantId: 'applicantId',
-  primaryRoleId: 'primaryRoleId',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CareerPreferenceScalarFieldEnum = (typeof CareerPreferenceScalarFieldEnum)[keyof typeof CareerPreferenceScalarFieldEnum]
-
-
-export const IndustryPreferenceScalarFieldEnum = {
-  preferenceId: 'preferenceId',
-  industryId: 'industryId',
-  rank: 'rank'
-} as const
-
-export type IndustryPreferenceScalarFieldEnum = (typeof IndustryPreferenceScalarFieldEnum)[keyof typeof IndustryPreferenceScalarFieldEnum]
-
-
-export const CompanyPreferenceScalarFieldEnum = {
-  preferenceId: 'preferenceId',
-  companyId: 'companyId',
-  rank: 'rank'
-} as const
-
-export type CompanyPreferenceScalarFieldEnum = (typeof CompanyPreferenceScalarFieldEnum)[keyof typeof CompanyPreferenceScalarFieldEnum]
-
-
 export const CompetencyScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -437,6 +442,10 @@ export const CompetencyFrameworkScalarFieldEnum = {
   version: 'version',
   title: 'title',
   approved: 'approved',
+  scope: 'scope',
+  industryId: 'industryId',
+  companyId: 'companyId',
+  courseName: 'courseName',
   createdAt: 'createdAt'
 } as const
 
@@ -446,7 +455,10 @@ export type CompetencyFrameworkScalarFieldEnum = (typeof CompetencyFrameworkScal
 export const FrameworkCompetencyScalarFieldEnum = {
   frameworkId: 'frameworkId',
   competencyId: 'competencyId',
-  weight: 'weight'
+  weight: 'weight',
+  requiredScore: 'requiredScore',
+  learningObjective: 'learningObjective',
+  learningResources: 'learningResources'
 } as const
 
 export type FrameworkCompetencyScalarFieldEnum = (typeof FrameworkCompetencyScalarFieldEnum)[keyof typeof FrameworkCompetencyScalarFieldEnum]
@@ -463,6 +475,7 @@ export const AssessmentBlueprintScalarFieldEnum = {
   active: 'active',
   requiresAuthenticatedIdentity: 'requiresAuthenticatedIdentity',
   requiresAuthenticatedAcademic: 'requiresAuthenticatedAcademic',
+  interactionPolicy: 'interactionPolicy',
   createdAt: 'createdAt'
 } as const
 
@@ -500,6 +513,7 @@ export type AssessmentSlotScalarFieldEnum = (typeof AssessmentSlotScalarFieldEnu
 export const AssessmentBookingScalarFieldEnum = {
   id: 'id',
   applicantId: 'applicantId',
+  targetId: 'targetId',
   blueprintId: 'blueprintId',
   slotId: 'slotId',
   seat: 'seat',
@@ -512,6 +526,117 @@ export const AssessmentBookingScalarFieldEnum = {
 } as const
 
 export type AssessmentBookingScalarFieldEnum = (typeof AssessmentBookingScalarFieldEnum)[keyof typeof AssessmentBookingScalarFieldEnum]
+
+
+export const AssessmentTargetScalarFieldEnum = {
+  id: 'id',
+  applicantId: 'applicantId',
+  jobRoleId: 'jobRoleId',
+  status: 'status',
+  lockedAt: 'lockedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AssessmentTargetScalarFieldEnum = (typeof AssessmentTargetScalarFieldEnum)[keyof typeof AssessmentTargetScalarFieldEnum]
+
+
+export const AssessmentTargetIndustryScalarFieldEnum = {
+  targetId: 'targetId',
+  industryId: 'industryId',
+  rank: 'rank'
+} as const
+
+export type AssessmentTargetIndustryScalarFieldEnum = (typeof AssessmentTargetIndustryScalarFieldEnum)[keyof typeof AssessmentTargetIndustryScalarFieldEnum]
+
+
+export const AssessmentTargetCompanyScalarFieldEnum = {
+  targetId: 'targetId',
+  companyId: 'companyId',
+  rank: 'rank'
+} as const
+
+export type AssessmentTargetCompanyScalarFieldEnum = (typeof AssessmentTargetCompanyScalarFieldEnum)[keyof typeof AssessmentTargetCompanyScalarFieldEnum]
+
+
+export const AssessmentTargetQualificationScalarFieldEnum = {
+  targetId: 'targetId',
+  documentId: 'documentId'
+} as const
+
+export type AssessmentTargetQualificationScalarFieldEnum = (typeof AssessmentTargetQualificationScalarFieldEnum)[keyof typeof AssessmentTargetQualificationScalarFieldEnum]
+
+
+export const AssessmentAttemptScalarFieldEnum = {
+  id: 'id',
+  targetId: 'targetId',
+  blueprintId: 'blueprintId',
+  contextSnapshot: 'contextSnapshot',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  assessorId: 'assessorId',
+  completionKey: 'completionKey',
+  completionHash: 'completionHash',
+  overallScore: 'overallScore',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentAttemptScalarFieldEnum = (typeof AssessmentAttemptScalarFieldEnum)[keyof typeof AssessmentAttemptScalarFieldEnum]
+
+
+export const AssessmentRequirementScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  competencyId: 'competencyId',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  requiredScore: 'requiredScore',
+  weight: 'weight',
+  sources: 'sources',
+  learningObjective: 'learningObjective',
+  learningResources: 'learningResources'
+} as const
+
+export type AssessmentRequirementScalarFieldEnum = (typeof AssessmentRequirementScalarFieldEnum)[keyof typeof AssessmentRequirementScalarFieldEnum]
+
+
+export const AssessmentCompetencyResultScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  requirementId: 'requirementId',
+  score: 'score',
+  gap: 'gap',
+  evidence: 'evidence'
+} as const
+
+export type AssessmentCompetencyResultScalarFieldEnum = (typeof AssessmentCompetencyResultScalarFieldEnum)[keyof typeof AssessmentCompetencyResultScalarFieldEnum]
+
+
+export const LearningPlanScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  status: 'status',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt'
+} as const
+
+export type LearningPlanScalarFieldEnum = (typeof LearningPlanScalarFieldEnum)[keyof typeof LearningPlanScalarFieldEnum]
+
+
+export const LearningPlanItemScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  resultId: 'resultId',
+  priority: 'priority',
+  objective: 'objective',
+  resources: 'resources',
+  status: 'status',
+  completedAt: 'completedAt'
+} as const
+
+export type LearningPlanItemScalarFieldEnum = (typeof LearningPlanItemScalarFieldEnum)[keyof typeof LearningPlanItemScalarFieldEnum]
 
 
 export const AssessmentBookingEventScalarFieldEnum = {
@@ -544,6 +669,176 @@ export const RateLimitBucketScalarFieldEnum = {
 } as const
 
 export type RateLimitBucketScalarFieldEnum = (typeof RateLimitBucketScalarFieldEnum)[keyof typeof RateLimitBucketScalarFieldEnum]
+
+
+export const AssessmentScenarioScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  version: 'version',
+  title: 'title',
+  prompt: 'prompt',
+  evaluationCriteria: 'evaluationCriteria',
+  competencyIds: 'competencyIds',
+  maxFollowups: 'maxFollowups',
+  approved: 'approved',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentScenarioScalarFieldEnum = (typeof AssessmentScenarioScalarFieldEnum)[keyof typeof AssessmentScenarioScalarFieldEnum]
+
+
+export const BlueprintScenarioScalarFieldEnum = {
+  blueprintId: 'blueprintId',
+  scenarioId: 'scenarioId',
+  position: 'position'
+} as const
+
+export type BlueprintScenarioScalarFieldEnum = (typeof BlueprintScenarioScalarFieldEnum)[keyof typeof BlueprintScenarioScalarFieldEnum]
+
+
+export const AssessmentAccommodationScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  waiveCamera: 'waiveCamera',
+  waiveMicrophone: 'waiveMicrophone',
+  allowText: 'allowText',
+  reason: 'reason',
+  approvedById: 'approvedById',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentAccommodationScalarFieldEnum = (typeof AssessmentAccommodationScalarFieldEnum)[keyof typeof AssessmentAccommodationScalarFieldEnum]
+
+
+export const AssessmentInteractionSessionScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  bookingId: 'bookingId',
+  mode: 'mode',
+  language: 'language',
+  status: 'status',
+  policy: 'policy',
+  preflight: 'preflight',
+  scenarios: 'scenarios',
+  leaseToken: 'leaseToken',
+  leaseExpiresAt: 'leaseExpiresAt',
+  pendingResponseId: 'pendingResponseId',
+  evaluation: 'evaluation',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AssessmentInteractionSessionScalarFieldEnum = (typeof AssessmentInteractionSessionScalarFieldEnum)[keyof typeof AssessmentInteractionSessionScalarFieldEnum]
+
+
+export const AssessmentConversationMessageScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  sequence: 'sequence',
+  role: 'role',
+  text: 'text',
+  scenarioIndex: 'scenarioIndex',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentConversationMessageScalarFieldEnum = (typeof AssessmentConversationMessageScalarFieldEnum)[keyof typeof AssessmentConversationMessageScalarFieldEnum]
+
+
+export const AssessmentResponseScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  idempotencyKey: 'idempotencyKey',
+  payloadHash: 'payloadHash',
+  promptId: 'promptId',
+  origin: 'origin',
+  confirmedText: 'confirmedText',
+  transcriptionId: 'transcriptionId',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentResponseScalarFieldEnum = (typeof AssessmentResponseScalarFieldEnum)[keyof typeof AssessmentResponseScalarFieldEnum]
+
+
+export const AssessmentTranscriptionScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  status: 'status',
+  provider: 'provider',
+  model: 'model',
+  language: 'language',
+  originalText: 'originalText',
+  durationMs: 'durationMs',
+  byteLength: 'byteLength',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentTranscriptionScalarFieldEnum = (typeof AssessmentTranscriptionScalarFieldEnum)[keyof typeof AssessmentTranscriptionScalarFieldEnum]
+
+
+export const TranscriptCorrectionScalarFieldEnum = {
+  id: 'id',
+  transcriptionId: 'transcriptionId',
+  originalText: 'originalText',
+  confirmedText: 'confirmedText',
+  createdAt: 'createdAt'
+} as const
+
+export type TranscriptCorrectionScalarFieldEnum = (typeof TranscriptCorrectionScalarFieldEnum)[keyof typeof TranscriptCorrectionScalarFieldEnum]
+
+
+export const AssessmentSpeechScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  messageId: 'messageId',
+  provider: 'provider',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentSpeechScalarFieldEnum = (typeof AssessmentSpeechScalarFieldEnum)[keyof typeof AssessmentSpeechScalarFieldEnum]
+
+
+export const AssessmentSessionEventScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  kind: 'kind',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentSessionEventScalarFieldEnum = (typeof AssessmentSessionEventScalarFieldEnum)[keyof typeof AssessmentSessionEventScalarFieldEnum]
+
+
+export const AssessmentGraphCheckpointScalarFieldEnum = {
+  sessionId: 'sessionId',
+  namespace: 'namespace',
+  checkpointId: 'checkpointId',
+  parentId: 'parentId',
+  type: 'type',
+  data: 'data',
+  metadataType: 'metadataType',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AssessmentGraphCheckpointScalarFieldEnum = (typeof AssessmentGraphCheckpointScalarFieldEnum)[keyof typeof AssessmentGraphCheckpointScalarFieldEnum]
+
+
+export const AssessmentGraphWriteScalarFieldEnum = {
+  sessionId: 'sessionId',
+  namespace: 'namespace',
+  checkpointId: 'checkpointId',
+  taskId: 'taskId',
+  taskPath: 'taskPath',
+  idx: 'idx',
+  channel: 'channel',
+  type: 'type',
+  data: 'data'
+} as const
+
+export type AssessmentGraphWriteScalarFieldEnum = (typeof AssessmentGraphWriteScalarFieldEnum)[keyof typeof AssessmentGraphWriteScalarFieldEnum]
 
 
 export const SortOrder = {

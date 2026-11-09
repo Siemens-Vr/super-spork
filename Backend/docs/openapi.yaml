@@ -2,11 +2,14 @@ openapi: 3.1.0
 info:
   title: VML NEXUS API
   version: 0.1.0
-  description: Applicant onboarding, private credential review, career preferences and assessment
-    scheduling. No AI interview or competency scoring is implemented. Fetch /auth/csrf first; send
-    its token with every state-changing request, including registration and login. Swagger UI
-    fetches it automatically for Try it out. Cookies are managed by the browser. See
-    docs/authentication.md for the admin MFA flow.
+  description: Applicant onboarding, private credential review, one-career assessment targets,
+    scheduling, assessor-recorded competency results and upskilling plans. Assessment inputs and
+    approved rubrics are frozen per attempt; completion unlocks another career target. A
+    configurable AI interviewer supports approved scenarios, confirmed text/voice answers,
+    persistent checkpoints and assessor-reviewed results. Course delivery is not connected. Fetch
+    /auth/csrf first; send its token with every state-changing request. Swagger UI fetches it
+    automatically for Try it out. Cookies are managed by the browser. See docs/authentication.md for
+    the admin MFA flow.
 servers:
   - url: /api/v1
 tags:
@@ -15,6 +18,7 @@ tags:
   - name: Documents
   - name: Career catalogue
   - name: Assessments
+  - name: Assessment sessions
   - name: Administration
 paths:
   /auth/csrf:
@@ -2257,215 +2261,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /applicants/me/career-preferences:
-    get:
-      operationId: get__applicants_me_career_preferences
-      tags:
-        - Applicants
-      summary: Read ranked career preferences
-      security:
-        - sessionCookie: []
-      parameters: []
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    anyOf:
-                      - $ref: '#/components/schemas/Preferences'
-                      - type: 'null'
-                  meta:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                required:
-                  - data
-        '400':
-          description: Invalid request or code
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authentication required or failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Permission, CSRF, verification, or MFA required
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: Workflow, capacity, eligibility, or uniqueness conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: Request too large
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '415':
-          description: Unsupported file signature or MIME type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Validation failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: External dependency unavailable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      operationId: put__applicants_me_career_preferences
-      tags:
-        - Applicants
-      summary: Replace industries, companies and primary role
-      description:
-        At most three distinct industries and three distinct companies. Submit identity first.
-        Cancel an active booking before changing primary role.
-      security:
-        - sessionCookie: []
-      parameters:
-        - in: header
-          name: X-CSRF-Token
-          required: true
-          schema:
-            type: string
-          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
-            reauthentication.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PreferencesInput'
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Preferences'
-                  meta:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                required:
-                  - data
-        '400':
-          description: Invalid request or code
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authentication required or failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: Permission, CSRF, verification, or MFA required
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: Workflow, capacity, eligibility, or uniqueness conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: Request too large
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '415':
-          description: Unsupported file signature or MIME type
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: Validation failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: External dependency unavailable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /identity/documents:
     post:
       operationId: post__identity_documents
@@ -2799,12 +2594,43 @@ paths:
       tags:
         - Documents
       summary: Upload private quarantined document
-      description:
-        Select institutionId from GET /institutions OR supply institutionName. An institution
-        is required for degrees, diplomas, transcripts, short courses and professional credentials.
-        Degrees/diplomas additionally require transcripts. INDUSTRY_CERTIFICATION and
-        PROFESSIONAL_REGISTRATION require expiresAt (YYYY-MM-DD or ISO datetime). Every file must be
-        PDF, JPEG or PNG, at most 10 MB by default. Titles are derived from filenames. A current
+      description: >-
+        Choose category in Try it out. Required fields depend on category; the server enforces these
+        rules.
+
+
+        | Category | Required metadata | Transcripts |
+
+        | --- | --- | --- |
+
+        | BACHELOR (Bachelor's degree) | courseName, institutionId OR institutionName | 1–5 required
+        |
+
+        | MASTER (Master's degree) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | PHD (PhD) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | DIPLOMA (Diploma) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | SHORT_COURSE (Short course) | courseName | Not accepted as attachments |
+
+        | INDUSTRY_CERTIFICATION (Industry certification) | certificationName, issuer, issuedAt |
+        Not accepted as attachments |
+
+        | PROFESSIONAL_REGISTRATION (Professional registration) | issuer, issuedAt, expiresAt | Not
+        accepted as attachments |
+
+        | TRANSCRIPT (Standalone transcript) | courseName, institutionId OR institutionName | Not
+        accepted as attachments |
+
+        | OTHER (Other document) | title | Not accepted as attachments |
+
+
+        Search GET /institutions?search=... and send the selected institutionId OR a typed
+        institutionName, never both. Institution is optional for short courses and professional
+        credentials. Swagger exposes all fields; the application frontend controls
+        category-dependent visibility and institution autocomplete. Dates accept YYYY-MM-DD or an
+        ISO datetime. Every file must be PDF, JPEG or PNG, at most 10 MB by default. A current
         identity document must have been submitted first.
       security:
         - sessionCookie: []
@@ -3868,6 +3694,9 @@ paths:
       tags:
         - Career catalogue
       summary: Browse active institutions
+      description: Search canonical institution names, abbreviations and alternative/campus names.
+        Paginated results can be filtered by type or offersTvet. These are directory entries for
+        applicant selection, not accreditation determinations.
       security:
         - sessionCookie: []
       parameters:
@@ -3891,6 +3720,24 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: type
+          required: false
+          schema:
+            type: string
+            enum:
+              - UNIVERSITY
+              - COLLEGE
+              - TRAINING_INSTITUTE
+              - OTHER
+        - in: query
+          name: offersTvet
+          required: false
+          schema:
+            type: string
+            enum:
+              - 'true'
+              - 'false'
       responses:
         '200':
           description: Success
@@ -4009,6 +3856,14 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: industryIds
+          required: false
+          schema:
+            type: string
+            description:
+              Comma-separated UUIDs for up to three industries; company must match any selected
+              industry.
       responses:
         '200':
           description: Success
@@ -4127,6 +3982,14 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: industryIds
+          required: false
+          schema:
+            type: string
+            description:
+              Comma-separated UUIDs for up to three industries; career must match all selected
+              industries.
       responses:
         '200':
           description: Success
@@ -4845,6 +4708,1015 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /assessments/targets:
+    get:
+      operationId: get__assessments_targets
+      tags:
+        - Assessments
+      summary: Read assessment target history
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AssessmentTarget'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: post__assessments_targets
+      tags:
+        - Assessments
+      summary: Choose one career and its assessment context
+      description:
+        One active target per applicant. Choose 1–3 career-linked industries, 0–3 companies
+        operating in those industries, and up to 10 of your current clean qualification documents.
+        With no qualification documents, the profile discipline supplies course background. Complete
+        the current assessment before creating another target.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessmentTargetInput'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentTarget'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/targets/{id}:
+    get:
+      operationId: get__assessments_targets_id_
+      tags:
+        - Assessments
+      summary: Read owned career, industries, companies and qualifications
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentTarget'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      operationId: put__assessments_targets_id_
+      tags:
+        - Assessments
+      summary: Replace choices while the target is a draft
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssessmentTargetInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentTarget'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/targets/{id}/prepare:
+    post:
+      operationId: post__assessments_targets_id_prepare
+      tags:
+        - Assessments
+      summary: Freeze assessment context and approved competency requirements
+      description:
+        Pins the core blueprint and snapshots the latest approved matching INDUSTRY, COMPANY
+        and COURSE frameworks. Duplicate competencies use the highest required score and summed
+        weights; missing context frameworks add no invented requirements. Course background never
+        reduces core thresholds. Repeated preparation with the same blueprint returns the same
+        attempt. Prepared choices and rubric rows are immutable.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrepareTargetInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/attempts/{id}:
+    get:
+      operationId: get__assessments_attempts_id_
+      tags:
+        - Assessments
+      summary: Read owned frozen context, rubric, results and learning plan
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/attempts/{id}/start:
+    post:
+      operationId: post__assessments_attempts_id_start
+      tags:
+        - Assessments
+      summary: Start the prepared assessment during its booked slot
+      description:
+        Requires a scheduled booking for this target within its start/end window. Repeated
+        starts while in progress return the same attempt. This records an assessment session; it
+        does not launch an AI interviewer.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/learning-plans/{id}:
+    get:
+      operationId: get__assessments_learning_plans_id_
+      tags:
+        - Assessments
+      summary: Read an owned upskilling plan and its assessed skill gaps
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LearningPlan'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/learning-plans/{id}/items/{itemId}:
+    patch:
+      operationId: patch__assessments_learning_plans_id_items_itemId_
+      tags:
+        - Assessments
+      summary: Record learning progress without changing assessment results
+      description:
+        Progress is self-reported. Completing learning items does not certify mastery or remove
+        the historical assessed gap; demonstrate improvement in another assessment.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: itemId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningProgressInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LearningPlan'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /assessments/bookings:
     post:
       operationId: post__assessments_bookings
@@ -4852,8 +5724,9 @@ paths:
         - Assessments
       summary: Reserve assessment capacity transactionally
       description:
-        One active booking per applicant. No AI session or scores are generated. Successful
-        retries return the original booking.
+        One active booking per applicant. Binds the booking to the active prepared target.
+        Create and explicitly prepare an assessment target before booking. Complete the current
+        assessment before creating the next target. Successful retries return the original booking.
       security:
         - sessionCookie: []
       parameters:
@@ -5357,6 +6230,246 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/Booking'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-attempts/{id}:
+    get:
+      operationId: get__admin_assessment_attempts_id_
+      tags:
+        - Administration
+      summary: Inspect an assessment for authorised grading
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        assessments.review.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-attempts/{id}/complete:
+    post:
+      operationId: post__admin_assessment_attempts_id_complete
+      tags:
+        - Administration
+      summary: Record assessor evidence, calculate skill gaps and create the learning plan
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        assessments.review and a started attempt. Submit exactly one 0–100 score and supporting
+        evidence for each frozen requirement. Results, booking completion, target completion and
+        learning recommendations commit atomically. The same idempotency key/results may be retried;
+        changed results return 409. Overall score is the weighted mean; each skill gap is
+        max(requiredScore-score,0). No employer selection or hiring decision is made.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+            pattern: ^[a-zA-Z0-9_-]+$
+          description:
+            Unique per applicant and operation. Retry with the same key and payload; changed
+            payload returns 409.
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteAttemptInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
                   meta:
                     type: object
                     properties:
@@ -9934,6 +11047,2013 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /assessments/{bookingId}/preflight:
+    get:
+      operationId: get__assessments_bookingId_preflight
+      tags:
+        - Assessment sessions
+      summary: Read booking entry policies without revealing scenarios
+      description:
+        Checks ownership. Readiness is reported by the browser, not attested by the backend.
+        Preflight can be read before the booked start time.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: bookingId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentPreflight'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/{bookingId}/start:
+    post:
+      operationId: post__assessments_bookingId_start
+      tags:
+        - Assessment sessions
+      summary: Confirm equipment, consent and start one interaction session
+      description:
+        Requires the scheduled start window and approved scenario coverage. Initialization is
+        idempotent per prepared attempt. Device permission does not imply recording consent. No
+        video is uploaded.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: bookingId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStartInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentSession'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}:
+    get:
+      operationId: get__assessment_sessions_id_
+      tags:
+        - Assessment sessions
+      summary: Read your persisted assessment conversation
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentSession'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/current-scenario:
+    get:
+      operationId: get__assessment_sessions_id_current_scenario
+      tags:
+        - Assessment sessions
+      summary: Read the current presented prompt only
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      progress:
+                        $ref: '#/components/schemas/SessionProgress'
+                      prompt:
+                        anyOf:
+                          - $ref: '#/components/schemas/ConversationMessage'
+                          - type: 'null'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/responses:
+    post:
+      operationId: post__assessment_sessions_id_responses
+      tags:
+        - Assessment sessions
+      summary: Submit a confirmed text or voice-transcribed answer
+      description:
+        Partial transcriptions cannot advance the graph. Original transcripts and corrections
+        are retained; raw audio is not. Retry with the same key and payload; use resume after
+        interruption.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+            pattern: ^[a-zA-Z0-9_-]+$
+          description:
+            Unique per applicant and operation. Retry with the same key and payload; changed
+            payload returns 409.
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmedResponseInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentSession'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/audio/transcribe:
+    post:
+      operationId: post__assessment_sessions_id_audio_transcribe
+      tags:
+        - Assessment sessions
+      summary: Transcribe transient WAV audio or register a final browser transcript
+      description: Multipart field audio for the compatible STT adapter, or application/json
+        BrowserTranscriptionInput when STT_PROVIDER=browser. Requires recorded audio-processing
+        consent and an active owned session. Browser text is self-reported and must still be
+        confirmed as an answer.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AudioUpload'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrowserTranscriptionInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Transcription'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/speech/synthesize:
+    post:
+      operationId: post__assessment_sessions_id_speech_synthesize
+      tags:
+        - Assessment sessions
+      summary: Speak an existing interviewer message
+      description:
+        Only a message ID belonging to this session is accepted; arbitrary text is rejected.
+        Browser mode returns authoritative text for SpeechSynthesis. Compatible mode returns
+        transient audio/wav. Failures do not advance the assessment.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpeechInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      provider:
+                        const: browser
+                      text:
+                        type: string
+                      language:
+                        type: string
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/progress:
+    get:
+      operationId: get__assessment_sessions_id_progress
+      tags:
+        - Assessment sessions
+      summary: Read scenario completion progress
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      totalScenarios:
+                        type: integer
+                      completedScenarios:
+                        type: integer
+                      currentScenario:
+                        type:
+                          - integer
+                          - 'null'
+                      hasPendingResponse:
+                        type: boolean
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/resume:
+    post:
+      operationId: post__assessment_sessions_id_resume
+      tags:
+        - Assessment sessions
+      summary: Resume persisted LangGraph checkpoints after interruption
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentSession'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/events:
+    post:
+      operationId: post__assessment_sessions_id_events
+      tags:
+        - Assessment sessions
+      summary: Record a device or network interruption
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionEventInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Message'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessment-sessions/{id}/results:
+    get:
+      operationId: get__assessment_sessions_id_results
+      tags:
+        - Assessment sessions
+      summary: Read provisional AI proposals or final reviewed competency results
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InteractionResults'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/scenarios:
+    get:
+      operationId: get__admin_scenarios
+      tags:
+        - Administration
+      summary: List private scenario bank and evaluation criteria
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited.
+      security:
+        - sessionCookie: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scenario'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: post__admin_scenarios
+      tags:
+        - Administration
+      summary: Create a versioned scenario and record approval
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioInput'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Scenario'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/blueprints/{id}/scenarios:
+    put:
+      operationId: put__admin_blueprints_id_scenarios
+      tags:
+        - Administration
+      summary: Assign approved scenarios in presentation order
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioAssignmentInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Message'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-attempts/{id}/accommodation:
+    put:
+      operationId: put__admin_assessment_attempts_id_accommodation
+      tags:
+        - Administration
+      summary: Approve an equipment or text accommodation before session start
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      attemptId:
+                        type: string
+                        format: uuid
+                      waiveCamera:
+                        type: boolean
+                      waiveMicrophone:
+                        type: boolean
+                      allowText:
+                        type: boolean
+                      reason:
+                        type: string
+                      approvedById:
+                        type: string
+                        format: uuid
+                      createdAt:
+                        type: string
+                        format: date-time
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-sessions/{id}:
+    get:
+      operationId: get__admin_assessment_sessions_id_
+      tags:
+        - Administration
+      summary: Review a conversation and proposed AI scores
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      bookingId:
+                        type: string
+                        format: uuid
+                      attemptId:
+                        type: string
+                        format: uuid
+                      status:
+                        enum:
+                          - ACTIVE
+                          - INTERRUPTED
+                          - AWAITING_REVIEW
+                          - COMPLETED
+                      mode:
+                        enum:
+                          - TEXT
+                          - VOICE
+                      language:
+                        type: string
+                      policy:
+                        $ref: '#/components/schemas/InteractionPolicy'
+                      preflight:
+                        type: object
+                      messages:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConversationMessage'
+                      progress:
+                        $ref: '#/components/schemas/SessionProgress'
+                      currentPromptId:
+                        type:
+                          - string
+                          - 'null'
+                        format: uuid
+                      hasPendingResponse:
+                        type: boolean
+                      endsAt:
+                        type: string
+                        format: date-time
+                      speech:
+                        $ref: '#/components/schemas/SpeechConfiguration'
+                      evaluation:
+                        type:
+                          - array
+                          - 'null'
+                        items:
+                          type: object
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-sessions/{id}/approve-results:
+    post:
+      operationId: post__admin_assessment_sessions_id_approve_results
+      tags:
+        - Administration
+      summary: Approve AI proposals and publish the existing skill-gap report
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Review the conversation
+        and evidence first. This uses existing immutable completion and deterministic learning-plan
+        rules. Use the existing assessor completion endpoint to submit corrected scores instead.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+            pattern: ^[a-zA-Z0-9_-]+$
+          description:
+            Unique per applicant and operation. Retry with the same key and payload; changed
+            payload returns 409.
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AssessmentAttempt'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     sessionCookie:
@@ -10044,19 +13164,7 @@ components:
               format: uuid
             country:
               type: string
-            region:
-              type: string
-            educationLevel:
-              type: string
-            institution:
-              type: string
             discipline:
-              type: string
-            professionalStatus:
-              type: string
-            graduationYear:
-              type: integer
-            summary:
               type: string
             consentVersion:
               type: string
@@ -10113,6 +13221,14 @@ components:
             - OTHER
         title:
           type: string
+        courseName:
+          type:
+            - string
+            - 'null'
+        certificationName:
+          type:
+            - string
+            - 'null'
         issuer:
           type:
             - string
@@ -10377,47 +13493,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-    Preferences:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        applicantId:
-          type: string
-          format: uuid
-        primaryRoleId:
-          type: string
-          format: uuid
-        primaryRole:
-          $ref: '#/components/schemas/Career'
-        industries:
-          type: array
-          items:
-            type: object
-            properties:
-              industryId:
-                type: string
-                format: uuid
-              rank:
-                type: integer
-              industry:
-                $ref: '#/components/schemas/Industry'
-        companies:
-          type: array
-          items:
-            type: object
-            properties:
-              companyId:
-                type: string
-                format: uuid
-              rank:
-                type: integer
-              company:
-                $ref: '#/components/schemas/Company'
-        updatedAt:
-          type: string
-          format: date-time
     Competency:
       type: object
       properties:
@@ -10445,6 +13520,27 @@ components:
           type: string
         approved:
           type: boolean
+        scope:
+          type: string
+          enum:
+            - CORE
+            - INDUSTRY
+            - COMPANY
+            - COURSE
+        industryId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        companyId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        courseName:
+          type:
+            - string
+            - 'null'
         competencies:
           type: array
           items:
@@ -10455,6 +13551,19 @@ components:
                 format: uuid
               weight:
                 type: integer
+              requiredScore:
+                type: integer
+                minimum: 1
+                maximum: 100
+              learningObjective:
+                type:
+                  - string
+                  - 'null'
+              learningResources:
+                type: array
+                items:
+                  type: string
+                  format: uri
               competency:
                 $ref: '#/components/schemas/Competency'
         createdAt:
@@ -10478,6 +13587,35 @@ components:
           type: string
         durationMinutes:
           type: integer
+        interactionPolicy:
+          type: object
+          properties:
+            cameraRequired:
+              default: false
+              type: boolean
+            microphoneRequired:
+              default: false
+              type: boolean
+            allowText:
+              default: true
+              type: boolean
+            language:
+              default: en
+              type: string
+              minLength: 2
+              maxLength: 20
+            cameraPurpose:
+              type: string
+              minLength: 10
+              maxLength: 1000
+            accommodationInstructions:
+              default:
+                Contact an administrator to request a camera or microphone exception or a text-based
+                assessment before starting.
+              type: string
+              minLength: 10
+              maxLength: 1000
+          additionalProperties: false
         instructions:
           type: string
         active:
@@ -10496,6 +13634,16 @@ components:
     Eligibility:
       type: object
       properties:
+        targetId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        attemptId:
+          type:
+            - string
+            - 'null'
+          format: uuid
         eligible:
           type: boolean
         reasons:
@@ -10558,6 +13706,16 @@ components:
       properties:
         bookingId:
           type: string
+          format: uuid
+        targetId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        attemptId:
+          type:
+            - string
+            - 'null'
           format: uuid
         applicantId:
           type: string
@@ -10677,6 +13835,15 @@ components:
           type: string
         country:
           type: string
+        type:
+          type: string
+          enum:
+            - UNIVERSITY
+            - COLLEGE
+            - TRAINING_INSTITUTE
+            - OTHER
+        offersTvet:
+          type: boolean
         website:
           type:
             - string
@@ -10738,8 +13905,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Document'
-        preferences:
-          $ref: '#/components/schemas/Preferences'
+        assessmentTargets:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              jobRoleId:
+                type: string
+                format: uuid
+              status:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
     AuditLog:
       type: object
       properties:
@@ -10899,68 +14080,10 @@ components:
         country:
           type: string
           pattern: ^[A-Z]{2}$
-        region:
-          type: string
-          minLength: 2
-          maxLength: 100
-        educationLevel:
-          type: string
-          enum:
-            - SECONDARY
-            - DIPLOMA
-            - BACHELOR
-            - MASTER
-            - PHD
-            - OTHER
-        institution:
-          type: string
-          minLength: 2
-          maxLength: 200
         discipline:
           type: string
           minLength: 2
           maxLength: 150
-        professionalStatus:
-          type: string
-          enum:
-            - STUDENT
-            - GRADUATE
-            - PROFESSIONAL
-            - OTHER
-        graduationYear:
-          type: integer
-          minimum: 1950
-          maximum: 2036
-        summary:
-          type: string
-          maxLength: 2000
-      additionalProperties: false
-    PreferencesInput:
-      type: object
-      properties:
-        industryIds:
-          minItems: 1
-          maxItems: 3
-          type: array
-          items:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        companyIds:
-          maxItems: 3
-          type: array
-          items:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        primaryRoleId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - industryIds
-        - companyIds
-        - primaryRoleId
       additionalProperties: false
     SuggestionInput:
       type: object
@@ -10996,12 +14119,31 @@ components:
         title:
           anyOf:
             - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+        courseName:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+        certificationName:
+          anyOf:
+            - type: string
+              minLength: 2
               maxLength: 200
             - type: string
               const: ''
         issuer:
-          type: string
-          maxLength: 200
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
         institutionId:
           anyOf:
             - type: string
@@ -11017,34 +14159,23 @@ components:
             - type: string
               const: ''
         issuedAt:
-          anyOf:
-            - anyOf:
-                - type: string
-                  format: date
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
-                - type: string
-                  format: date-time
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
-            - type: string
-              const: ''
+          type:
+            - string
+            - 'null'
         expiresAt:
-          anyOf:
-            - anyOf:
-                - type: string
-                  format: date
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
-                - type: string
-                  format: date-time
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
-            - type: string
-              const: ''
+          type:
+            - string
+            - 'null'
         credentialNumber:
           type: string
           maxLength: 150
         verificationUrl:
-          type: string
-          maxLength: 1000
-          format: uri
+          anyOf:
+            - type: string
+              maxLength: 1000
+              format: uri
+            - type: string
+              const: ''
       required:
         - category
       additionalProperties: false
@@ -11057,6 +14188,7 @@ components:
           maxLength: 200
         issuer:
           type: string
+          minLength: 2
           maxLength: 200
       required:
         - title
@@ -11116,6 +14248,93 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - slotId
+      additionalProperties: false
+    AssessmentTargetInput:
+      type: object
+      properties:
+        jobRoleId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        industryIds:
+          minItems: 1
+          maxItems: 3
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        companyIds:
+          default: []
+          maxItems: 3
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        qualificationIds:
+          default: []
+          maxItems: 10
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - jobRoleId
+        - industryIds
+      additionalProperties: false
+    PrepareTargetInput:
+      type: object
+      properties:
+        blueprintId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - blueprintId
+      additionalProperties: false
+    CompleteAttemptInput:
+      type: object
+      properties:
+        results:
+          minItems: 1
+          maxItems: 400
+          type: array
+          items:
+            type: object
+            properties:
+              requirementId:
+                type: string
+                format: uuid
+                pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              score:
+                type: integer
+                minimum: 0
+                maximum: 100
+              evidence:
+                type: string
+                minLength: 10
+                maxLength: 4000
+            required:
+              - requirementId
+              - score
+              - evidence
+            additionalProperties: false
+      required:
+        - results
+      additionalProperties: false
+    LearningProgressInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - COMPLETED
+      required:
+        - status
       additionalProperties: false
     CancelInput:
       type: object
@@ -11237,6 +14456,856 @@ components:
         - status
         - reason
       additionalProperties: false
+    AssessmentRequirement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        competencyId:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        requiredScore:
+          type: integer
+        weight:
+          type: integer
+        sources:
+          type: array
+          items:
+            type: object
+            properties:
+              frameworkId:
+                type: string
+                format: uuid
+              version:
+                type: integer
+              scope:
+                type: string
+        learningObjective:
+          type: string
+        learningResources:
+          type: array
+          items:
+            type: string
+            format: uri
+    AssessmentResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        requirementId:
+          type: string
+          format: uuid
+        score:
+          type: integer
+        gap:
+          type: integer
+        evidence:
+          type: string
+        requirement:
+          $ref: '#/components/schemas/AssessmentRequirement'
+    LearningPlanItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        planId:
+          type: string
+          format: uuid
+        resultId:
+          type: string
+          format: uuid
+        priority:
+          type: integer
+        objective:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
+            format: uri
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - COMPLETED
+        completedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        result:
+          $ref: '#/components/schemas/AssessmentResult'
+    LearningPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - PENDING
+            - IN_PROGRESS
+            - COMPLETED
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearningPlanItem'
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+    AssessmentContext:
+      type: object
+      properties:
+        schemaVersion:
+          const: 1
+        career:
+          $ref: '#/components/schemas/Career'
+        industries:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              rank:
+                type: integer
+        companies:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              rank:
+                type: integer
+        education:
+          type: object
+          properties:
+            discipline:
+              type: string
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+        blueprint:
+          $ref: '#/components/schemas/Blueprint'
+        frameworks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              version:
+                type: integer
+              scope:
+                type: string
+              title:
+                type: string
+        scoring:
+          type: object
+          properties:
+            scale:
+              type: string
+            thresholdRule:
+              type: string
+            weightRule:
+              type: string
+            gapRule:
+              type: string
+            overallRule:
+              type: string
+    AssessmentAttempt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        targetId:
+          type: string
+          format: uuid
+        blueprintId:
+          type: string
+          format: uuid
+        contextSnapshot:
+          $ref: '#/components/schemas/AssessmentContext'
+        requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentRequirement'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentResult'
+        learningPlan:
+          anyOf:
+            - $ref: '#/components/schemas/LearningPlan'
+            - type: 'null'
+        startedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        completedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        assessorId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        overallScore:
+          type:
+            - number
+            - 'null'
+        createdAt:
+          type: string
+          format: date-time
+    AssessmentTarget:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        applicantId:
+          type: string
+          format: uuid
+        jobRoleId:
+          type: string
+          format: uuid
+        jobRole:
+          $ref: '#/components/schemas/Career'
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PREPARED
+            - IN_PROGRESS
+            - COMPLETED
+        industries:
+          type: array
+          items:
+            type: object
+            properties:
+              targetId:
+                type: string
+                format: uuid
+              industryId:
+                type: string
+                format: uuid
+              rank:
+                type: integer
+              industry:
+                $ref: '#/components/schemas/Industry'
+        companies:
+          type: array
+          items:
+            type: object
+            properties:
+              targetId:
+                type: string
+                format: uuid
+              companyId:
+                type: string
+                format: uuid
+              rank:
+                type: integer
+              company:
+                $ref: '#/components/schemas/Company'
+        qualifications:
+          type: array
+          items:
+            type: object
+            properties:
+              targetId:
+                type: string
+                format: uuid
+              documentId:
+                type: string
+                format: uuid
+              document:
+                $ref: '#/components/schemas/Document'
+        attempt:
+          anyOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                blueprintId:
+                  type: string
+                  format: uuid
+                startedAt:
+                  type: string
+                  format: date-time
+                completedAt:
+                  type: string
+                  format: date-time
+            - type: 'null'
+        lockedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        completedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    InteractionPolicy:
+      type: object
+      properties:
+        cameraRequired:
+          default: false
+          type: boolean
+        microphoneRequired:
+          default: false
+          type: boolean
+        allowText:
+          default: true
+          type: boolean
+        language:
+          default: en
+          type: string
+          minLength: 2
+          maxLength: 20
+        cameraPurpose:
+          type: string
+          minLength: 10
+          maxLength: 1000
+        accommodationInstructions:
+          default:
+            Contact an administrator to request a camera or microphone exception or a text-based
+            assessment before starting.
+          type: string
+          minLength: 10
+          maxLength: 1000
+      additionalProperties: false
+    SessionStartInput:
+      type: object
+      properties:
+        confirmed:
+          type: boolean
+          const: true
+        mode:
+          type: string
+          enum:
+            - TEXT
+            - VOICE
+        devices:
+          type: object
+          properties:
+            camera:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            microphone:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            speakerConfirmed:
+              type: boolean
+          required:
+            - camera
+            - microphone
+            - speakerConfirmed
+          additionalProperties: false
+        privacyAcknowledged:
+          type: boolean
+          const: true
+        audioProcessingConsent:
+          default: false
+          type: boolean
+      required:
+        - confirmed
+        - mode
+        - devices
+        - privacyAcknowledged
+      additionalProperties: false
+    ConfirmedResponseInput:
+      type: object
+      properties:
+        promptId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        origin:
+          type: string
+          enum:
+            - TEXT
+            - VOICE
+        confirmed:
+          type: boolean
+          const: true
+        text:
+          type: string
+          minLength: 1
+          maxLength: 12000
+        transcriptionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - promptId
+        - origin
+        - confirmed
+        - text
+      additionalProperties: false
+    BrowserTranscriptionInput:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 12000
+        isFinal:
+          type: boolean
+          const: true
+        language:
+          default: en
+          type: string
+          minLength: 2
+          maxLength: 20
+      required:
+        - text
+        - isFinal
+      additionalProperties: false
+    SpeechInput:
+      type: object
+      properties:
+        messageId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - messageId
+      additionalProperties: false
+    SessionEventInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - DISCONNECTED
+            - DEVICE_DISCONNECTED
+            - PLAYBACK_FAILED
+            - MICROPHONE_MUTED
+        device:
+          type: string
+          enum:
+            - camera
+            - microphone
+            - speaker
+            - network
+      required:
+        - kind
+      additionalProperties: false
+    ScenarioInput:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 60
+          pattern: ^[A-Z0-9_-]+$
+        version:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        prompt:
+          type: string
+          minLength: 20
+          maxLength: 6000
+        evaluationCriteria:
+          type: string
+          minLength: 20
+          maxLength: 6000
+        competencyIds:
+          minItems: 1
+          maxItems: 30
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        maxFollowups:
+          default: 2
+          type: integer
+          minimum: 0
+          maximum: 3
+        approved:
+          default: false
+          type: boolean
+      required:
+        - code
+        - version
+        - title
+        - prompt
+        - evaluationCriteria
+        - competencyIds
+      additionalProperties: false
+    ScenarioAssignmentInput:
+      type: object
+      properties:
+        scenarioIds:
+          minItems: 1
+          maxItems: 20
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - scenarioIds
+      additionalProperties: false
+    AccommodationInput:
+      type: object
+      properties:
+        waiveCamera:
+          default: false
+          type: boolean
+        waiveMicrophone:
+          default: false
+          type: boolean
+        allowText:
+          default: false
+          type: boolean
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 2000
+      required:
+        - reason
+      additionalProperties: false
+    Scenario:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 60
+          pattern: ^[A-Z0-9_-]+$
+        version:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        prompt:
+          type: string
+          minLength: 20
+          maxLength: 6000
+        evaluationCriteria:
+          type: string
+          minLength: 20
+          maxLength: 6000
+        competencyIds:
+          minItems: 1
+          maxItems: 30
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        maxFollowups:
+          default: 2
+          type: integer
+          minimum: 0
+          maximum: 3
+        approved:
+          default: false
+          type: boolean
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - code
+        - version
+        - title
+        - prompt
+        - evaluationCriteria
+        - competencyIds
+      additionalProperties: false
+    Transcription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        status:
+          enum:
+            - PENDING
+            - COMPLETED
+            - FAILED
+        provider:
+          type: string
+        model:
+          type:
+            - string
+            - 'null'
+        language:
+          type: string
+        originalText:
+          type:
+            - string
+            - 'null'
+        durationMs:
+          type:
+            - integer
+            - 'null'
+        byteLength:
+          type:
+            - integer
+            - 'null'
+        createdAt:
+          type: string
+          format: date-time
+    AudioUpload:
+      type: object
+      properties:
+        audio:
+          type: string
+          format: binary
+          description:
+            16-bit PCM WAV, mono/stereo, 8–48 kHz. Maximum 8 MB and 180 seconds by default. Audio
+            is processed transiently, never persisted.
+      required:
+        - audio
+    ConversationMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+          format: uuid
+        sequence:
+          type: integer
+        role:
+          enum:
+            - AI
+            - APPLICANT
+        text:
+          type: string
+        scenarioIndex:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+    SessionProgress:
+      type: object
+      properties:
+        totalScenarios:
+          type: integer
+        completedScenarios:
+          type: integer
+        currentScenario:
+          type:
+            - integer
+            - 'null'
+    SpeechConfiguration:
+      type: object
+      properties:
+        stt:
+          type: string
+        tts:
+          type: string
+        language:
+          type: string
+        maxAudioBytes:
+          type: integer
+        maxAudioSeconds:
+          type: integer
+        formats:
+          type: array
+          items:
+            type: string
+        rawAudioRetained:
+          const: false
+        videoTransmitted:
+          const: false
+    AssessmentSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        bookingId:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        status:
+          enum:
+            - ACTIVE
+            - INTERRUPTED
+            - AWAITING_REVIEW
+            - COMPLETED
+        mode:
+          enum:
+            - TEXT
+            - VOICE
+        language:
+          type: string
+        policy:
+          $ref: '#/components/schemas/InteractionPolicy'
+        preflight:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversationMessage'
+        progress:
+          $ref: '#/components/schemas/SessionProgress'
+        currentPromptId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+        hasPendingResponse:
+          type: boolean
+        endsAt:
+          type: string
+          format: date-time
+        speech:
+          $ref: '#/components/schemas/SpeechConfiguration'
+    AssessmentPreflight:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+        attemptId:
+          type: string
+          format: uuid
+        session:
+          anyOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                status:
+                  type: string
+            - type: 'null'
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        canStart:
+          type: boolean
+        policy:
+          $ref: '#/components/schemas/InteractionPolicy'
+        aiReady:
+          type: boolean
+        speech:
+          $ref: '#/components/schemas/SpeechConfiguration'
+        browserReadinessIsSelfReported:
+          const: true
+        privacy:
+          type: object
+          additionalProperties:
+            type: string
+    InteractionResults:
+      oneOf:
+        - type: object
+          properties:
+            provisional:
+              const: true
+            reviewRequired:
+              const: true
+            competencies:
+              type: array
+              items:
+                type: object
+                properties:
+                  requirementId:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  score:
+                    type: integer
+                  gap:
+                    type: integer
+                  evidence:
+                    type: string
+                  requiredScore:
+                    type: integer
+                  weight:
+                    type: integer
+            message:
+              type: string
+        - type: object
+          properties:
+            provisional:
+              const: false
+            reviewRequired:
+              const: false
+            attempt:
+              $ref: '#/components/schemas/AssessmentAttempt'
     Upload:
       type: object
       properties:
@@ -11252,6 +15321,47 @@ components:
             - INDUSTRY_CERTIFICATION
             - PROFESSIONAL_REGISTRATION
             - OTHER
+          description:
+            Select a document category. BACHELOR, MASTER, PHD and DIPLOMA require a certificate
+            plus transcripts.
+        title:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+          description:
+            Descriptive name required for OTHER. Other categories use the uploaded filename as
+            their title.
+        courseName:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+          description:
+            Course/programme studied, e.g. Software Engineering or Mechatronics Engineering.
+            Required for degrees, diplomas, short courses and standalone transcripts.
+        certificationName:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+          description: Name of the industry certification. Required for INDUSTRY_CERTIFICATION.
+        issuer:
+          anyOf:
+            - type: string
+              minLength: 2
+              maxLength: 200
+            - type: string
+              const: ''
+          description:
+            Issuing organisation or professional body name. Required for INDUSTRY_CERTIFICATION and
+            PROFESSIONAL_REGISTRATION.
         institutionId:
           anyOf:
             - type: string
@@ -11259,6 +15369,9 @@ components:
               pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
             - type: string
               const: ''
+          description:
+            Select an active institution using GET /institutions?search=...; leave institutionName
+            blank.
         institutionName:
           anyOf:
             - type: string
@@ -11266,21 +15379,40 @@ components:
               maxLength: 200
             - type: string
               const: ''
+          description:
+            Type the institution name only when it is not listed; leave institutionId blank. This
+            does not add an entry to the shared catalogue.
+        issuedAt:
+          type: string
+          description:
+            Optional issue/award date for BACHELOR, MASTER, PHD and DIPLOMA; leave blank if
+            unknown. Required only for industry certifications and professional registrations. Use
+            YYYY-MM-DD or an ISO datetime; do not send the placeholder string.
+          default: ''
+          example: ''
         expiresAt:
+          type: string
+          description: Leave blank for BACHELOR, MASTER, PHD and DIPLOMA. Required for professional
+            registrations; optional for industry certifications. If supplied, use YYYY-MM-DD or an
+            ISO datetime after issuedAt.
+          default: ''
+          example: ''
+        credentialNumber:
+          type: string
+          maxLength: 150
+        verificationUrl:
           anyOf:
-            - anyOf:
-                - type: string
-                  format: date
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
-                - type: string
-                  format: date-time
-                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+            - type: string
+              maxLength: 1000
+              format: uri
             - type: string
               const: ''
         file:
           type: string
           format: binary
-          description: Certificate or document file. Its filename becomes the title.
+          description:
+            Required certificate/document file (one PDF, JPEG or PNG, at most 10 MB by default).
+            For OTHER, supply a descriptive title; otherwise its filename becomes the title.
         transcripts:
           type: array
           items:
@@ -11295,12 +15427,218 @@ components:
         - category
         - file
       additionalProperties: false
-      description:
-        Select institutionId from GET /institutions OR supply institutionName. An institution
-        is required for degrees, diplomas, transcripts, short courses and professional credentials.
-        Degrees/diplomas additionally require transcripts. INDUSTRY_CERTIFICATION and
-        PROFESSIONAL_REGISTRATION require expiresAt (YYYY-MM-DD or ISO datetime). Every file must be
-        PDF, JPEG or PNG, at most 10 MB by default. Titles are derived from filenames.
+      allOf:
+        - if:
+            properties:
+              category:
+                const: BACHELOR
+            required:
+              - category
+          then:
+            required:
+              - courseName
+              - transcripts
+            oneOf:
+              - required:
+                  - institutionId
+                properties:
+                  institutionId:
+                    type: string
+                    format: uuid
+                  institutionName:
+                    const: ''
+              - required:
+                  - institutionName
+                properties:
+                  institutionName:
+                    type: string
+                    minLength: 2
+                  institutionId:
+                    const: ''
+        - if:
+            properties:
+              category:
+                const: MASTER
+            required:
+              - category
+          then:
+            required:
+              - courseName
+              - transcripts
+            oneOf:
+              - required:
+                  - institutionId
+                properties:
+                  institutionId:
+                    type: string
+                    format: uuid
+                  institutionName:
+                    const: ''
+              - required:
+                  - institutionName
+                properties:
+                  institutionName:
+                    type: string
+                    minLength: 2
+                  institutionId:
+                    const: ''
+        - if:
+            properties:
+              category:
+                const: PHD
+            required:
+              - category
+          then:
+            required:
+              - courseName
+              - transcripts
+            oneOf:
+              - required:
+                  - institutionId
+                properties:
+                  institutionId:
+                    type: string
+                    format: uuid
+                  institutionName:
+                    const: ''
+              - required:
+                  - institutionName
+                properties:
+                  institutionName:
+                    type: string
+                    minLength: 2
+                  institutionId:
+                    const: ''
+        - if:
+            properties:
+              category:
+                const: DIPLOMA
+            required:
+              - category
+          then:
+            required:
+              - courseName
+              - transcripts
+            oneOf:
+              - required:
+                  - institutionId
+                properties:
+                  institutionId:
+                    type: string
+                    format: uuid
+                  institutionName:
+                    const: ''
+              - required:
+                  - institutionName
+                properties:
+                  institutionName:
+                    type: string
+                    minLength: 2
+                  institutionId:
+                    const: ''
+        - if:
+            properties:
+              category:
+                const: SHORT_COURSE
+            required:
+              - category
+          then:
+            required:
+              - courseName
+        - if:
+            properties:
+              category:
+                const: INDUSTRY_CERTIFICATION
+            required:
+              - category
+          then:
+            required:
+              - certificationName
+              - issuer
+              - issuedAt
+        - if:
+            properties:
+              category:
+                const: PROFESSIONAL_REGISTRATION
+            required:
+              - category
+          then:
+            required:
+              - issuer
+              - issuedAt
+              - expiresAt
+        - if:
+            properties:
+              category:
+                const: TRANSCRIPT
+            required:
+              - category
+          then:
+            required:
+              - courseName
+            oneOf:
+              - required:
+                  - institutionId
+                properties:
+                  institutionId:
+                    type: string
+                    format: uuid
+                  institutionName:
+                    const: ''
+              - required:
+                  - institutionName
+                properties:
+                  institutionName:
+                    type: string
+                    minLength: 2
+                  institutionId:
+                    const: ''
+        - if:
+            properties:
+              category:
+                const: OTHER
+            required:
+              - category
+          then:
+            required:
+              - title
+      description: >-
+        Choose category in Try it out. Required fields depend on category; the server enforces these
+        rules.
+
+
+        | Category | Required metadata | Transcripts |
+
+        | --- | --- | --- |
+
+        | BACHELOR (Bachelor's degree) | courseName, institutionId OR institutionName | 1–5 required
+        |
+
+        | MASTER (Master's degree) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | PHD (PhD) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | DIPLOMA (Diploma) | courseName, institutionId OR institutionName | 1–5 required |
+
+        | SHORT_COURSE (Short course) | courseName | Not accepted as attachments |
+
+        | INDUSTRY_CERTIFICATION (Industry certification) | certificationName, issuer, issuedAt |
+        Not accepted as attachments |
+
+        | PROFESSIONAL_REGISTRATION (Professional registration) | issuer, issuedAt, expiresAt | Not
+        accepted as attachments |
+
+        | TRANSCRIPT (Standalone transcript) | courseName, institutionId OR institutionName | Not
+        accepted as attachments |
+
+        | OTHER (Other document) | title | Not accepted as attachments |
+
+
+        Search GET /institutions?search=... and send the selected institutionId OR a typed
+        institutionName, never both. Institution is optional for short courses and professional
+        credentials. Swagger exposes all fields; the application frontend controls
+        category-dependent visibility and institution autocomplete. Dates accept YYYY-MM-DD or an
+        ISO datetime. Every file must be PDF, JPEG or PNG, at most 10 MB by default.
     IdentityUpload:
       type: object
       properties:
@@ -11471,6 +15809,17 @@ components:
           type: string
           minLength: 2
           maxLength: 200
+        type:
+          default: OTHER
+          type: string
+          enum:
+            - UNIVERSITY
+            - COLLEGE
+            - TRAINING_INSTITUTE
+            - OTHER
+        offersTvet:
+          default: false
+          type: boolean
         country:
           default: KE
           type: string
@@ -11492,6 +15841,17 @@ components:
           type: string
           minLength: 2
           maxLength: 200
+        type:
+          default: OTHER
+          type: string
+          enum:
+            - UNIVERSITY
+            - COLLEGE
+            - TRAINING_INSTITUTE
+            - OTHER
+        offersTvet:
+          default: false
+          type: boolean
         country:
           default: KE
           type: string
@@ -11558,6 +15918,26 @@ components:
         approved:
           default: false
           type: boolean
+        scope:
+          default: CORE
+          type: string
+          enum:
+            - CORE
+            - INDUSTRY
+            - COMPANY
+            - COURSE
+        industryId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        companyId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        courseName:
+          type: string
+          minLength: 2
+          maxLength: 200
         competencies:
           minItems: 1
           maxItems: 100
@@ -11573,6 +15953,23 @@ components:
                 type: integer
                 minimum: 1
                 maximum: 100
+              requiredScore:
+                default: 70
+                type: integer
+                minimum: 1
+                maximum: 100
+              learningObjective:
+                type: string
+                minLength: 10
+                maxLength: 2000
+              learningResources:
+                default: []
+                maxItems: 20
+                type: array
+                items:
+                  type: string
+                  maxLength: 1000
+                  format: uri
             required:
               - competencyId
               - weight
@@ -11615,6 +16012,41 @@ components:
           type: integer
           minimum: 15
           maximum: 240
+        interactionPolicy:
+          default:
+            cameraRequired: false
+            microphoneRequired: false
+            allowText: true
+            language: en
+            accommodationInstructions: Contact an administrator to request an equipment exception before starting.
+          type: object
+          properties:
+            cameraRequired:
+              default: false
+              type: boolean
+            microphoneRequired:
+              default: false
+              type: boolean
+            allowText:
+              default: true
+              type: boolean
+            language:
+              default: en
+              type: string
+              minLength: 2
+              maxLength: 20
+            cameraPurpose:
+              type: string
+              minLength: 10
+              maxLength: 1000
+            accommodationInstructions:
+              default:
+                Contact an administrator to request a camera or microphone exception or a text-based
+                assessment before starting.
+              type: string
+              minLength: 10
+              maxLength: 1000
+          additionalProperties: false
         instructions:
           type: string
           minLength: 10

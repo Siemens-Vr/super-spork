@@ -64,17 +64,37 @@ enum BookingStatus {
   MISSED
 }
 
+enum AssessmentTargetStatus {
+  DRAFT
+  PREPARED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum RequirementScope {
+  CORE
+  INDUSTRY
+  COMPANY
+  COURSE
+}
+
+enum LearningStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
-  id              String                 @id @default(uuid()) @db.Uuid
-  email           String                 @unique
+  id              String              @id @default(uuid()) @db.Uuid
+  email           String              @unique
   legalName       String
   phone           String?
   passwordHash    String?
-  emailVerifiedAt DateTime?              @db.Timestamptz(3)
-  status          AccountStatus          @default(ACTIVE)
-  sessionVersion  Int                    @default(0)
-  createdAt       DateTime               @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime               @updatedAt @db.Timestamptz(3)
+  emailVerifiedAt DateTime?           @db.Timestamptz(3)
+  status          AccountStatus       @default(ACTIVE)
+  sessionVersion  Int                 @default(0)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
   profile         ApplicantProfile?
   roles           UserRole[]
   identities      AuthIdentity[]
@@ -82,12 +102,14 @@ model User {
   sessions        Session[]
   mfa             AdminMfaCredential?
   documents       Document[]
-  preferences     CareerPreference?
-  bookings        AssessmentBooking[]
-  reviews         DocumentVerification[]
-  evidence        VerificationEvidence[]
-  audits          AuditLog[]
-  suggestions     CompanySuggestion[]
+
+  bookings          AssessmentBooking[]
+  reviews           DocumentVerification[]
+  evidence          VerificationEvidence[]
+  audits            AuditLog[]
+  suggestions       CompanySuggestion[]
+  assessmentTargets AssessmentTarget[]
+  assessedAttempts  AssessmentAttempt[]    @relation("AttemptAssessor")
 }
 
 model Role {
@@ -202,50 +224,75 @@ model AuditLog {
   @@index([resourceId])
 }
 
+enum InstitutionType {
+  UNIVERSITY
+  COLLEGE
+  TRAINING_INSTITUTE
+  OTHER
+}
+
 model Institution {
-  id        String     @id @default(uuid()) @db.Uuid
-  name      String     @unique
-  country   String     @default("KE")
-  website   String?
-  active    Boolean    @default(true)
-  documents Document[]
-  createdAt DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime   @updatedAt @db.Timestamptz(3)
+  id         String             @id @default(uuid()) @db.Uuid
+  name       String             @unique
+  country    String             @default("KE")
+  website    String?
+  type       InstitutionType    @default(OTHER)
+  offersTvet Boolean            @default(false)
+  sourceUrl  String?
+  aliases    InstitutionAlias[]
+  active     Boolean            @default(true)
+  documents  Document[]
+  createdAt  DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime           @updatedAt @db.Timestamptz(3)
+
+  @@index([type, active])
+}
+
+model InstitutionAlias {
+  id            String      @id @default(uuid()) @db.Uuid
+  institutionId String      @db.Uuid
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  name          String
+
+  @@unique([institutionId, name])
 }
 
 // Identity and academic records share storage mechanics; category separates their states.
 model Document {
-  id                        String                      @id @default(uuid()) @db.Uuid
-  applicantId               String                      @db.Uuid
-  applicant                 User                        @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  id                        String                          @id @default(uuid()) @db.Uuid
+  applicantId               String                          @db.Uuid
+  applicant                 User                            @relation(fields: [applicantId], references: [id], onDelete: Restrict)
   category                  DocumentCategory
   title                     String
+  courseName                String?
+  certificationName         String?
   issuer                    String?
-  institutionId             String?                     @db.Uuid
+  institutionId             String?                         @db.Uuid
   institutionName           String?
-  institution               Institution?                @relation(fields: [institutionId], references: [id], onDelete: Restrict)
-  issuedAt                  DateTime?                   @db.Timestamptz(3)
-  expiresAt                 DateTime?                   @db.Timestamptz(3)
+  institution               Institution?                    @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  issuedAt                  DateTime?                       @db.Timestamptz(3)
+  expiresAt                 DateTime?                       @db.Timestamptz(3)
   encryptedCredentialNumber String?
   verificationUrl           String?
-  storageKey                String                      @unique
+  storageKey                String                          @unique
   mimeType                  String
   size                      Int
   sha256                    String
-  scanStatus                ScanStatus                  @default(QUARANTINED)
-  status                    VerificationStatus          @default(UPLOADED)
-  replacesId                String?                     @unique @db.Uuid
-  replaces                  Document?                   @relation("DocumentVersions", fields: [replacesId], references: [id], onDelete: Restrict)
-  replacement               Document?                   @relation("DocumentVersions")
-  qualificationId           String?                     @db.Uuid
-  qualification             Document?                   @relation("QualificationTranscripts", fields: [qualificationId], references: [id], onDelete: Restrict)
-  transcripts               Document[]                  @relation("QualificationTranscripts")
+  scanStatus                ScanStatus                      @default(QUARANTINED)
+  status                    VerificationStatus              @default(UPLOADED)
+  replacesId                String?                         @unique @db.Uuid
+  replaces                  Document?                       @relation("DocumentVersions", fields: [replacesId], references: [id], onDelete: Restrict)
+  replacement               Document?                       @relation("DocumentVersions")
+  qualificationId           String?                         @db.Uuid
+  qualification             Document?                       @relation("QualificationTranscripts", fields: [qualificationId], references: [id], onDelete: Restrict)
+  transcripts               Document[]                      @relation("QualificationTranscripts")
   reviews                   DocumentVerification[]
   evidence                  VerificationEvidence[]
   history                   VerificationStatusHistory[]
   analysisJobs              DocumentAnalysisJob[]
-  createdAt                 DateTime                    @default(now()) @db.Timestamptz(3)
-  updatedAt                 DateTime                    @updatedAt @db.Timestamptz(3)
+  assessmentQualifications  AssessmentTargetQualification[]
+  createdAt                 DateTime                        @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime                        @updatedAt @db.Timestamptz(3)
 
   @@index([applicantId, category])
   @@index([qualificationId])
@@ -299,28 +346,32 @@ model DocumentAnalysisJob {
 }
 
 model Industry {
-  id          String               @id @default(uuid()) @db.Uuid
-  name        String               @unique
+  id          String            @id @default(uuid()) @db.Uuid
+  name        String            @unique
   description String
-  active      Boolean              @default(true)
+  active      Boolean           @default(true)
   companies   CompanyIndustry[]
   jobRoles    JobRoleIndustry[]
-  preferences IndustryPreference[]
-  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime             @updatedAt @db.Timestamptz(3)
+
+  assessmentTargets     AssessmentTargetIndustry[]
+  requirementFrameworks CompetencyFramework[]
+  createdAt             DateTime                   @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime                   @updatedAt @db.Timestamptz(3)
 }
 
 model Company {
-  id          String              @id @default(uuid()) @db.Uuid
-  name        String              @unique
+  id          String            @id @default(uuid()) @db.Uuid
+  name        String            @unique
   description String
   website     String?
-  country     String              @default("KE")
-  active      Boolean             @default(true)
+  country     String            @default("KE")
+  active      Boolean           @default(true)
   industries  CompanyIndustry[]
-  preferences CompanyPreference[]
-  createdAt   DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime            @updatedAt @db.Timestamptz(3)
+
+  assessmentTargets     AssessmentTargetCompany[]
+  requirementFrameworks CompetencyFramework[]
+  createdAt             DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime                  @updatedAt @db.Timestamptz(3)
 }
 
 model CompanyIndustry {
@@ -344,16 +395,17 @@ model CompanySuggestion {
 }
 
 model JobRole {
-  id          String                @id @default(uuid()) @db.Uuid
-  title       String                @unique
+  id          String            @id @default(uuid()) @db.Uuid
+  title       String            @unique
   description String
-  active      Boolean               @default(true)
+  active      Boolean           @default(true)
   industries  JobRoleIndustry[]
-  preferences CareerPreference[]
-  frameworks  CompetencyFramework[]
-  blueprints  AssessmentBlueprint[]
-  createdAt   DateTime              @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime              @updatedAt @db.Timestamptz(3)
+
+  frameworks        CompetencyFramework[]
+  blueprints        AssessmentBlueprint[]
+  assessmentTargets AssessmentTarget[]
+  createdAt         DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime              @updatedAt @db.Timestamptz(3)
 }
 
 model JobRoleIndustry {
@@ -365,45 +417,13 @@ model JobRoleIndustry {
   @@id([jobRoleId, industryId])
 }
 
-model CareerPreference {
-  id            String               @id @default(uuid()) @db.Uuid
-  applicantId   String               @unique @db.Uuid
-  applicant     User                 @relation(fields: [applicantId], references: [id], onDelete: Restrict)
-  primaryRoleId String               @db.Uuid
-  primaryRole   JobRole              @relation(fields: [primaryRoleId], references: [id], onDelete: Restrict)
-  industries    IndustryPreference[]
-  companies     CompanyPreference[]
-  updatedAt     DateTime             @updatedAt @db.Timestamptz(3)
-}
-
-model IndustryPreference {
-  preferenceId String           @db.Uuid
-  industryId   String           @db.Uuid
-  rank         Int
-  preference   CareerPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
-  industry     Industry         @relation(fields: [industryId], references: [id], onDelete: Restrict)
-
-  @@id([preferenceId, industryId])
-  @@unique([preferenceId, rank])
-}
-
-model CompanyPreference {
-  preferenceId String           @db.Uuid
-  companyId    String           @db.Uuid
-  rank         Int
-  preference   CareerPreference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
-  company      Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
-
-  @@id([preferenceId, companyId])
-  @@unique([preferenceId, rank])
-}
-
 model Competency {
-  id          String                @id @default(uuid()) @db.Uuid
-  code        String                @unique
-  name        String
-  description String
-  frameworks  FrameworkCompetency[]
+  id                     String                  @id @default(uuid()) @db.Uuid
+  code                   String                  @unique
+  name                   String
+  description            String
+  frameworks             FrameworkCompetency[]
+  assessmentRequirements AssessmentRequirement[]
 }
 
 model CompetencyFramework {
@@ -413,6 +433,12 @@ model CompetencyFramework {
   version      Int
   title        String
   approved     Boolean               @default(false)
+  scope        RequirementScope      @default(CORE)
+  industryId   String?               @db.Uuid
+  industry     Industry?             @relation(fields: [industryId], references: [id], onDelete: Restrict)
+  companyId    String?               @db.Uuid
+  company      Company?              @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  courseName   String?
   competencies FrameworkCompetency[]
   blueprints   AssessmentBlueprint[]
   createdAt    DateTime              @default(now()) @db.Timestamptz(3)
@@ -421,11 +447,14 @@ model CompetencyFramework {
 }
 
 model FrameworkCompetency {
-  frameworkId  String              @db.Uuid
-  competencyId String              @db.Uuid
-  framework    CompetencyFramework @relation(fields: [frameworkId], references: [id], onDelete: Restrict)
-  competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Restrict)
-  weight       Int
+  frameworkId       String              @db.Uuid
+  competencyId      String              @db.Uuid
+  framework         CompetencyFramework @relation(fields: [frameworkId], references: [id], onDelete: Restrict)
+  competency        Competency          @relation(fields: [competencyId], references: [id], onDelete: Restrict)
+  weight            Int
+  requiredScore     Int                 @default(70)
+  learningObjective String?
+  learningResources String[]            @default([])
 
   @@id([frameworkId, competencyId])
 }
@@ -445,6 +474,9 @@ model AssessmentBlueprint {
   requiresAuthenticatedAcademic Boolean                  @default(false)
   availability                  AssessmentAvailability[]
   bookings                      AssessmentBooking[]
+  attempts                      AssessmentAttempt[]
+  interactionPolicy             Json                     @default("{}")
+  scenarios                     BlueprintScenario[]
   createdAt                     DateTime                 @default(now()) @db.Timestamptz(3)
 
   @@unique([jobRoleId, version])
@@ -480,27 +512,160 @@ model AssessmentSlot {
 }
 
 model AssessmentBooking {
-  id                String                   @id @default(uuid()) @db.Uuid
-  applicantId       String                   @db.Uuid
-  applicant         User                     @relation(fields: [applicantId], references: [id], onDelete: Restrict)
-  blueprintId       String                   @db.Uuid
-  blueprint         AssessmentBlueprint      @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
-  slotId            String                   @db.Uuid
-  slot              AssessmentSlot           @relation(fields: [slotId], references: [id], onDelete: Restrict)
+  id                String                        @id @default(uuid()) @db.Uuid
+  applicantId       String                        @db.Uuid
+  applicant         User                          @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  targetId          String?                       @db.Uuid
+  target            AssessmentTarget?             @relation(fields: [targetId], references: [id], onDelete: Restrict)
+  blueprintId       String                        @db.Uuid
+  blueprint         AssessmentBlueprint           @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  slotId            String                        @db.Uuid
+  slot              AssessmentSlot                @relation(fields: [slotId], references: [id], onDelete: Restrict)
   seat              Int
-  status            BookingStatus            @default(SCHEDULED)
+  status            BookingStatus                 @default(SCHEDULED)
   idempotencyKey    String
-  rescheduleCount   Int                      @default(0)
-  rescheduledFromId String?                  @unique @db.Uuid
-  rescheduledFrom   AssessmentBooking?       @relation("BookingChain", fields: [rescheduledFromId], references: [id], onDelete: Restrict)
-  rescheduledTo     AssessmentBooking?       @relation("BookingChain")
+  rescheduleCount   Int                           @default(0)
+  rescheduledFromId String?                       @unique @db.Uuid
+  rescheduledFrom   AssessmentBooking?            @relation("BookingChain", fields: [rescheduledFromId], references: [id], onDelete: Restrict)
+  rescheduledTo     AssessmentBooking?            @relation("BookingChain")
   events            AssessmentBookingEvent[]
-  createdAt         DateTime                 @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime                 @updatedAt @db.Timestamptz(3)
+  interaction       AssessmentInteractionSession?
+  createdAt         DateTime                      @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime                      @updatedAt @db.Timestamptz(3)
 
   @@unique([applicantId, idempotencyKey])
   @@index([slotId, status])
   @@index([applicantId, createdAt])
+  @@index([targetId])
+}
+
+model AssessmentTarget {
+  id             String                          @id @default(uuid()) @db.Uuid
+  applicantId    String                          @db.Uuid
+  applicant      User                            @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  jobRoleId      String                          @db.Uuid
+  jobRole        JobRole                         @relation(fields: [jobRoleId], references: [id], onDelete: Restrict)
+  status         AssessmentTargetStatus          @default(DRAFT)
+  industries     AssessmentTargetIndustry[]
+  companies      AssessmentTargetCompany[]
+  qualifications AssessmentTargetQualification[]
+  attempt        AssessmentAttempt?
+  bookings       AssessmentBooking[]
+  lockedAt       DateTime?                       @db.Timestamptz(3)
+  completedAt    DateTime?                       @db.Timestamptz(3)
+  createdAt      DateTime                        @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime                        @updatedAt @db.Timestamptz(3)
+
+  @@index([applicantId, createdAt])
+}
+
+model AssessmentTargetIndustry {
+  targetId   String           @db.Uuid
+  industryId String           @db.Uuid
+  rank       Int
+  target     AssessmentTarget @relation(fields: [targetId], references: [id], onDelete: Restrict)
+  industry   Industry         @relation(fields: [industryId], references: [id], onDelete: Restrict)
+
+  @@id([targetId, industryId])
+  @@unique([targetId, rank])
+}
+
+model AssessmentTargetCompany {
+  targetId  String           @db.Uuid
+  companyId String           @db.Uuid
+  rank      Int
+  target    AssessmentTarget @relation(fields: [targetId], references: [id], onDelete: Restrict)
+  company   Company          @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@id([targetId, companyId])
+  @@unique([targetId, rank])
+}
+
+model AssessmentTargetQualification {
+  targetId   String           @db.Uuid
+  documentId String           @db.Uuid
+  target     AssessmentTarget @relation(fields: [targetId], references: [id], onDelete: Restrict)
+  document   Document         @relation(fields: [documentId], references: [id], onDelete: Restrict)
+
+  @@id([targetId, documentId])
+}
+
+model AssessmentAttempt {
+  id              String                        @id @default(uuid()) @db.Uuid
+  targetId        String                        @unique @db.Uuid
+  target          AssessmentTarget              @relation(fields: [targetId], references: [id], onDelete: Restrict)
+  blueprintId     String                        @db.Uuid
+  blueprint       AssessmentBlueprint           @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  contextSnapshot Json
+  requirements    AssessmentRequirement[]
+  results         AssessmentCompetencyResult[]
+  learningPlan    LearningPlan?
+  startedAt       DateTime?                     @db.Timestamptz(3)
+  completedAt     DateTime?                     @db.Timestamptz(3)
+  assessorId      String?                       @db.Uuid
+  assessor        User?                         @relation("AttemptAssessor", fields: [assessorId], references: [id], onDelete: Restrict)
+  completionKey   String?
+  completionHash  String?
+  overallScore    Float?
+  interaction     AssessmentInteractionSession?
+  accommodation   AssessmentAccommodation?
+  createdAt       DateTime                      @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentRequirement {
+  id                String                      @id @default(uuid()) @db.Uuid
+  attemptId         String                      @db.Uuid
+  attempt           AssessmentAttempt           @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  competencyId      String                      @db.Uuid
+  competency        Competency                  @relation(fields: [competencyId], references: [id], onDelete: Restrict)
+  code              String
+  name              String
+  description       String
+  requiredScore     Int
+  weight            Int
+  sources           Json
+  learningObjective String
+  learningResources String[]                    @default([])
+  result            AssessmentCompetencyResult?
+
+  @@unique([attemptId, competencyId])
+}
+
+model AssessmentCompetencyResult {
+  id            String                @id @default(uuid()) @db.Uuid
+  attemptId     String                @db.Uuid
+  attempt       AssessmentAttempt     @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  requirementId String                @unique @db.Uuid
+  requirement   AssessmentRequirement @relation(fields: [requirementId], references: [id], onDelete: Restrict)
+  score         Int
+  gap           Int
+  evidence      String
+  learningItem  LearningPlanItem?
+}
+
+model LearningPlan {
+  id          String             @id @default(uuid()) @db.Uuid
+  attemptId   String             @unique @db.Uuid
+  attempt     AssessmentAttempt  @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  status      LearningStatus     @default(PENDING)
+  items       LearningPlanItem[]
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  completedAt DateTime?          @db.Timestamptz(3)
+}
+
+model LearningPlanItem {
+  id          String                     @id @default(uuid()) @db.Uuid
+  planId      String                     @db.Uuid
+  plan        LearningPlan               @relation(fields: [planId], references: [id], onDelete: Restrict)
+  resultId    String                     @unique @db.Uuid
+  result      AssessmentCompetencyResult @relation(fields: [resultId], references: [id], onDelete: Restrict)
+  priority    Int
+  objective   String
+  resources   String[]                   @default([])
+  status      LearningStatus             @default(PENDING)
+  completedAt DateTime?                  @db.Timestamptz(3)
+
+  @@unique([planId, priority])
 }
 
 model AssessmentBookingEvent {
@@ -527,4 +692,177 @@ model RateLimitBucket {
   key       String   @id
   count     Int      @default(1)
   expiresAt DateTime @db.Timestamptz(3)
+}
+
+model AssessmentScenario {
+  id                 String              @id @default(uuid()) @db.Uuid
+  code               String
+  version            Int                 @default(1)
+  title              String
+  prompt             String
+  evaluationCriteria String
+  competencyIds      String[]            @db.Uuid
+  maxFollowups       Int                 @default(2)
+  approved           Boolean             @default(false)
+  blueprints         BlueprintScenario[]
+  createdAt          DateTime            @default(now()) @db.Timestamptz(3)
+
+  @@unique([code, version])
+}
+
+model BlueprintScenario {
+  blueprintId String              @db.Uuid
+  scenarioId  String              @db.Uuid
+  position    Int
+  blueprint   AssessmentBlueprint @relation(fields: [blueprintId], references: [id], onDelete: Restrict)
+  scenario    AssessmentScenario  @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+
+  @@id([blueprintId, scenarioId])
+  @@unique([blueprintId, position])
+}
+
+model AssessmentAccommodation {
+  id              String            @id @default(uuid()) @db.Uuid
+  attemptId       String            @unique @db.Uuid
+  attempt         AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  waiveCamera     Boolean           @default(false)
+  waiveMicrophone Boolean           @default(false)
+  allowText       Boolean           @default(false)
+  reason          String
+  approvedById    String            @db.Uuid
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentInteractionSession {
+  id                String                          @id @default(uuid()) @db.Uuid
+  attemptId         String                          @unique @db.Uuid
+  attempt           AssessmentAttempt               @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  bookingId         String                          @unique @db.Uuid
+  booking           AssessmentBooking               @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  mode              String
+  language          String                          @default("en")
+  status            String                          @default("ACTIVE")
+  policy            Json
+  preflight         Json
+  scenarios         Json
+  leaseToken        String?                         @db.Uuid
+  leaseExpiresAt    DateTime?                       @db.Timestamptz(3)
+  pendingResponseId String?                         @db.Uuid
+  messages          AssessmentConversationMessage[]
+  responses         AssessmentResponse[]
+  transcriptions    AssessmentTranscription[]
+  speech            AssessmentSpeech[]
+  events            AssessmentSessionEvent[]
+  checkpoints       AssessmentGraphCheckpoint[]
+  writes            AssessmentGraphWrite[]
+  evaluation        Json?
+  completedAt       DateTime?                       @db.Timestamptz(3)
+  createdAt         DateTime                        @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime                        @updatedAt @db.Timestamptz(3)
+}
+
+model AssessmentConversationMessage {
+  id            String                       @id @db.Uuid
+  sessionId     String                       @db.Uuid
+  session       AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  sequence      Int
+  role          String
+  text          String
+  scenarioIndex Int
+  createdAt     DateTime                     @default(now()) @db.Timestamptz(3)
+  speech        AssessmentSpeech[]
+
+  @@unique([sessionId, sequence])
+}
+
+model AssessmentResponse {
+  id              String                       @id @default(uuid()) @db.Uuid
+  sessionId       String                       @db.Uuid
+  session         AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  idempotencyKey  String
+  payloadHash     String
+  promptId        String                       @db.Uuid
+  origin          String
+  confirmedText   String
+  transcriptionId String?                      @unique @db.Uuid
+  transcription   AssessmentTranscription?     @relation(fields: [transcriptionId], references: [id], onDelete: Restrict)
+  processedAt     DateTime?                    @db.Timestamptz(3)
+  createdAt       DateTime                     @default(now()) @db.Timestamptz(3)
+
+  @@unique([sessionId, idempotencyKey])
+}
+
+model AssessmentTranscription {
+  id           String                       @id @default(uuid()) @db.Uuid
+  sessionId    String                       @db.Uuid
+  session      AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  status       String
+  provider     String
+  model        String?
+  language     String
+  originalText String?
+  durationMs   Int?
+  byteLength   Int?
+  response     AssessmentResponse?
+  corrections  TranscriptCorrection[]
+  createdAt    DateTime                     @default(now()) @db.Timestamptz(3)
+}
+
+model TranscriptCorrection {
+  id              String                  @id @default(uuid()) @db.Uuid
+  transcriptionId String                  @db.Uuid
+  transcription   AssessmentTranscription @relation(fields: [transcriptionId], references: [id], onDelete: Restrict)
+  originalText    String
+  confirmedText   String
+  createdAt       DateTime                @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentSpeech {
+  id        String                        @id @default(uuid()) @db.Uuid
+  sessionId String                        @db.Uuid
+  session   AssessmentInteractionSession  @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  messageId String                        @db.Uuid
+  message   AssessmentConversationMessage @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  provider  String
+  status    String
+  createdAt DateTime                      @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentSessionEvent {
+  id        String                       @id @default(uuid()) @db.Uuid
+  sessionId String                       @db.Uuid
+  session   AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  kind      String
+  details   Json?
+  createdAt DateTime                     @default(now()) @db.Timestamptz(3)
+}
+
+model AssessmentGraphCheckpoint {
+  sessionId    String                       @db.Uuid
+  session      AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  namespace    String                       @default("")
+  checkpointId String
+  parentId     String?
+  type         String
+  data         Bytes
+  metadataType String
+  metadata     Bytes
+  createdAt    DateTime                     @default(now()) @db.Timestamptz(3)
+
+  @@id([sessionId, namespace, checkpointId])
+}
+
+model AssessmentGraphWrite {
+  sessionId    String                       @db.Uuid
+  session      AssessmentInteractionSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  namespace    String                       @default("")
+  checkpointId String
+  taskId       String
+  taskPath     String                       @default("")
+  idx          Int
+  channel      String
+  type         String
+  data         Bytes
+
+  @@id([sessionId, namespace, checkpointId, taskId, idx])
 }

@@ -1,6 +1,8 @@
 # VML NEXUS backend
 
-Phase-one REST API for Virtual Mechatronics Labs: applicant registration → private document onboarding → career selection → competency assessment booking. Verification can proceed in parallel. No frontend, live AI interview, scores, or course delivery is implemented.
+REST API for Virtual Mechatronics Labs: applicant registration → private document onboarding → one-career assessment target → booking → assessor-recorded competency results → skill gaps and upskilling plans. Verification can proceed in parallel. A configurable AI interviewer now supports approved scenarios, persistent text/voice conversations and assessor-reviewed competency proposals. No production frontend or course delivery is connected.
+
+See [assessment targets and upskilling](docs/assessment-targets.md) for the complete API workflow, rubric configuration, scoring rules and assessment target history. Each prepared assessment preserves its course, career, industries, companies and requirement versions. Completing it unlocks the next career target.
 
 ## Start locally
 
@@ -20,6 +22,14 @@ npm run dev
 # In another terminal with the same environment:
 npm run worker
 ```
+
+The seed includes 313 Kenyan institutions with searchable aliases and institution types. To update only this directory, run `npm run db:seed:institutions`. Existing institution IDs and inactive entries are preserved. See [directory source and import notes](prisma/data/README.md).
+
+It also includes the 27 agreed engineering industries, each with a description, in `prisma/data/engineering-industries.json`. Run `npm run db:seed:industries` to add only these industries. The command is safe to repeat: existing IDs, descriptions, inactive status and relationships are preserved. Earlier catalogue entries remain in existing databases; fresh databases receive the new 27-entry catalogue. The main seed uses the new industries for newly created companies and demonstration careers. No database migration is needed for this catalogue update.
+
+The company seed adds 40 employers across Kenya (KE), Uganda (UG), Tanzania (TZ), and Rwanda (RW), covering all 27 engineering industries. Run `npm run db:seed:companies` to install only this catalogue and its industry links; `npm run db:seed` includes it too. Each entry has a description, website, country and industry mappings, with source URLs in `prisma/data/east-african-companies.json`. Existing company IDs, admin edits, inactive status and additional links are preserved. No schema migration is required.
+
+In Swagger, use **GET /api/v1/companies** with `search`, `industryIds`, `page` and `limit` (maximum 100). For example, search `kiira` or `Kenya Airways`; pass selected industry UUIDs to show matching employers. Applicants can use returned company IDs in their assessment target choices. This is a curated employer directory, including public utilities and research bodies, rather than a complete East African business register. It does not seed company-specific assessment requirements.
 
 ClamAV needs time to download signatures and initialize. Until scanning succeeds, documents remain quarantined. The worker is required for scans and email delivery. All Compose ports bind to loopback; its credentials are development-only.
 
@@ -51,15 +61,15 @@ The bootstrap script refuses a second administrator unless the operator explicit
 
 All routes are below `/api/v1`. Operations are documented in [docs/openapi.yaml](docs/openapi.yaml), including searchable `/institutions` for upload dropdowns. See [document upload requirements](docs/api.md) for institution, transcript and expiry fields by category; upload titles come from filenames.
 
-| Area              | Routes                                                                                                                                                                                                                                                                      |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authentication    | `/auth/register`, `/verify-email`, `/resend-verification`, `/login`, `/logout`, `/logout-all`, `/me`, `/sessions`, `/sessions/:id`, `/forgot-password`, `/reset-password`, `/reauthenticate`, `/csrf` (all under `/auth`)                                                   |
-| Google and MFA    | `/auth/google`, `/auth/google/callback`, `/auth/google/complete`, `/auth/google/link`, `/auth/mfa/setup`, `/auth/mfa/verify`                                                                                                                                                |
-| Applicant         | `/applicants/me`, `/applicants/me/onboarding`, `/applicants/me/career-preferences`                                                                                                                                                                                          |
-| Private documents | `/identity/documents`, `/identity/status`, `/identity/documents/:id/replace`, `/documents`, `/documents/:id`, `/documents/:id/verification`, `/documents/:id/download`, `/documents/:id/replace`, `/documents/:id/evidence`                                                 |
-| Catalogue         | `/industries`, `/companies`, `/companies/suggestions`, `/careers`, `/careers/:id`, `/careers/:id/competencies`                                                                                                                                                              |
-| Assessment        | `/assessments/eligibility`, `/assessments/blueprints/:id`, `/assessments/available-slots`, `/assessments/bookings`, `/assessments/bookings/:id`, `/assessments/bookings/:id/cancel`, `/assessments/bookings/:id/reschedule`                                                 |
-| Administration    | `/admin/applicants`, applicant details/status, `/admin/documents` with details/download/reviews/evidence; industries, companies, careers, institutions, competencies, frameworks, blueprints; company suggestions/review; availability; bookings/details/cancel; audit logs |
+| Area              | Routes                                                                                                                                                                                                                                                                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Authentication    | `/auth/register`, `/verify-email`, `/resend-verification`, `/login`, `/logout`, `/logout-all`, `/me`, `/sessions`, `/sessions/:id`, `/forgot-password`, `/reset-password`, `/reauthenticate`, `/csrf` (all under `/auth`)                                                                                                                        |
+| Google and MFA    | `/auth/google`, `/auth/google/callback`, `/auth/google/complete`, `/auth/google/link`, `/auth/mfa/setup`, `/auth/mfa/verify`                                                                                                                                                                                                                     |
+| Applicant         | `/applicants/me`, `/applicants/me/onboarding`                                                                                                                                                                                                                                                                                                    |
+| Private documents | `/identity/documents`, `/identity/status`, `/identity/documents/:id/replace`, `/documents`, `/documents/:id`, `/documents/:id/verification`, `/documents/:id/download`, `/documents/:id/replace`, `/documents/:id/evidence`                                                                                                                      |
+| Catalogue         | `/industries`, `/companies`, `/companies/suggestions`, `/careers`, `/careers/:id`, `/careers/:id/competencies`                                                                                                                                                                                                                                   |
+| Assessment        | `/assessments/targets`, target details/prepare, `/assessments/attempts/:id`, attempt start, learning plans/progress, `/assessments/eligibility`, `/assessments/blueprints/:id`, `/assessments/available-slots`, `/assessments/bookings`, `/assessments/bookings/:id`, `/assessments/bookings/:id/cancel`, `/assessments/bookings/:id/reschedule` |
+| Administration    | `/admin/applicants`, applicant details/status, `/admin/documents` with details/download/reviews/evidence; industries, companies, careers, institutions, competencies, frameworks, blueprints; company suggestions/review; availability; bookings/details/cancel; audit logs                                                                      |
 
 Consult Swagger for HTTP methods, input schemas, permissions and status codes. Applicant routes require verified email. Private document and booking lookups enforce ownership even with a known UUID. Admin access requires ADMIN **and** granular permissions **and** recent MFA.
 
@@ -112,3 +122,13 @@ Run migrations once as an authorized deployment step, not simultaneously in ever
 - [Security decisions and operating checklist](docs/security.md), [validation report](docs/validation.md)
 
 Google requires a configured OAuth client and exact redirect URI. SMTP and S3 require credentials outside local Compose. This milestone does not determine legal compliance automatically. Retention and deletion need institutional approval; the provided retention report identifies candidates and never silently deletes sensitive records or historical evidence. The full external-service stack and live Google authentication must be validated in the target deployment before production release.
+
+## Assessment entry and voice development tests
+
+The backend supports owned booking preflight, confirmed session start, approved scenarios, a LangGraph conversation with PostgreSQL checkpoints, final transcript correction, speech adapters, reconnect/resume and assessor-reviewed AI proposals. See [the implementation audit and configuration](docs/assessment-interaction-audit.md).
+
+After migrations, Prisma generation and seeding, start the API and open [the development assessment test page](http://localhost:3000/dev/assessments). Sign in with a verified applicant account and select a scheduled booking. The page and its media controls exist only in development; production uses the documented APIs from its own frontend. Camera preview remains local and video is never recorded. Browser speech recognition may use the browser vendor; no server audio is retained.
+
+Set `AI_PROVIDER=compatible` with `AI_BASE_URL`, `AI_MODEL` and a server-side `AI_API_KEY` to enable the real interviewer. Browser STT/TTS are the defaults; compatible server speech adapters are optional. AI output is provisional until an authorised assessor reviews it. The seeded Mechatronics scenarios and broad rubric are development content requiring institutional review before real assessment decisions.
+
+For local Ollama, use `AI_BASE_URL=http://127.0.0.1:11434/v1`, `AI_API_KEY=ollama` (a local placeholder), `AI_MODEL=qwen3.5:9b`, `AI_REASONING_EFFORT=none`, `AI_MAX_OUTPUT_TOKENS=768` and `AI_KEEP_ALIVE=30m`. Keep Ollama running and restart the API after changing `.env`. Run `npm run ai:check` to measure a real synthetic assessment turn without creating an applicant result.

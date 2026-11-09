@@ -2,9 +2,12 @@ import type { z } from 'zod';
 import { prisma, userLock, type Tx } from '../config/prisma.js';
 import { requireCondition } from '../errors/app-error.js';
 import { notify } from './email.service.js';
+import { activeTargetStatuses, targetForBooking } from './assessment-target.service.js';
 import { audit } from '../utils/audit.js';
+import { applicantProfileSelect, isProfileComplete } from '../utils/applicant-profile.js';
 import type { availabilitySchema } from '../validators/assessment.schema.js';
 const bookingInclude = {
+  target: { select: { attempt: { select: { id: true } } } },
   blueprint: { include: { jobRole: true } },
   slot: { include: { availability: true } },
   events: { orderBy: { createdAt: 'asc' as const } },
@@ -13,33 +16,35 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
   const u = await tx.user.findUniqueOrThrow({
     where: { id: applicantId },
     include: {
-      profile: true,
-      preferences: { include: { primaryRole: true } },
+      profile: { select: applicantProfileSelect },
       documents: { where: { replacement: null } },
+      assessmentTargets: {
+        where: { status: { in: [...activeTargetStatuses] } },
+        include: { jobRole: true, attempt: true },
+        take: 1,
+      },
     },
   });
   const reasons: string[] = [];
   if (u.status !== 'ACTIVE') reasons.push('ACCOUNT_RESTRICTED');
   if (!u.emailVerifiedAt) reasons.push('EMAIL_NOT_VERIFIED');
-  if (!(
-    u.phone &&
-    u.profile?.educationLevel &&
-    u.profile.institution &&
-    u.profile.discipline &&
-    u.profile.professionalStatus
-  ))
-    reasons.push('PROFILE_INCOMPLETE');
+  if (!isProfileComplete(u)) reasons.push('PROFILE_INCOMPLETE');
   const identities = u.documents.filter(
     (d) => ['NATIONAL_ID', 'PASSPORT'].includes(d.category) && d.scanStatus === 'CLEAN',
   );
   if (!identities.length) reasons.push('IDENTITY_SUBMISSION_REQUIRED');
-  if (!u.preferences?.primaryRole.active) reasons.push('TARGET_ROLE_REQUIRED');
+  const target = u.assessmentTargets[0];
+  const role = target?.jobRole;
+  if (!target) reasons.push('TARGET_REQUIRED');
+  if (!role?.active) reasons.push('TARGET_ROLE_REQUIRED');
   const blueprints = await tx.assessmentBlueprint.findMany({
     where: {
       ...(blueprintId ? { id: blueprintId } : {}),
-      jobRoleId: u.preferences?.primaryRoleId ?? '00000000-0000-0000-0000-000000000000',
+      ...(target?.attempt ? { id: target.attempt.blueprintId } : {}),
+      ...(blueprintId && target?.attempt ? { AND: { id: blueprintId } } : {}),
+      jobRoleId: role?.id ?? '00000000-0000-0000-0000-000000000000',
       active: true,
-      framework: { approved: true },
+      framework: { approved: true, scope: 'CORE' },
     },
   });
   if (!blueprints.length) reasons.push('BLUEPRINT_UNAVAILABLE');
@@ -62,6 +67,8 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
     ],
   }));
   return {
+    targetId: target?.id ?? null,
+    attemptId: target?.attempt?.id ?? null,
     eligible: policies.some((p) => !p.reasons.length),
     reasons,
     blueprints: policies,
@@ -281,9 +288,11 @@ async function reserve(
   const used = new Set(slot.bookings.map((x) => x.seat));
   const seat = Array.from({ length: a.capacity }, (_, i) => i + 1).find((i) => !used.has(i));
   requireCondition(seat, 409, 'SLOT_UNAVAILABLE', 'This assessment slot is full');
+  const targetId = await targetForBooking(tx, applicantId, b.id);
   const result = await tx.assessmentBooking.create({
     data: {
       applicantId,
+      targetId,
       slotId,
       blueprintId: b.id,
       seat,
@@ -332,6 +341,7 @@ export async function cancelBooking(actorId: string, id: string, reason: string,
     const b = await tx.assessmentBooking.findUniqueOrThrow({
       where: { id },
       include: {
+        target: true,
         slot: { include: { availability: true } },
         applicant: { select: { email: true } },
       },
@@ -341,6 +351,12 @@ export async function cancelBooking(actorId: string, id: string, reason: string,
       409,
       'BOOKING_NOT_ACTIVE',
       'Only a scheduled booking can be cancelled',
+    );
+    requireCondition(
+      b.target?.status !== 'IN_PROGRESS',
+      409,
+      'ASSESSMENT_IN_PROGRESS',
+      'A started assessment must be completed',
     );
     if (!asAdmin)
       requireCondition(
@@ -367,6 +383,8 @@ export async function cancelBooking(actorId: string, id: string, reason: string,
 export function confirmation(b: Awaited<ReturnType<typeof booking>>) {
   return {
     bookingId: b.id,
+    targetId: b.targetId,
+    attemptId: b.target?.attempt?.id ?? null,
     applicantId: b.applicantId,
     jobRole: b.blueprint.jobRole,
     blueprint: { id: b.blueprint.id, title: b.blueprint.title, version: b.blueprint.version },

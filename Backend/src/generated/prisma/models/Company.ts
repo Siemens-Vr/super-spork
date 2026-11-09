@@ -207,7 +207,8 @@ export type CompanyWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   industries?: Prisma.CompanyIndustryListRelationFilter
-  preferences?: Prisma.CompanyPreferenceListRelationFilter
+  assessmentTargets?: Prisma.AssessmentTargetCompanyListRelationFilter
+  requirementFrameworks?: Prisma.CompetencyFrameworkListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -220,7 +221,8 @@ export type CompanyOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   industries?: Prisma.CompanyIndustryOrderByRelationAggregateInput
-  preferences?: Prisma.CompanyPreferenceOrderByRelationAggregateInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyOrderByRelationAggregateInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -236,7 +238,8 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   industries?: Prisma.CompanyIndustryListRelationFilter
-  preferences?: Prisma.CompanyPreferenceListRelationFilter
+  assessmentTargets?: Prisma.AssessmentTargetCompanyListRelationFilter
+  requirementFrameworks?: Prisma.CompetencyFrameworkListRelationFilter
 }, "id" | "name">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -277,7 +280,8 @@ export type CompanyCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.CompanyIndustryCreateNestedManyWithoutCompanyInput
-  preferences?: Prisma.CompanyPreferenceCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -290,7 +294,8 @@ export type CompanyUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.CompanyIndustryUncheckedCreateNestedManyWithoutCompanyInput
-  preferences?: Prisma.CompanyPreferenceUncheckedCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -303,7 +308,8 @@ export type CompanyUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.CompanyIndustryUpdateManyWithoutCompanyNestedInput
-  preferences?: Prisma.CompanyPreferenceUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -316,7 +322,8 @@ export type CompanyUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.CompanyIndustryUncheckedUpdateManyWithoutCompanyNestedInput
-  preferences?: Prisma.CompanyPreferenceUncheckedUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -390,6 +397,11 @@ export type CompanyScalarRelationFilter = {
   isNot?: Prisma.CompanyWhereInput
 }
 
+export type CompanyNullableScalarRelationFilter = {
+  is?: Prisma.CompanyWhereInput | null
+  isNot?: Prisma.CompanyWhereInput | null
+}
+
 export type CompanyCreateNestedOneWithoutIndustriesInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutIndustriesInput, Prisma.CompanyUncheckedCreateWithoutIndustriesInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutIndustriesInput
@@ -404,18 +416,34 @@ export type CompanyUpdateOneRequiredWithoutIndustriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutIndustriesInput, Prisma.CompanyUpdateWithoutIndustriesInput>, Prisma.CompanyUncheckedUpdateWithoutIndustriesInput>
 }
 
-export type CompanyCreateNestedOneWithoutPreferencesInput = {
-  create?: Prisma.XOR<Prisma.CompanyCreateWithoutPreferencesInput, Prisma.CompanyUncheckedCreateWithoutPreferencesInput>
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutPreferencesInput
+export type CompanyCreateNestedOneWithoutRequirementFrameworksInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedCreateWithoutRequirementFrameworksInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutRequirementFrameworksInput
   connect?: Prisma.CompanyWhereUniqueInput
 }
 
-export type CompanyUpdateOneRequiredWithoutPreferencesNestedInput = {
-  create?: Prisma.XOR<Prisma.CompanyCreateWithoutPreferencesInput, Prisma.CompanyUncheckedCreateWithoutPreferencesInput>
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutPreferencesInput
-  upsert?: Prisma.CompanyUpsertWithoutPreferencesInput
+export type CompanyUpdateOneWithoutRequirementFrameworksNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedCreateWithoutRequirementFrameworksInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutRequirementFrameworksInput
+  upsert?: Prisma.CompanyUpsertWithoutRequirementFrameworksInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
   connect?: Prisma.CompanyWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutPreferencesInput, Prisma.CompanyUpdateWithoutPreferencesInput>, Prisma.CompanyUncheckedUpdateWithoutPreferencesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutRequirementFrameworksInput, Prisma.CompanyUpdateWithoutRequirementFrameworksInput>, Prisma.CompanyUncheckedUpdateWithoutRequirementFrameworksInput>
+}
+
+export type CompanyCreateNestedOneWithoutAssessmentTargetsInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedCreateWithoutAssessmentTargetsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAssessmentTargetsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutAssessmentTargetsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedCreateWithoutAssessmentTargetsInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAssessmentTargetsInput
+  upsert?: Prisma.CompanyUpsertWithoutAssessmentTargetsInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutAssessmentTargetsInput, Prisma.CompanyUpdateWithoutAssessmentTargetsInput>, Prisma.CompanyUncheckedUpdateWithoutAssessmentTargetsInput>
 }
 
 export type CompanyCreateWithoutIndustriesInput = {
@@ -427,7 +455,8 @@ export type CompanyCreateWithoutIndustriesInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  preferences?: Prisma.CompanyPreferenceCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutIndustriesInput = {
@@ -439,7 +468,8 @@ export type CompanyUncheckedCreateWithoutIndustriesInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  preferences?: Prisma.CompanyPreferenceUncheckedCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutIndustriesInput = {
@@ -467,7 +497,8 @@ export type CompanyUpdateWithoutIndustriesInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  preferences?: Prisma.CompanyPreferenceUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutIndustriesInput = {
@@ -479,10 +510,11 @@ export type CompanyUncheckedUpdateWithoutIndustriesInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  preferences?: Prisma.CompanyPreferenceUncheckedUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
-export type CompanyCreateWithoutPreferencesInput = {
+export type CompanyCreateWithoutRequirementFrameworksInput = {
   id?: string
   name: string
   description: string
@@ -492,9 +524,10 @@ export type CompanyCreateWithoutPreferencesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.CompanyIndustryCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyCreateNestedManyWithoutCompanyInput
 }
 
-export type CompanyUncheckedCreateWithoutPreferencesInput = {
+export type CompanyUncheckedCreateWithoutRequirementFrameworksInput = {
   id?: string
   name: string
   description: string
@@ -504,25 +537,26 @@ export type CompanyUncheckedCreateWithoutPreferencesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   industries?: Prisma.CompanyIndustryUncheckedCreateNestedManyWithoutCompanyInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedCreateNestedManyWithoutCompanyInput
 }
 
-export type CompanyCreateOrConnectWithoutPreferencesInput = {
+export type CompanyCreateOrConnectWithoutRequirementFrameworksInput = {
   where: Prisma.CompanyWhereUniqueInput
-  create: Prisma.XOR<Prisma.CompanyCreateWithoutPreferencesInput, Prisma.CompanyUncheckedCreateWithoutPreferencesInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedCreateWithoutRequirementFrameworksInput>
 }
 
-export type CompanyUpsertWithoutPreferencesInput = {
-  update: Prisma.XOR<Prisma.CompanyUpdateWithoutPreferencesInput, Prisma.CompanyUncheckedUpdateWithoutPreferencesInput>
-  create: Prisma.XOR<Prisma.CompanyCreateWithoutPreferencesInput, Prisma.CompanyUncheckedCreateWithoutPreferencesInput>
+export type CompanyUpsertWithoutRequirementFrameworksInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedUpdateWithoutRequirementFrameworksInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedCreateWithoutRequirementFrameworksInput>
   where?: Prisma.CompanyWhereInput
 }
 
-export type CompanyUpdateToOneWithWhereWithoutPreferencesInput = {
+export type CompanyUpdateToOneWithWhereWithoutRequirementFrameworksInput = {
   where?: Prisma.CompanyWhereInput
-  data: Prisma.XOR<Prisma.CompanyUpdateWithoutPreferencesInput, Prisma.CompanyUncheckedUpdateWithoutPreferencesInput>
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutRequirementFrameworksInput, Prisma.CompanyUncheckedUpdateWithoutRequirementFrameworksInput>
 }
 
-export type CompanyUpdateWithoutPreferencesInput = {
+export type CompanyUpdateWithoutRequirementFrameworksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -532,9 +566,10 @@ export type CompanyUpdateWithoutPreferencesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.CompanyIndustryUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUpdateManyWithoutCompanyNestedInput
 }
 
-export type CompanyUncheckedUpdateWithoutPreferencesInput = {
+export type CompanyUncheckedUpdateWithoutRequirementFrameworksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -544,6 +579,75 @@ export type CompanyUncheckedUpdateWithoutPreferencesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   industries?: Prisma.CompanyIndustryUncheckedUpdateManyWithoutCompanyNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutAssessmentTargetsInput = {
+  id?: string
+  name: string
+  description: string
+  website?: string | null
+  country?: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  industries?: Prisma.CompanyIndustryCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutAssessmentTargetsInput = {
+  id?: string
+  name: string
+  description: string
+  website?: string | null
+  country?: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  industries?: Prisma.CompanyIndustryUncheckedCreateNestedManyWithoutCompanyInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutAssessmentTargetsInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedCreateWithoutAssessmentTargetsInput>
+}
+
+export type CompanyUpsertWithoutAssessmentTargetsInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedUpdateWithoutAssessmentTargetsInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedCreateWithoutAssessmentTargetsInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutAssessmentTargetsInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutAssessmentTargetsInput, Prisma.CompanyUncheckedUpdateWithoutAssessmentTargetsInput>
+}
+
+export type CompanyUpdateWithoutAssessmentTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  industries?: Prisma.CompanyIndustryUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutAssessmentTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  industries?: Prisma.CompanyIndustryUncheckedUpdateManyWithoutCompanyNestedInput
+  requirementFrameworks?: Prisma.CompetencyFrameworkUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -553,12 +657,14 @@ export type CompanyUncheckedUpdateWithoutPreferencesInput = {
 
 export type CompanyCountOutputType = {
   industries: number
-  preferences: number
+  assessmentTargets: number
+  requirementFrameworks: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   industries?: boolean | CompanyCountOutputTypeCountIndustriesArgs
-  preferences?: boolean | CompanyCountOutputTypeCountPreferencesArgs
+  assessmentTargets?: boolean | CompanyCountOutputTypeCountAssessmentTargetsArgs
+  requirementFrameworks?: boolean | CompanyCountOutputTypeCountRequirementFrameworksArgs
 }
 
 /**
@@ -581,8 +687,15 @@ export type CompanyCountOutputTypeCountIndustriesArgs<ExtArgs extends runtime.Ty
 /**
  * CompanyCountOutputType without action
  */
-export type CompanyCountOutputTypeCountPreferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CompanyPreferenceWhereInput
+export type CompanyCountOutputTypeCountAssessmentTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AssessmentTargetCompanyWhereInput
+}
+
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountRequirementFrameworksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompetencyFrameworkWhereInput
 }
 
 
@@ -596,7 +709,8 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   industries?: boolean | Prisma.Company$industriesArgs<ExtArgs>
-  preferences?: boolean | Prisma.Company$preferencesArgs<ExtArgs>
+  assessmentTargets?: boolean | Prisma.Company$assessmentTargetsArgs<ExtArgs>
+  requirementFrameworks?: boolean | Prisma.Company$requirementFrameworksArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -636,7 +750,8 @@ export type CompanySelectScalar = {
 export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "website" | "country" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   industries?: boolean | Prisma.Company$industriesArgs<ExtArgs>
-  preferences?: boolean | Prisma.Company$preferencesArgs<ExtArgs>
+  assessmentTargets?: boolean | Prisma.Company$assessmentTargetsArgs<ExtArgs>
+  requirementFrameworks?: boolean | Prisma.Company$requirementFrameworksArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -646,7 +761,8 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Company"
   objects: {
     industries: Prisma.$CompanyIndustryPayload<ExtArgs>[]
-    preferences: Prisma.$CompanyPreferencePayload<ExtArgs>[]
+    assessmentTargets: Prisma.$AssessmentTargetCompanyPayload<ExtArgs>[]
+    requirementFrameworks: Prisma.$CompetencyFrameworkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1052,7 +1168,8 @@ readonly fields: CompanyFieldRefs;
 export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   industries<T extends Prisma.Company$industriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$industriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyIndustryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  preferences<T extends Prisma.Company$preferencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$preferencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPreferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assessmentTargets<T extends Prisma.Company$assessmentTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$assessmentTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentTargetCompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  requirementFrameworks<T extends Prisma.Company$requirementFrameworksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$requirementFrameworksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompetencyFrameworkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1507,27 +1624,51 @@ export type Company$industriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Company.preferences
+ * Company.assessmentTargets
  */
-export type Company$preferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Company$assessmentTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the CompanyPreference
+   * Select specific fields to fetch from the AssessmentTargetCompany
    */
-  select?: Prisma.CompanyPreferenceSelect<ExtArgs> | null
+  select?: Prisma.AssessmentTargetCompanySelect<ExtArgs> | null
   /**
-   * Omit specific fields from the CompanyPreference
+   * Omit specific fields from the AssessmentTargetCompany
    */
-  omit?: Prisma.CompanyPreferenceOmit<ExtArgs> | null
+  omit?: Prisma.AssessmentTargetCompanyOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.CompanyPreferenceInclude<ExtArgs> | null
-  where?: Prisma.CompanyPreferenceWhereInput
-  orderBy?: Prisma.CompanyPreferenceOrderByWithRelationInput | Prisma.CompanyPreferenceOrderByWithRelationInput[]
-  cursor?: Prisma.CompanyPreferenceWhereUniqueInput
+  include?: Prisma.AssessmentTargetCompanyInclude<ExtArgs> | null
+  where?: Prisma.AssessmentTargetCompanyWhereInput
+  orderBy?: Prisma.AssessmentTargetCompanyOrderByWithRelationInput | Prisma.AssessmentTargetCompanyOrderByWithRelationInput[]
+  cursor?: Prisma.AssessmentTargetCompanyWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.CompanyPreferenceScalarFieldEnum | Prisma.CompanyPreferenceScalarFieldEnum[]
+  distinct?: Prisma.AssessmentTargetCompanyScalarFieldEnum | Prisma.AssessmentTargetCompanyScalarFieldEnum[]
+}
+
+/**
+ * Company.requirementFrameworks
+ */
+export type Company$requirementFrameworksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompetencyFramework
+   */
+  select?: Prisma.CompetencyFrameworkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompetencyFramework
+   */
+  omit?: Prisma.CompetencyFrameworkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompetencyFrameworkInclude<ExtArgs> | null
+  where?: Prisma.CompetencyFrameworkWhereInput
+  orderBy?: Prisma.CompetencyFrameworkOrderByWithRelationInput | Prisma.CompetencyFrameworkOrderByWithRelationInput[]
+  cursor?: Prisma.CompetencyFrameworkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompetencyFrameworkScalarFieldEnum | Prisma.CompetencyFrameworkScalarFieldEnum[]
 }
 
 /**
