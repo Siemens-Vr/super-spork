@@ -69,6 +69,7 @@ enum AssessmentTargetStatus {
   PREPARED
   IN_PROGRESS
   COMPLETED
+  ABANDONED
 }
 
 enum RequirementScope {
@@ -174,12 +175,14 @@ model AuthIdentity {
 }
 
 model Session {
-  sid       String   @id
-  userId    String?  @db.Uuid
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  data      Json
-  expiresAt DateTime @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  absoluteExpiresAt DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt         DateTime? @db.Timestamptz(3)
+  sid               String    @id
+  userId            String?   @db.Uuid
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data              Json
+  expiresAt         DateTime  @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([userId])
   @@index([expiresAt])
@@ -259,6 +262,8 @@ model InstitutionAlias {
 
 // Identity and academic records share storage mechanics; category separates their states.
 model Document {
+  cleanupPending            Boolean                         @default(false)
+  storageDeletedAt          DateTime?                       @db.Timestamptz(3)
   id                        String                          @id @default(uuid()) @db.Uuid
   applicantId               String                          @db.Uuid
   applicant                 User                            @relation(fields: [applicantId], references: [id], onDelete: Restrict)
@@ -297,6 +302,7 @@ model Document {
   @@index([applicantId, category])
   @@index([qualificationId])
   @@index([scanStatus, status])
+  @@index([cleanupPending])
 }
 
 model DocumentVerification {

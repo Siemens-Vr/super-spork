@@ -4660,6 +4660,8 @@ export type AuthIdentityScalarFieldEnum = (typeof AuthIdentityScalarFieldEnum)[k
 
 
 export const SessionScalarFieldEnum = {
+  absoluteExpiresAt: 'absoluteExpiresAt',
+  revokedAt: 'revokedAt',
   sid: 'sid',
   userId: 'userId',
   data: 'data',
@@ -4735,6 +4737,8 @@ export type InstitutionAliasScalarFieldEnum = (typeof InstitutionAliasScalarFiel
 
 
 export const DocumentScalarFieldEnum = {
+  cleanupPending: 'cleanupPending',
+  storageDeletedAt: 'storageDeletedAt',
   id: 'id',
   applicantId: 'applicantId',
   category: 'category',

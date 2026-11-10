@@ -4,11 +4,12 @@ const bool = z.enum(['true', 'false']).transform((v) => v === 'true');
 const schema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+    PORT: z.coerce.number().int().min(1).max(65535).default(4000),
     DATABASE_URL: z.url(),
     REDIS_URL: z.url().default('redis://127.0.0.1:6379'),
-    APP_URL: z.url().default('http://localhost:3000'),
-    CORS_ORIGINS: z.string().default('http://localhost:3000'),
+    APP_URL: z.url().default('http://localhost:4000'),
+    CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:4000'),
+    FRONTEND_URL: z.url().default('http://localhost:3000'),
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
     SESSION_SECRET: z.string().min(48),
     DATA_ENCRYPTION_KEY: z.string().regex(/^[a-fA-F0-9]{64}$/),
@@ -34,6 +35,9 @@ const schema = z
     S3_FORCE_PATH_STYLE: bool.default(true),
     CLAMAV_HOST: z.string().default('127.0.0.1'),
     CLAMAV_PORT: z.coerce.number().default(3310),
+    MAX_UPLOAD_TOTAL_MB: z.coerce.number().int().min(1).max(120).default(30),
+    MAX_CONCURRENT_UPLOADS: z.coerce.number().int().min(1).max(16).default(4),
+    MAX_ACCOUNT_UPLOAD_MB: z.coerce.number().int().min(1).max(10000).default(500),
     MAX_UPLOAD_MB: z.coerce.number().int().min(1).max(20).default(10),
     ENABLE_SWAGGER: bool.default(true),
     DOCUMENT_RETENTION_DAYS: z.coerce.number().int().min(30).default(365),
@@ -64,6 +68,26 @@ const schema = z
     MAX_AUDIO_SECONDS: z.coerce.number().int().min(10).max(300).default(180),
   })
   .superRefine((v, ctx) => {
+    const frontend = new URL(v.FRONTEND_URL);
+    if (
+      !['http:', 'https:'].includes(frontend.protocol) ||
+      frontend.username ||
+      frontend.password ||
+      frontend.search ||
+      frontend.hash ||
+      frontend.pathname !== '/'
+    )
+      ctx.addIssue({
+        code: 'custom',
+        path: ['FRONTEND_URL'],
+        message: 'Use a trusted frontend origin without a path, credentials, query or fragment',
+      });
+    if (v.NODE_ENV === 'production' && frontend.protocol !== 'https:')
+      ctx.addIssue({
+        code: 'custom',
+        path: ['FRONTEND_URL'],
+        message: 'Production frontend requires HTTPS',
+      });
     if (v.NODE_ENV === 'production' && !v.APP_URL.startsWith('https://'))
       ctx.addIssue({ code: 'custom', path: ['APP_URL'], message: 'Production requires HTTPS' });
   });

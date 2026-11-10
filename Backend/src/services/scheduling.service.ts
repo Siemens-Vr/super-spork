@@ -1,3 +1,4 @@
+import { expireBookingsForUser } from './assessment-lifecycle.service.js';
 import type { z } from 'zod';
 import { prisma, userLock, type Tx } from '../config/prisma.js';
 import { requireCondition } from '../errors/app-error.js';
@@ -308,7 +309,7 @@ async function reserve(
     tx,
     user.email,
     rescheduledFromId ? 'Assessment rescheduled' : 'Assessment booking confirmed',
-    `Booking ${result.id}\nRole: ${b.jobRole.title}\nBlueprint: ${b.title} v${b.version}\nStart: ${slot.startsAt.toISOString()}\nEnd: ${slot.endsAt.toISOString()}\nDisplay timezone: ${a.timezone}\nDuration: ${b.durationMinutes} minutes\n${b.instructions}\nThe assessment is scheduled. A session launch mechanism is not available in this phase.`,
+    `Booking ${result.id}\nRole: ${b.jobRole.title}\nBlueprint: ${b.title} v${b.version}\nStart: ${slot.startsAt.toISOString()}\nEnd: ${slot.endsAt.toISOString()}\nDisplay timezone: ${a.timezone}\nDuration: ${b.durationMinutes} minutes\n${b.instructions}\nOpen your assessment booking during its scheduled window to start the session.`,
   );
   await audit(
     tx,
@@ -329,6 +330,7 @@ export async function createBooking(
   return prisma.$transaction(
     async (tx) => {
       await userLock(tx, applicantId);
+      await expireBookingsForUser(tx, applicantId);
       return reserve(tx, applicantId, slotId, key, rescheduledFromId, reason);
     },
     { timeout: 15000 },

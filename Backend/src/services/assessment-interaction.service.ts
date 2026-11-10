@@ -1,3 +1,7 @@
+import {
+  expireBookingsForUser,
+  reconcileApplicantBookings,
+} from './assessment-lifecycle.service.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma, userLock } from '../config/prisma.js';
@@ -27,6 +31,7 @@ const includeBooking = {
   target: { include: { attempt: { include: { requirements: true, accommodation: true } } } },
 } as const;
 export async function ownedBooking(applicantId: string, id: string) {
+  await reconcileApplicantBookings(applicantId);
   const booking = await prisma.assessmentBooking.findFirst({
     where: { id, applicantId },
     include: includeBooking,
@@ -41,6 +46,12 @@ export async function ownedBooking(applicantId: string, id: string) {
   return booking;
 }
 function requireWindow(booking: { status: string; slot: { startsAt: Date; endsAt: Date } }) {
+  requireCondition(
+    !['EXPIRED', 'MISSED'].includes(booking.status),
+    409,
+    'ASSESSMENT_WINDOW_CLOSED',
+    'The scheduled assessment window has ended',
+  );
   requireCondition(
     booking.status === 'SCHEDULED',
     409,
@@ -101,6 +112,7 @@ export async function preflight(applicantId: string, bookingId: string) {
   };
 }
 export async function ownedSession(applicantId: string, id: string, asAdmin = false) {
+  if (!asAdmin) await reconcileApplicantBookings(applicantId);
   const session = await prisma.assessmentInteractionSession.findFirst({
     where: { id, ...(!asAdmin ? { booking: { applicantId } } : {}) },
     include: {
@@ -133,7 +145,8 @@ export async function getSession(applicantId: string, id: string, asAdmin = fals
       currentScenario: w && !w.finished ? w.cursor + 1 : null,
     },
     currentPromptId:
-      s.status === 'AWAITING_REVIEW' || s.attempt.completedAt
+      ['AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'].includes(s.status) ||
+      s.attempt.completedAt
         ? null
         : (s.messages.at(-1)?.id ?? null),
     hasPendingResponse: !!s.pendingResponseId,
@@ -265,7 +278,11 @@ export async function startSession(
 async function runSession(applicantId: string, id: string) {
   const token = randomUUID();
   const lease = await prisma.assessmentInteractionSession.updateMany({
-    where: { id, OR: [{ leaseToken: null }, { leaseExpiresAt: { lt: new Date() } }] },
+    where: {
+      id,
+      status: { in: ['ACTIVE', 'INTERRUPTED'] },
+      OR: [{ leaseToken: null }, { leaseExpiresAt: { lt: new Date() } }],
+    },
     data: { leaseToken: token, leaseExpiresAt: new Date(Date.now() + env.AI_TIMEOUT_MS + 30000) },
   });
   requireCondition(
@@ -355,6 +372,12 @@ async function runSession(applicantId: string, id: string) {
         })
       : null;
     await prisma.$transaction(async (tx) => {
+      await userLock(tx, applicantId);
+      const currentBooking = await tx.assessmentBooking.findUniqueOrThrow({
+        where: { id: s.bookingId },
+        include: { slot: true },
+      });
+      requireWindow(currentBooking);
       const owned = await tx.assessmentInteractionSession.updateMany({
         where: { id, leaseToken: token },
         data: {
@@ -419,7 +442,8 @@ export async function respond(
   }
   requireWindow(s.booking);
   requireCondition(
-    !s.attempt.completedAt && !['AWAITING_REVIEW', 'COMPLETED'].includes(s.status),
+    !s.attempt.completedAt &&
+      !['AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'].includes(s.status),
     409,
     'SESSION_FINISHED',
     'This assessment conversation is complete',
@@ -436,6 +460,8 @@ export async function respond(
     'Request a text accommodation before responding',
   );
   await prisma.$transaction(async (tx) => {
+    await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     await tx.$queryRaw`SELECT id FROM "AssessmentInteractionSession" WHERE id=${id}::uuid FOR UPDATE`;
     const current = await tx.assessmentInteractionSession.findUniqueOrThrow({
       where: { id },
@@ -453,6 +479,12 @@ export async function respond(
       );
       return;
     }
+    requireCondition(
+      ['ACTIVE', 'INTERRUPTED'].includes(current.status),
+      409,
+      'SESSION_FINISHED',
+      'This assessment conversation is complete',
+    );
     requireCondition(
       !current.pendingResponseId && !current.leaseToken,
       409,
@@ -484,6 +516,14 @@ export async function respond(
           },
         });
     }
+    const scenarios = z.array(frozenScenarioSchema).parse(s.scenarios);
+    const budget = scenarios.reduce((sum, scenario) => sum + 1 + scenario.maxFollowups, 0);
+    requireCondition(
+      (await tx.assessmentResponse.count({ where: { sessionId: id } })) < budget,
+      409,
+      'RESPONSE_BUDGET_EXHAUSTED',
+      'The approved assessment answer budget has been reached',
+    );
     const response = await tx.assessmentResponse.create({
       data: {
         sessionId: id,
@@ -517,7 +557,8 @@ async function requireAudioConsent(applicantId: string, id: string) {
   const s = await ownedSession(applicantId, id);
   requireWindow(s.booking);
   requireCondition(
-    !s.attempt.completedAt && !['AWAITING_REVIEW', 'COMPLETED'].includes(s.status),
+    !s.attempt.completedAt &&
+      !['AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'].includes(s.status),
     409,
     'SESSION_FINISHED',
     'The assessment conversation is complete',

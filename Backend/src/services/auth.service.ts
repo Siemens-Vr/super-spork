@@ -135,7 +135,10 @@ export async function resetPassword(input: z.infer<typeof resetSchema>) {
       where: { id: u.id },
       data: { passwordHash, sessionVersion: { increment: 1 } },
     });
-    await tx.session.deleteMany({ where: { userId: u.id } });
+    await tx.session.updateMany({
+      where: { userId: u.id },
+      data: { revokedAt: new Date(), data: {} },
+    });
     await notify(
       tx,
       u.email,
@@ -175,7 +178,7 @@ export async function revokeAll(userId: string) {
   await prisma.$transaction(async (tx) => {
     await userLock(tx, userId);
     await tx.user.update({ where: { id: userId }, data: { sessionVersion: { increment: 1 } } });
-    await tx.session.deleteMany({ where: { userId } });
+    await tx.session.updateMany({ where: { userId }, data: { revokedAt: new Date(), data: {} } });
     await audit(tx, userId, 'auth.sessions_revoked', userId);
   });
 }

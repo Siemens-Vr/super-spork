@@ -163,12 +163,12 @@ export async function updateCatalogue(
         case 'industries':
           return tx.industry.update({
             where: { id },
-            data: v.industrySchema.partial().parse(body),
+            data: v.industryPatchSchema.parse(body),
           });
         case 'institutions':
           return tx.institution.update({
             where: { id },
-            data: v.institutionSchema.partial().parse(body),
+            data: v.institutionPatchSchema.parse(body),
           });
         case 'competencies': {
           requireCondition(
@@ -185,7 +185,7 @@ export async function updateCatalogue(
           });
         }
         case 'companies': {
-          const { industryIds, ...data } = v.companySchema.partial().parse(body);
+          const { industryIds, ...data } = v.companyPatchSchema.parse(body);
           if (industryIds) {
             await validIndustries(tx, industryIds);
             await tx.companyIndustry.deleteMany({ where: { companyId: id } });
@@ -201,7 +201,7 @@ export async function updateCatalogue(
           });
         }
         case 'careers': {
-          const { industryIds, ...data } = v.roleSchema.partial().parse(body);
+          const { industryIds, ...data } = v.rolePatchSchema.parse(body);
           if (industryIds) {
             await validIndustries(tx, industryIds);
             await tx.jobRoleIndustry.deleteMany({ where: { jobRoleId: id } });

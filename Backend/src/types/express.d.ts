@@ -2,6 +2,7 @@ import 'express-session';
 import type { Principal } from '../middleware/authenticate.js';
 declare module 'express-session' {
   interface SessionData {
+    absoluteExpiresAt?: number;
     userId?: string;
     sessionVersion?: number;
     csrf?: string;

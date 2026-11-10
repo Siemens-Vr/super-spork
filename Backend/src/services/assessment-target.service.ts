@@ -1,3 +1,4 @@
+import { expireBookingsForUser } from './assessment-lifecycle.service.js';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { prisma, userLock, type Tx } from '../config/prisma.js';
@@ -162,6 +163,7 @@ function choiceData(input: TargetInput) {
 export async function createTarget(applicantId: string, input: TargetInput) {
   return prisma.$transaction(async (tx) => {
     await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     requireCondition(
       !(await tx.assessmentTarget.count({
         where: { applicantId, status: { in: [...activeTargetStatuses] } },
@@ -187,6 +189,7 @@ export async function createTarget(applicantId: string, input: TargetInput) {
 export async function updateTarget(applicantId: string, id: string, input: TargetInput) {
   return prisma.$transaction(async (tx) => {
     await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     const target = await getTarget(applicantId, id, tx);
     requireCondition(
       target.status === 'DRAFT',
@@ -392,6 +395,7 @@ export async function prepareInTransaction(
 export async function prepareTarget(applicantId: string, id: string, blueprintId: string) {
   return prisma.$transaction(async (tx) => {
     await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     return prepareInTransaction(tx, applicantId, id, blueprintId);
   });
 }
@@ -440,6 +444,7 @@ export async function getAttempt(applicantId: string, id: string, asAdmin = fals
 export async function startAttempt(applicantId: string, id: string) {
   await prisma.$transaction(async (tx) => {
     await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     const attempt = await tx.assessmentAttempt.findFirst({
       where: { id, target: { applicantId } },
       include: { target: true },
@@ -665,6 +670,7 @@ export async function updateLearningProgress(
 ) {
   await prisma.$transaction(async (tx) => {
     await userLock(tx, applicantId);
+    await expireBookingsForUser(tx, applicantId);
     const item = await tx.learningPlanItem.findFirst({
       where: { id: itemId, planId, plan: { attempt: { target: { applicantId } } } },
     });

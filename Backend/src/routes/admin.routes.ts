@@ -1,3 +1,4 @@
+import { abandonTarget } from '../services/assessment-lifecycle.service.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma, userLock } from '../config/prisma.js';
@@ -20,6 +21,21 @@ import { requireCondition } from '../errors/app-error.js';
 import { applicantProfileSelect } from '../utils/applicant-profile.js';
 export const adminRouter = Router();
 adminRouter.use(authenticate, verified, admin);
+adminRouter.post(
+  '/assessment-targets/:id/abandon',
+  authorize('assessments.manage'),
+  validate(reasonSchema),
+  async (req, res) => {
+    res.json({
+      data: await abandonTarget(
+        req.principal!.id,
+        uuid.parse(req.params.id),
+        req.body.reason,
+        true,
+      ),
+    });
+  },
+);
 adminRouter.get('/assessment-attempts/:id', authorize('assessments.review'), async (req, res) => {
   const id = uuid.parse(req.params.id);
   const data = await assessmentTargets.getAttempt(req.principal!.id, id, true);
@@ -115,7 +131,10 @@ adminRouter.patch(
         where: { id },
         data: { status: req.body.status, sessionVersion: { increment: 1 } },
       });
-      await tx.session.deleteMany({ where: { userId: id } });
+      await tx.session.updateMany({
+        where: { userId: id },
+        data: { revokedAt: new Date(), data: {} },
+      });
       await audit(tx, req.principal!.id, 'admin.account_status_changed', id, {
         status: req.body.status,
         reason: req.body.reason,

@@ -1,3 +1,4 @@
+import { expireAssessmentBookings } from '../services/assessment-lifecycle.service.js';
 import { Worker } from 'bullmq';
 import { prisma } from '../config/prisma.js';
 import { logger } from '../config/logger.js';
@@ -30,6 +31,7 @@ async function dispatch() {
   if (dispatching) return;
   dispatching = true;
   try {
+    await expireAssessmentBookings();
     const [emails, documents] = await Promise.all([
       prisma.notificationOutbox.findMany({
         where: { status: 'PENDING', ...(emailCursor ? { id: { gt: emailCursor } } : {}) },
@@ -38,7 +40,7 @@ async function dispatch() {
       }),
       prisma.document.findMany({
         where: {
-          scanStatus: { in: ['QUARANTINED', 'FAILED'] },
+          OR: [{ scanStatus: { in: ['QUARANTINED', 'FAILED'] } }, { cleanupPending: true }],
           ...(documentCursor ? { id: { gt: documentCursor } } : {}),
         },
         take: 100,
@@ -50,7 +52,9 @@ async function dispatch() {
     for (const item of emails) await emailQueue.add('deliver', { id: item.id }, { jobId: item.id });
     for (const item of documents)
       await documentQueue.add('scan', { id: item.id }, { jobId: item.id });
-    await prisma.session.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+    await prisma.session.deleteMany({
+      where: { absoluteExpiresAt: { lt: new Date(Date.now() - 3600000) } },
+    });
     await prisma.rateLimitBucket.deleteMany({ where: { expiresAt: { lt: new Date() } } });
   } catch {
     logger.error('Outbox dispatch failed; pending records are preserved');

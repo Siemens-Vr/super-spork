@@ -10,11 +10,22 @@ let config: Promise<oidc.Configuration> | undefined;
 async function configuration() {
   if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET)
     throw new AppError(503, 'GOOGLE_UNAVAILABLE', 'Google authentication is not configured');
-  return (config ??= oidc.discovery(
-    new URL('https://accounts.google.com'),
-    env.GOOGLE_CLIENT_ID,
-    env.GOOGLE_CLIENT_SECRET,
-  ));
+  return (config ??= oidc
+    .discovery(
+      new URL('https://accounts.google.com'),
+      env.GOOGLE_CLIENT_ID,
+      env.GOOGLE_CLIENT_SECRET,
+      undefined,
+      { execute: [oidc.enableNonRepudiationChecks] },
+    )
+    .catch(() => {
+      config = undefined;
+      throw new AppError(
+        503,
+        'GOOGLE_UNAVAILABLE',
+        'Google authentication is temporarily unavailable',
+      );
+    }));
 }
 export const googleProvider = {
   async start() {
@@ -23,7 +34,7 @@ export const googleProvider = {
       nonce = oidc.randomNonce(),
       verifier = oidc.randomPKCECodeVerifier();
     const url = oidc.buildAuthorizationUrl(c, {
-      redirect_uri: `${env.APP_URL}/api/v1/auth/google/callback`,
+      redirect_uri: new URL('/api/v1/auth/google/callback', env.APP_URL).href,
       scope: 'openid email profile',
       state,
       nonce,

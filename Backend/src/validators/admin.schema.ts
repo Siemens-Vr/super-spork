@@ -153,3 +153,43 @@ export const suggestionReviewSchema = z
     (v) => v.status !== 'APPROVED' || !!v.companyId,
     'Create the catalogue company first, then provide its ID',
   );
+
+// PATCH accepts only supplied values; creation defaults must not reactivate or reset records.
+const nonempty = <T extends z.ZodRawShape>(shape: T) =>
+  z
+    .object(shape)
+    .strict()
+    .refine((value) => Object.keys(value).length > 0, 'Provide at least one change');
+export const industryPatchSchema = nonempty({
+  name: industrySchema.shape.name.optional(),
+  description: industrySchema.shape.description.optional(),
+  active: z.boolean().optional(),
+});
+export const companyPatchSchema = nonempty({
+  name: companySchema.shape.name.optional(),
+  description: companySchema.shape.description.optional(),
+  website: companySchema.shape.website,
+  country: z
+    .string()
+    .regex(/^[A-Z]{2}$/)
+    .optional(),
+  active: z.boolean().optional(),
+  industryIds: companySchema.shape.industryIds.optional(),
+});
+export const institutionPatchSchema = nonempty({
+  name: institutionSchema.shape.name.optional(),
+  type: z.enum(institutionTypes).optional(),
+  offersTvet: z.boolean().optional(),
+  country: z
+    .string()
+    .regex(/^[A-Z]{2}$/)
+    .optional(),
+  website: institutionSchema.shape.website,
+  active: z.boolean().optional(),
+});
+export const rolePatchSchema = nonempty({
+  title: roleSchema.shape.title.optional(),
+  description: roleSchema.shape.description.optional(),
+  active: z.boolean().optional(),
+  industryIds: roleSchema.shape.industryIds.optional(),
+});

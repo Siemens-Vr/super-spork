@@ -1,3 +1,7 @@
+import {
+  abandonTarget,
+  reconcileApplicantBookings,
+} from '../services/assessment-lifecycle.service.js';
 import { Router } from 'express';
 import { prisma } from '../config/prisma.js';
 import * as s from '../services/scheduling.service.js';
@@ -24,6 +28,11 @@ import { validate } from '../middleware/validate.js';
 import { requireCondition } from '../errors/app-error.js';
 export const assessmentRouter = Router();
 assessmentRouter.use(authenticate, verified, applicant, authorize('assessments.schedule.self'));
+assessmentRouter.post('/targets/:id/abandon', validate(reasonSchema), async (req, res) => {
+  res.json({
+    data: await abandonTarget(req.principal!.id, uuid.parse(req.params.id), req.body.reason),
+  });
+});
 assessmentRouter.get('/targets', async (req, res) => {
   const p = pagination.parse(req.query);
   res.json(await targets.listTargets(req.principal!.id, p.page, p.limit));
@@ -103,6 +112,7 @@ assessmentRouter.post('/bookings', validate(bookingSchema), async (req, res) => 
   res.status(201).json({ data: s.confirmation(b) });
 });
 assessmentRouter.get('/bookings', async (req, res) => {
+  await reconcileApplicantBookings(req.principal!.id);
   const p = pagination.parse(req.query);
   const rows = await prisma.assessmentBooking.findMany({
     where: { applicantId: req.principal!.id },

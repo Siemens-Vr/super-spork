@@ -1,45 +1,71 @@
 import session, { type SessionData } from 'express-session';
 import { prisma } from './prisma.js';
 import { env } from './env.js';
-import type { Prisma } from '../generated/prisma/client.js';
+import { AppError } from '../errors/app-error.js';
 export const cookieName = env.NODE_ENV === 'production' ? '__Host-nexus.sid' : 'nexus.sid';
 export class PrismaSessionStore extends session.Store {
   get(sid: string, cb: (err: unknown, data?: SessionData | null) => void) {
     prisma.session
       .findUnique({ where: { sid } })
-      .then((r) =>
-        cb(null, r && r.expiresAt > new Date() ? (r.data as unknown as SessionData) : null),
-      )
+      .then((row) => {
+        if (
+          !row ||
+          row.revokedAt ||
+          row.expiresAt <= new Date() ||
+          row.absoluteExpiresAt <= new Date()
+        )
+          return cb(null, null);
+        const data = row.data as unknown as SessionData;
+        data.absoluteExpiresAt = row.absoluteExpiresAt.getTime();
+        cb(null, data);
+      })
       .catch(cb);
   }
   set(sid: string, data: SessionData, cb?: (err?: unknown) => void) {
-    const expiresAt = new Date(data.cookie.expires ?? Date.now() + env.SESSION_TTL_HOURS * 3600000);
-    const json = JSON.parse(JSON.stringify(data)) as Prisma.InputJsonValue;
+    const now = Date.now();
+    data.absoluteExpiresAt ??= Math.min(
+      new Date(data.cookie.expires ?? now + env.SESSION_TTL_HOURS * 3600000).getTime(),
+      now + env.SESSION_TTL_HOURS * 3600000,
+    );
+    if (data.absoluteExpiresAt <= now) {
+      cb?.(new AppError(401, 'SESSION_INVALID', 'Session has expired'));
+      return;
+    }
+    const absolute = new Date(data.absoluteExpiresAt);
+    const expires = new Date(
+      Math.min(new Date(data.cookie.expires ?? absolute).getTime(), absolute.getTime()),
+    );
+    const json = JSON.stringify(data);
+    // The conflict predicate is atomic with revocation: a late writer cannot recreate a revoked SID.
+    prisma.$executeRaw`INSERT INTO "Session" (sid,"userId",data,"expiresAt","absoluteExpiresAt","createdAt")
+      VALUES (${sid},${data.userId ?? null}::uuid,${json}::jsonb,${expires},${absolute},CURRENT_TIMESTAMP)
+      ON CONFLICT (sid) DO UPDATE SET "userId"=EXCLUDED."userId",data=EXCLUDED.data,"expiresAt"=LEAST(EXCLUDED."expiresAt","Session"."absoluteExpiresAt")
+      WHERE "Session"."revokedAt" IS NULL AND "Session"."absoluteExpiresAt">CURRENT_TIMESTAMP AND "Session"."expiresAt">CURRENT_TIMESTAMP`
+      .then((count) =>
+        cb?.(
+          count
+            ? undefined
+            : new AppError(401, 'SESSION_INVALID', 'Session has expired or was revoked'),
+        ),
+      )
+      .catch((error) => cb?.(error));
+  }
+  destroy(sid: string, cb?: (err?: unknown) => void) {
+    const now = new Date();
+    const expiry = new Date(Date.now() + 168 * 3600000);
     prisma.session
       .upsert({
         where: { sid },
-        create: { sid, userId: data.userId, data: json, expiresAt },
-        update: { userId: data.userId ?? null, data: json, expiresAt },
+        create: { sid, data: {}, revokedAt: now, expiresAt: expiry, absoluteExpiresAt: expiry },
+        update: { revokedAt: now, data: {} },
       })
       .then(() => cb?.())
-      .catch((e) => cb?.(e));
+      .catch((error) => cb?.(error));
   }
-  destroy(sid: string, cb?: (err?: unknown) => void) {
-    prisma.session
-      .deleteMany({ where: { sid } })
-      .then(() => cb?.())
-      .catch((e) => cb?.(e));
-  }
-  touch(sid: string, data: SessionData, cb?: (err?: unknown) => void) {
-    prisma.session
-      .updateMany({
-        where: { sid },
-        data: {
-          expiresAt: new Date(data.cookie.expires ?? Date.now() + env.SESSION_TTL_HOURS * 3600000),
-        },
-      })
-      .then(() => cb?.())
-      .catch((e) => cb?.(e));
+  touch(sid: string, _data: SessionData, cb?: (err?: unknown) => void) {
+    // There is no sliding idle lifetime: the immutable deadline is enforced by get/set.
+    void sid;
+    cb?.();
   }
 }
 export function sessionMiddleware() {

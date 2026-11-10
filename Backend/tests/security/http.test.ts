@@ -25,6 +25,24 @@ describe('HTTP security without external services', () => {
     expect(r.body.error.code).toBe('CSRF_INVALID');
     expect(r.body.error.requestId).toBeTruthy();
   });
+  it.each(['http://localhost:3000', 'http://localhost:4000'])(
+    'allows credentialed frontend and Swagger requests from %s while enforcing CSRF',
+    async (origin) => {
+      const preflight = await request(app)
+        .options('/api/v1/auth/google/complete')
+        .set('Origin', origin)
+        .set('Access-Control-Request-Method', 'POST')
+        .set('Access-Control-Request-Headers', 'Content-Type,X-CSRF-Token');
+      expect(preflight.status).toBe(204);
+      expect(preflight.headers['access-control-allow-origin']).toBe(origin);
+      expect(preflight.headers['access-control-allow-credentials']).toBe('true');
+      const mutation = await request(app)
+        .post('/api/v1/auth/google/complete')
+        .set('Origin', origin)
+        .send({});
+      expect(mutation.body.error.code).toBe('CSRF_INVALID');
+    },
+  );
   it('rejects origins outside the allowlist', async () => {
     const r = await request(app).get('/api/v1/auth/csrf').set('Origin', 'https://untrusted.test');
     expect(r.status).toBe(403);
@@ -50,7 +68,7 @@ describe('HTTP security without external services', () => {
       requestInterceptor: (request: SwaggerRequest) => Promise<SwaggerRequest>;
     };
     let options: SwaggerOptions | undefined;
-    const window = { location: { search: '', origin: 'http://localhost:3000' }, onload: () => {} };
+    const window = { location: { search: '', origin: 'http://localhost:4000' }, onload: () => {} };
     let csrfResponse: { ok: boolean; status: number; json: () => Promise<unknown> } = {
       ok: false,
       status: 500,

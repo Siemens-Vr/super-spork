@@ -1,0 +1,111 @@
+{
+  "date": "2026-11-10",
+  "scope": "Current backend working tree; isolated synthetic PostgreSQL nexus_test database only",
+  "automated_checks": {
+    "test_files_passed": 10,
+    "tests_passed": 146,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "npm_advisories": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "route_matrix": {
+    "anonymousChecks": 105,
+    "applicantAdminChecks": 46,
+    "adminMfaChecks": 46,
+    "failures": []
+  },
+  "reproductions": [
+    {
+      "finding": "revoked-session-resurrection",
+      "before": 200,
+      "revoke": 204,
+      "immediatelyAfterRevoke": 401,
+      "afterStaleSave": 200,
+      "logout": 204,
+      "afterLogoutStaleSave": 200,
+      "logoutAllVersionProtection": 401
+    },
+    {
+      "finding": "infected-object-cleanup-not-retried",
+      "firstDeletionFailed": true,
+      "status": "INFECTED",
+      "removeCallsAfterRetry": 1
+    },
+    {
+      "finding": "missed-booking-recovery",
+      "status": "SCHEDULED",
+      "newBookingError": "ACTIVE_BOOKING_EXISTS",
+      "cancelError": "CANCELLATION_WINDOW_CLOSED",
+      "startError": "ASSESSMENT_WINDOW_CLOSED",
+      "automaticExpiryImplementation": false
+    },
+    {
+      "finding": "expired-started-booking-recovery",
+      "adminCancelError": "ASSESSMENT_IN_PROGRESS",
+      "targetStatus": "IN_PROGRESS"
+    },
+    {
+      "finding": "absolute-session-expiry-slides",
+      "originalLifetimeMs": 1200,
+      "observations": [
+        {
+          "elapsedMs": 510,
+          "status": 200,
+          "setCookie": false
+        },
+        {
+          "elapsedMs": 975,
+          "status": 200,
+          "setCookie": false
+        },
+        {
+          "elapsedMs": 1438,
+          "status": 200,
+          "setCookie": false
+        },
+        {
+          "elapsedMs": 1904,
+          "status": 200,
+          "setCookie": false
+        },
+        {
+          "elapsedMs": 2364,
+          "status": 200,
+          "setCookie": false
+        }
+      ],
+      "serverExpiresAfterOriginalDeadline": true
+    },
+    {
+      "finding": "partial-update-applies-creation-defaults",
+      "before": {
+        "active": false,
+        "country": "UG",
+        "type": "UNIVERSITY",
+        "offersTvet": true
+      },
+      "after": {
+        "active": true,
+        "country": "KE",
+        "type": "OTHER",
+        "offersTvet": false
+      },
+      "requestFields": ["name"]
+    }
+  ],
+  "limitations": [
+    "HTTP race reproduced by saving the stale server-side session snapshot after revocation; no arbitrary cookie forgery is claimed.",
+    "Absolute expiry uses a short-lived synthetic session and repeated HTTP requests.",
+    "Storage deletion outage and scanner verdict are controlled synthetic boundaries.",
+    "Docker build context and upload-memory findings are static reviews, not image inspection or a load test.",
+    "Real OAuth sign-in, SMTP, object storage, ClamAV, Redis/BullMQ recovery and production infrastructure were not end-to-end validated."
+  ]
+}

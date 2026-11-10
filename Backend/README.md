@@ -37,8 +37,8 @@ The Compose database is available at `127.0.0.1:55432` (container port `5432`). 
 
 Local object storage uses the [PGSTY Silo MinIO fork](https://github.com/pgsty/silo) and its matching client, pinned to `RELEASE.2026-10-26T00-00-00Z`. The upstream `minio/minio` and `minio/mc` images are no longer publicly pullable. Silo supports the existing S3 endpoint, `MINIO_*` credentials, and storage volume. If an older checkout fails with `pull access denied for minio/mc`, use the updated Compose file, run `docker compose pull`, then `docker compose up -d`.
 
-- Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
-- OpenAPI JSON: [http://localhost:3000/api/v1/openapi.json](http://localhost:3000/api/v1/openapi.json)
+- Swagger UI: [http://localhost:4000/docs](http://localhost:4000/docs)
+- OpenAPI JSON: [http://localhost:4000/api/v1/openapi.json](http://localhost:4000/api/v1/openapi.json)
 - Mailpit local email inbox: [http://localhost:8025](http://localhost:8025)
 - Private storage console: [http://localhost:9001](http://localhost:9001)
 - Probes: `/health/live` and `/health/ready` (PostgreSQL and Redis).
@@ -78,13 +78,13 @@ Consult Swagger for HTTP methods, input schemas, permissions and status codes. A
 The detailed executable shell journey is in [docs/journey.md](docs/journey.md). Begin with:
 
 ```bash
-curl -sS -c /tmp/nexus.cookies http://localhost:3000/api/v1/auth/csrf
+curl -sS -c /tmp/nexus.cookies http://localhost:4000/api/v1/auth/csrf
 # Copy data.csrfToken from the response into NEXUS_CSRF.
 export NEXUS_CSRF='the-returned-token'
 curl -sS -b /tmp/nexus.cookies -c /tmp/nexus.cookies \
   -H "X-CSRF-Token: $NEXUS_CSRF" -H 'Content-Type: application/json' \
   -d '{"legalName":"Example Applicant","email":"applicant@example.test","phone":"0712345678","password":"a long example passphrase","passwordConfirmation":"a long example passphrase","consentVersion":"2026-11-01"}' \
-  http://localhost:3000/api/v1/auth/register
+  http://localhost:4000/api/v1/auth/register
 ```
 
 Registration returns `202` with a generic message. Obtain the code from Mailpit, verify, log in, complete the profile, upload identity, select a career, and book an actual configured slot. No availability is fabricated by the seed; an admin must publish a real availability window first.
@@ -127,8 +127,12 @@ Google requires a configured OAuth client and exact redirect URI. SMTP and S3 re
 
 The backend supports owned booking preflight, confirmed session start, approved scenarios, a LangGraph conversation with PostgreSQL checkpoints, final transcript correction, speech adapters, reconnect/resume and assessor-reviewed AI proposals. See [the implementation audit and configuration](docs/assessment-interaction-audit.md).
 
-After migrations, Prisma generation and seeding, start the API and open [the development assessment test page](http://localhost:3000/dev/assessments). Sign in with a verified applicant account and select a scheduled booking. The page and its media controls exist only in development; production uses the documented APIs from its own frontend. Camera preview remains local and video is never recorded. Browser speech recognition may use the browser vendor; no server audio is retained.
+After migrations, Prisma generation and seeding, start the API and open [the development assessment test page](http://localhost:4000/dev/assessments). Sign in with a verified applicant account and select a scheduled booking. The page and its media controls exist only in development; production uses the documented APIs from its own frontend. Camera preview remains local and video is never recorded. Browser speech recognition may use the browser vendor; no server audio is retained.
 
 Set `AI_PROVIDER=compatible` with `AI_BASE_URL`, `AI_MODEL` and a server-side `AI_API_KEY` to enable the real interviewer. Browser STT/TTS are the defaults; compatible server speech adapters are optional. AI output is provisional until an authorised assessor reviews it. The seeded Mechatronics scenarios and broad rubric are development content requiring institutional review before real assessment decisions.
 
 For local Ollama, use `AI_BASE_URL=http://127.0.0.1:11434/v1`, `AI_API_KEY=ollama` (a local placeholder), `AI_MODEL=qwen3.5:9b`, `AI_REASONING_EFFORT=none`, `AI_MAX_OUTPUT_TOKENS=768` and `AI_KEEP_ALIVE=30m`. Keep Ollama running and restart the API after changing `.env`. Run `npm run ai:check` to measure a real synthetic assessment turn without creating an applicant result.
+
+## Security fixes and frontend integration
+
+See [security remediation](docs/security-remediation.md) for the required migrations, bounded upload settings, Google browser return routes, and audited assessment recovery endpoints. Run migrations and restart both the API and worker when updating an existing installation.

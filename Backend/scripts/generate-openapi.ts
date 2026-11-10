@@ -435,7 +435,7 @@ schemas.AssessmentTarget = object({
   applicantId: id,
   jobRoleId: id,
   jobRole: ref('Career'),
-  status: { type: 'string', enum: ['DRAFT', 'PREPARED', 'IN_PROGRESS', 'COMPLETED'] },
+  status: { type: 'string', enum: ['DRAFT', 'PREPARED', 'IN_PROGRESS', 'COMPLETED', 'ABANDONED'] },
   industries: array(
     object({ targetId: id, industryId: id, rank: { type: 'integer' }, industry: ref('Industry') }),
   ),
@@ -515,7 +515,9 @@ schemas.AssessmentSession = object({
   id,
   bookingId: id,
   attemptId: id,
-  status: { enum: ['ACTIVE', 'INTERRUPTED', 'AWAITING_REVIEW', 'COMPLETED'] },
+  status: {
+    enum: ['ACTIVE', 'INTERRUPTED', 'AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'],
+  },
   mode: { enum: ['TEXT', 'VOICE'] },
   language: str,
   policy: ref('InteractionPolicy'),
@@ -840,7 +842,7 @@ add(
       requiredFields: array(str),
     }),
     description:
-      'OIDC verifies issuer, audience, expiration, state, nonce and PKCE. An email collision requires explicit authenticated linking.',
+      'OIDC verifies signatures, issuer, audience, expiration, state, nonce and PKCE. JSON clients receive the documented JSON response. Browsers accepting HTML receive a 303 redirect to fixed routes under FRONTEND_URL: /auth/google/callback for login/linking, /register/google for registration, or /login for errors. No authentication tokens are included in redirect URLs. An email collision requires explicit authenticated linking.',
   },
 );
 add(
@@ -1113,6 +1115,29 @@ add('post', '/assessments/bookings', 'Reserve assessment capacity transactionall
   description:
     'One active booking per applicant. Binds the booking to the active prepared target. Create and explicitly prepare an assessment target before booking. Complete the current assessment before creating the next target. Successful retries return the original booking.',
 });
+add(
+  'post',
+  '/assessments/targets/{id}/abandon',
+  'Abandon an unstarted or expired owned assessment target',
+  'Assessments',
+  {
+    input: 'CancelInput',
+    output: object({ id: str, status: str }),
+    description: 'Started live assessments require administrator recovery. History is preserved.',
+  },
+);
+add(
+  'post',
+  '/admin/assessment-targets/{id}/abandon',
+  'Recover an interrupted assessment by abandoning its target',
+  'Administration',
+  {
+    input: 'CancelInput',
+    output: object({ id: str, status: str }),
+    description:
+      'Requires assessments.manage, ADMIN and recent MFA. Completed results remain immutable; evidence is retained.',
+  },
+);
 add('get', '/assessments/bookings', 'Read booking history and upcoming assessment', 'Assessments', {
   output: array(ref('Booking')),
   parameters: pages,
@@ -1253,15 +1278,17 @@ for (const [path, schema, output] of [
       : path === 'blueprints'
         ? admin.activationSchema
         : path === 'industries'
-          ? admin.industrySchema.partial()
+          ? admin.industryPatchSchema
           : path === 'companies'
-            ? admin.companySchema.partial()
+            ? admin.companyPatchSchema
             : path === 'careers'
-              ? admin.roleSchema.partial()
+              ? admin.rolePatchSchema
               : path === 'institutions'
-                ? admin.institutionSchema.partial()
+                ? admin.institutionPatchSchema
                 : admin.competencySchema.partial(),
   );
+  if (['industries', 'companies', 'careers', 'institutions'].includes(path))
+    schemas[`${name}_update`] = { ...schemas[`${name}_update`], minProperties: 1 };
   add('get', `/admin/${path}`, `List ${path} including inactive records`, 'Administration', {
     output: array(ref(output)),
     parameters: pages,

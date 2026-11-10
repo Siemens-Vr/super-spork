@@ -3,7 +3,7 @@
 These commands assume local Compose infrastructure, seeded catalogue, an API process and a worker. Use test records and nonsensitive sample files. They require `jq`. Privacy version must match `PRIVACY_NOTICE_VERSION`.
 
 ```bash
-export NEXUS_API=http://localhost:3000/api/v1
+export NEXUS_API=http://localhost:4000/api/v1
 export NEXUS_COOKIE=/tmp/nexus-applicant.cookies
 csrf() {
   curl -sS -b "$NEXUS_COOKIE" -c "$NEXUS_COOKIE" "$NEXUS_API/auth/csrf" | jq -r '.data.csrfToken'

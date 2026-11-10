@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import multer from 'multer';
+import { readFile } from 'node:fs/promises';
+import { audioUpload } from '../middleware/upload.js';
 import { authenticate, verified, applicant, authorize, admin } from '../middleware/authenticate.js';
 import { rateLimit } from '../middleware/security.js';
 import { uuid } from '../validators/auth.schema.js';
@@ -8,7 +9,6 @@ import { pagination } from '../validators/career.schema.js';
 import * as schemas from '../validators/assessment-interaction.schema.js';
 import * as sessions from '../services/assessment-interaction.service.js';
 import { prisma } from '../config/prisma.js';
-import { env } from '../config/env.js';
 import { audit } from '../utils/audit.js';
 import { requireCondition } from '../errors/app-error.js';
 export const assessmentSessionRouter = Router();
@@ -36,7 +36,7 @@ assessmentSessionRouter.get('/:id/progress', async (req, res) => {
 });
 assessmentSessionRouter.post(
   '/:id/responses',
-  rateLimit('assessment-response', 40, 3600, true),
+  rateLimit('assessment-response-abuse', 600, 3600, true),
   async (req, res) => {
     res.json({
       data: await sessions.respond(
@@ -67,10 +67,6 @@ assessmentSessionRouter.post(
     res.json({ data: { message: 'Event recorded' } });
   },
 );
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: env.MAX_AUDIO_MB * 1024 * 1024, files: 1, fields: 0 },
-}).single('audio');
 assessmentSessionRouter.post(
   '/:id/audio/transcribe',
   rateLimit('assessment-transcription', 30, 3600, true),
@@ -78,12 +74,16 @@ assessmentSessionRouter.post(
     await sessions.ownedSession(req.principal!.id, uuid.parse(req.params.id));
     next();
   },
-  (req, res, next) => (req.is('multipart/form-data') ? upload(req, res, next) : next()),
+  (req, res, next) => (req.is('multipart/form-data') ? audioUpload(req, res, next) : next()),
   async (req, res) => {
     const id = uuid.parse(req.params.id);
     if (req.is('multipart/form-data')) {
-      requireCondition(req.file, 422, 'AUDIO_REQUIRED', 'Upload one audio field');
-      res.json({ data: await sessions.transcribeAudio(req.principal!.id, id, req.file.buffer) });
+      const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+      const file = files?.audio?.[0];
+      requireCondition(file, 422, 'AUDIO_REQUIRED', 'Upload one audio field');
+      res.json({
+        data: await sessions.transcribeAudio(req.principal!.id, id, await readFile(file.path)),
+      });
     } else
       res.json({
         data: await sessions.browserTranscription(

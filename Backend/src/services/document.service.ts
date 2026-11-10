@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { env } from '../config/env.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { fileTypeFromBuffer } from 'file-type';
 import type { z } from 'zod';
@@ -89,9 +91,19 @@ export async function uploadDocument(
     'TOO_MANY_TRANSCRIPTS',
     'Attach at most five transcript files',
   );
-  const uploads = await Promise.all(
-    [file, ...transcripts].map(async (attachment) => {
-      const detected = await fileTypeFromBuffer(attachment.buffer);
+  const uploads: {
+    attachment: Express.Multer.File;
+    mime: string;
+    title: string;
+    key: string;
+    sha256: string;
+  }[] = [];
+  const storedKeys: string[] = [];
+  try {
+    // The parser streams to bounded temporary files. Read and transfer only one file at a time.
+    for (const attachment of [file, ...transcripts]) {
+      const buffer = attachment.buffer ?? (await readFile(attachment.path));
+      const detected = await fileTypeFromBuffer(buffer);
       requireCondition(
         detected &&
           ['application/pdf', 'image/jpeg', 'image/png'].includes(detected.mime) &&
@@ -107,17 +119,30 @@ export async function uploadDocument(
           .join('')
           .trim()
           .slice(0, 200) || 'uploaded-document';
-      return { attachment, mime: detected.mime, title, key: `quarantine/${randomUUID()}` };
-    }),
-  );
-  const storedKeys: string[] = [];
-  try {
-    for (const upload of uploads) {
-      storedKeys.push(upload.key);
-      await storage.put(upload.key, upload.attachment.buffer, upload.mime);
+      const key = `quarantine/${randomUUID()}`;
+      storedKeys.push(key);
+      await storage.put(key, buffer, detected.mime);
+      uploads.push({
+        attachment,
+        mime: detected.mime,
+        title,
+        key,
+        sha256: createHash('sha256').update(buffer).digest('hex'),
+      });
     }
     return await prisma.$transaction(async (tx) => {
       await userLock(tx, applicantId);
+      const usage = await tx.document.aggregate({
+        where: { applicantId, storageDeletedAt: null },
+        _sum: { size: true },
+      });
+      requireCondition(
+        (usage._sum.size ?? 0) + uploads.reduce((sum, item) => sum + item.attachment.size, 0) <=
+          env.MAX_ACCOUNT_UPLOAD_MB * 1024 * 1024,
+        413,
+        'STORAGE_QUOTA_EXCEEDED',
+        'Account document storage quota exceeded',
+      );
       if (!identityOnly)
         requireCondition(
           await tx.document.count({
@@ -178,7 +203,7 @@ export async function uploadDocument(
           storageKey: main.key,
           mimeType: main.mime,
           size: file.size,
-          sha256: createHash('sha256').update(file.buffer).digest('hex'),
+          sha256: main.sha256,
           history: {
             create: {
               toStatus: 'UPLOADED',
@@ -202,7 +227,7 @@ export async function uploadDocument(
             storageKey: upload.key,
             mimeType: upload.mime,
             size: upload.attachment.size,
-            sha256: createHash('sha256').update(upload.attachment.buffer).digest('hex'),
+            sha256: upload.sha256,
             history: {
               create: {
                 toStatus: 'UPLOADED',

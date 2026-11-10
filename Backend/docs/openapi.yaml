@@ -1431,8 +1431,11 @@ paths:
         - Authentication
       summary: Validate Google response and establish session
       description:
-        OIDC verifies issuer, audience, expiration, state, nonce and PKCE. An email collision
-        requires explicit authenticated linking.
+        'OIDC verifies signatures, issuer, audience, expiration, state, nonce and PKCE. JSON
+        clients receive the documented JSON response. Browsers accepting HTML receive a 303 redirect
+        to fixed routes under FRONTEND_URL: /auth/google/callback for login/linking,
+        /register/google for registration, or /login for errors. No authentication tokens are
+        included in redirect URLs. An email collision requires explicit authenticated linking.'
       security: []
       parameters:
         - in: query
@@ -5881,6 +5884,250 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Booking'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments/targets/{id}/abandon:
+    post:
+      operationId: post__assessments_targets_id_abandon
+      tags:
+        - Assessments
+      summary: Abandon an unstarted or expired owned assessment target
+      description: Started live assessments require administrator recovery. History is preserved.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/assessment-targets/{id}/abandon:
+    post:
+      operationId: post__admin_assessment_targets_id_abandon
+      tags:
+        - Administration
+      summary: Recover an interrupted assessment by abandoning its target
+      description:
+        Requires assessments.manage, ADMIN and recent MFA. Completed results remain immutable;
+        evidence is retained.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
                   meta:
                     type: object
                     properties:
@@ -12818,6 +13065,8 @@ paths:
                           - INTERRUPTED
                           - AWAITING_REVIEW
                           - COMPLETED
+                          - EXPIRED
+                          - ABANDONED
                       mode:
                         enum:
                           - TEXT
@@ -14716,6 +14965,7 @@ components:
             - PREPARED
             - IN_PROGRESS
             - COMPLETED
+            - ABANDONED
         industries:
           type: array
           items:
@@ -15199,6 +15449,8 @@ components:
             - INTERRUPTED
             - AWAITING_REVIEW
             - COMPLETED
+            - EXPIRED
+            - ABANDONED
         mode:
           enum:
             - TEXT
@@ -15683,9 +15935,9 @@ components:
           minLength: 5
           maxLength: 4000
         active:
-          default: true
           type: boolean
       additionalProperties: false
+      minProperties: 1
     Admin_companies:
       type: object
       properties:
@@ -15737,11 +15989,9 @@ components:
           maxLength: 1000
           format: uri
         country:
-          default: KE
           type: string
           pattern: ^[A-Z]{2}$
         active:
-          default: true
           type: boolean
         industryIds:
           minItems: 1
@@ -15752,6 +16002,7 @@ components:
             format: uuid
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       additionalProperties: false
+      minProperties: 1
     Admin_careers:
       type: object
       properties:
@@ -15791,7 +16042,6 @@ components:
           minLength: 5
           maxLength: 4000
         active:
-          default: true
           type: boolean
         industryIds:
           minItems: 1
@@ -15802,6 +16052,7 @@ components:
             format: uuid
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       additionalProperties: false
+      minProperties: 1
     Admin_institutions:
       type: object
       properties:
@@ -15842,7 +16093,6 @@ components:
           minLength: 2
           maxLength: 200
         type:
-          default: OTHER
           type: string
           enum:
             - UNIVERSITY
@@ -15850,10 +16100,8 @@ components:
             - TRAINING_INSTITUTE
             - OTHER
         offersTvet:
-          default: false
           type: boolean
         country:
-          default: KE
           type: string
           pattern: ^[A-Z]{2}$
         website:
@@ -15861,9 +16109,9 @@ components:
           maxLength: 1000
           format: uri
         active:
-          default: true
           type: boolean
       additionalProperties: false
+      minProperties: 1
     Admin_competencies:
       type: object
       properties:

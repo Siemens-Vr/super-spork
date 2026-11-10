@@ -1,3 +1,5 @@
+import { PrismaSessionStore } from '../../src/config/session.js';
+import { reconcileApplicantBookings } from '../../src/services/assessment-lifecycle.service.js';
 import { beforeAll, beforeEach, afterAll, describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
 import { createServer } from 'node:http';
@@ -1629,6 +1631,141 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     expect(large.status).toBe(413);
     expect(large.body.error.code).toBe('REQUEST_TOO_LARGE');
   });
+  it('logs existing Google users in with a rotated session and rejects restricted accounts', async () => {
+    const a = request.agent(server);
+    const start = vi.spyOn(googleProvider, 'start').mockResolvedValue({
+      url: 'https://accounts.google.com/authorize',
+      state: 'return-state',
+      nonce: 'nonce',
+      verifier: 'verifier',
+    });
+    const finish = vi.spyOn(googleProvider, 'finish').mockResolvedValue({
+      subject: 'returning-google-subject',
+      email: 'returning-google@example.test',
+      name: 'Returning Applicant',
+    });
+    try {
+      await a.get('/api/v1/auth/google');
+      await a.get('/api/v1/auth/google/callback?state=return-state&code=valid');
+      const registered = await post(a, '/auth/google/complete', {
+        phone: '0712345678',
+        consentVersion: env.PRIVACY_NOTICE_VERSION,
+      });
+      expect(registered.status).toBe(201);
+      expect((await a.get('/api/v1/auth/me')).body.data.roles).toEqual(['APPLICANT']);
+      expect(
+        (
+          await post(a, '/auth/google/complete', {
+            phone: '0712345678',
+            consentVersion: env.PRIVACY_NOTICE_VERSION,
+          })
+        ).status,
+      ).toBe(400);
+      const b = request.agent(server);
+      const previousCsrf = await csrf(b);
+      await b.get('/api/v1/auth/google');
+      const login = await b.get('/api/v1/auth/google/callback?state=return-state&code=valid');
+      expect(login.body.data.authenticated).toBe(true);
+      expect(login.body.data.csrfToken).not.toBe(previousCsrf);
+      expect((await b.get('/api/v1/auth/me')).body.data.email).toBe(
+        'returning-google@example.test',
+      );
+      await prisma.user.update({
+        where: { email: 'returning-google@example.test' },
+        data: { status: 'SUSPENDED' },
+      });
+      const c = request.agent(server);
+      await c.get('/api/v1/auth/google');
+      expect(
+        (await c.get('/api/v1/auth/google/callback?state=return-state&code=valid')).body.error.code,
+      ).toBe('ACCOUNT_RESTRICTED');
+      expect((await c.get('/api/v1/auth/me')).status).toBe(401);
+    } finally {
+      start.mockRestore();
+      finish.mockRestore();
+    }
+  });
+  it('discards pending registration when another Google sign-in begins or fails', async () => {
+    const a = request.agent(server);
+    const start = vi.spyOn(googleProvider, 'start').mockResolvedValue({
+      url: 'https://accounts.google.com/authorize',
+      state: 'pending-state',
+      nonce: 'nonce',
+      verifier: 'verifier',
+    });
+    const finish = vi.spyOn(googleProvider, 'finish').mockResolvedValue({
+      subject: 'stale-google-subject',
+      email: 'stale-google@example.test',
+      name: 'Stale Applicant',
+    });
+    const completion = { phone: '0712345678', consentVersion: env.PRIVACY_NOTICE_VERSION };
+    try {
+      await a.get('/api/v1/auth/google');
+      expect(
+        (await a.get('/api/v1/auth/google/callback?state=pending-state&code=valid')).body.data
+          .registrationRequired,
+      ).toBe(true);
+      expect((await a.post('/api/v1/auth/google/complete').send(completion)).body.error.code).toBe(
+        'CSRF_INVALID',
+      );
+      expect(
+        (await post(a, '/auth/google/complete', { ...completion, consentVersion: 'old' })).body
+          .error.code,
+      ).toBe('CONSENT_REQUIRED');
+      await a.get('/api/v1/auth/google');
+      expect((await post(a, '/auth/google/complete', completion)).body.error.code).toBe(
+        'GOOGLE_FLOW_INVALID',
+      );
+      await a.get('/api/v1/auth/google/callback?state=pending-state&code=valid');
+      finish.mockRejectedValueOnce(new Error('Cancelled or invalid callback'));
+      expect(
+        (await a.get('/api/v1/auth/google/callback?state=pending-state&code=bad')).status,
+      ).toBe(400);
+      expect((await post(a, '/auth/google/complete', completion)).body.error.code).toBe(
+        'GOOGLE_FLOW_INVALID',
+      );
+      expect(
+        await prisma.user.findUnique({ where: { email: 'stale-google@example.test' } }),
+      ).toBeNull();
+    } finally {
+      start.mockRestore();
+      finish.mockRestore();
+    }
+  });
+  it('expires pending Google registration after ten minutes', async () => {
+    const a = request.agent(server);
+    const start = vi.spyOn(googleProvider, 'start').mockResolvedValue({
+      url: 'https://accounts.google.com/authorize',
+      state: 'expiry-state',
+      nonce: 'nonce',
+      verifier: 'verifier',
+    });
+    const finish = vi.spyOn(googleProvider, 'finish').mockResolvedValue({
+      subject: 'expired-google-subject',
+      email: 'expired-google@example.test',
+      name: 'Expired Applicant',
+    });
+    try {
+      await a.get('/api/v1/auth/google');
+      await a.get('/api/v1/auth/google/callback?state=expiry-state&code=valid');
+      const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 600001);
+      try {
+        expect(
+          (
+            await post(a, '/auth/google/complete', {
+              phone: '0712345678',
+              consentVersion: env.PRIVACY_NOTICE_VERSION,
+            })
+          ).body.error.code,
+        ).toBe('GOOGLE_FLOW_INVALID');
+      } finally {
+        clock.mockRestore();
+      }
+    } finally {
+      start.mockRestore();
+      finish.mockRestore();
+    }
+  });
   it('links Google only after authenticated explicit reauthentication', async () => {
     const p = await applicant();
     const start = vi.spyOn(googleProvider, 'start').mockResolvedValue({
@@ -2592,6 +2729,421 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     } finally {
       env.STT_PROVIDER = oldStt;
       env.TTS_PROVIDER = oldTts;
+    }
+  });
+  it('does not resurrect revoked sessions after stale writes or rotation', async () => {
+    const { a } = await applicant();
+    const row = (await a.get('/api/v1/auth/sessions')).body.data.find(
+      (s: { current: boolean }) => s.current,
+    );
+    const stored = await prisma.session.findUniqueOrThrow({ where: { sid: row.id } });
+    const stale = structuredClone(stored.data) as unknown as import('express-session').SessionData;
+    const store = new PrismaSessionStore();
+    const save = () =>
+      new Promise<void>((resolve, reject) =>
+        store.set(row.id, stale, (error) => (error ? reject(error) : resolve())),
+      );
+    expect(
+      (await a.delete(`/api/v1/auth/sessions/${row.id}`).set('X-CSRF-Token', await csrf(a))).status,
+    ).toBe(204);
+    await expect(save()).rejects.toMatchObject({ code: 'SESSION_INVALID' });
+    expect((await a.get('/api/v1/auth/me')).status).toBe(401);
+    expect(
+      (await prisma.session.findUniqueOrThrow({ where: { sid: row.id } })).revokedAt,
+    ).not.toBeNull();
+    const p = await applicant();
+    const previous = (await p.a.get('/api/v1/auth/sessions')).body.data.find(
+      (s: { current: boolean }) => s.current,
+    );
+    const old = await prisma.session.findUniqueOrThrow({ where: { sid: previous.id } });
+    await post(p.a, '/auth/reauthenticate', { password });
+    await expect(
+      new Promise<void>((resolve, reject) =>
+        store.set(
+          previous.id,
+          old.data as unknown as import('express-session').SessionData,
+          (error) => (error ? reject(error) : resolve()),
+        ),
+      ),
+    ).rejects.toMatchObject({ code: 'SESSION_INVALID' });
+  });
+  it('enforces an immutable absolute session deadline even when a client keeps sending its cookie', async () => {
+    const { a } = await applicant();
+    const row = (await a.get('/api/v1/auth/sessions')).body.data.find(
+      (s: { current: boolean }) => s.current,
+    );
+    const original = await prisma.session.findUniqueOrThrow({ where: { sid: row.id } });
+    const store = new PrismaSessionStore();
+    const stale = original.data as unknown as import('express-session').SessionData;
+    await new Promise<void>((resolve, reject) =>
+      store.touch(
+        row.id,
+        { ...stale, cookie: { ...stale.cookie, expires: new Date(Date.now() + 864000000) } },
+        (error) => (error ? reject(error) : resolve()),
+      ),
+    );
+    expect(
+      (await prisma.session.findUniqueOrThrow({ where: { sid: row.id } })).absoluteExpiresAt,
+    ).toEqual(original.absoluteExpiresAt);
+    await prisma.session.update({
+      where: { sid: row.id },
+      data: {
+        absoluteExpiresAt: new Date(Date.now() - 1000),
+        expiresAt: new Date(Date.now() + 3600000),
+      },
+    });
+    expect((await a.get('/api/v1/auth/me')).status).toBe(401);
+    await expect(
+      new Promise<void>((resolve, reject) =>
+        store.set(row.id, stale, (error) => (error ? reject(error) : resolve())),
+      ),
+    ).rejects.toMatchObject({ code: 'SESSION_INVALID' });
+  });
+  it('preserves omitted catalogue fields and rejects empty PATCH updates', async () => {
+    const a = await adminSession();
+    const created = await post(a, '/admin/institutions', {
+      name: 'Audit Ugandan university',
+      type: 'UNIVERSITY',
+      offersTvet: true,
+      country: 'UG',
+      active: false,
+    });
+    expect(created.status).toBe(201);
+    const changed = await a
+      .patch(`/api/v1/admin/institutions/${created.body.data.id}`)
+      .set('X-CSRF-Token', await csrf(a))
+      .send({ name: 'Renamed Ugandan university' });
+    expect(changed.status).toBe(200);
+    expect(changed.body.data).toMatchObject({
+      country: 'UG',
+      type: 'UNIVERSITY',
+      offersTvet: true,
+      active: false,
+    });
+    expect(
+      (
+        await a
+          .patch(`/api/v1/admin/institutions/${created.body.data.id}`)
+          .set('X-CSRF-Token', await csrf(a))
+          .send({})
+      ).status,
+    ).toBe(422);
+  });
+  it('rejects aggregate upload sizes and enforces account storage quotas without partial records', async () => {
+    const p = await applicant();
+    await uploadIdentity(p.a);
+    const before = await prisma.document.count({ where: { applicantId: p.id } });
+    const total = env.MAX_UPLOAD_TOTAL_MB,
+      quota = env.MAX_ACCOUNT_UPLOAD_MB;
+    const attachment = Buffer.concat([pdf, Buffer.alloc(600000)]);
+    try {
+      env.MAX_UPLOAD_TOTAL_MB = 1;
+      const large = await p.a
+        .post('/api/v1/documents')
+        .set('X-CSRF-Token', await csrf(p.a))
+        .field('category', 'MASTER')
+        .field('courseName', 'Engineering')
+        .field('institutionName', 'Audit College')
+        .attach('file', attachment, { filename: 'degree.pdf', contentType: 'application/pdf' })
+        .attach('transcripts', attachment, {
+          filename: 'transcript.pdf',
+          contentType: 'application/pdf',
+        });
+      expect(large.status).toBe(413);
+      env.MAX_UPLOAD_TOTAL_MB = total;
+      env.MAX_ACCOUNT_UPLOAD_MB = 1;
+      const full = await p.a
+        .post('/api/v1/documents')
+        .set('X-CSRF-Token', await csrf(p.a))
+        .field('category', 'MASTER')
+        .field('courseName', 'Engineering')
+        .field('institutionName', 'Audit College')
+        .attach('file', attachment, { filename: 'degree.pdf', contentType: 'application/pdf' })
+        .attach('transcripts', attachment, {
+          filename: 'transcript.pdf',
+          contentType: 'application/pdf',
+        });
+      expect(full.body.error.code).toBe('STORAGE_QUOTA_EXCEEDED');
+      expect(await prisma.document.count({ where: { applicantId: p.id } })).toBe(before);
+    } finally {
+      env.MAX_UPLOAD_TOTAL_MB = total;
+      env.MAX_ACCOUNT_UPLOAD_MB = quota;
+    }
+  });
+  it('bounds concurrent upload processing while a storage transfer is in progress', async () => {
+    const p = await applicant();
+    const original = storage.put,
+      limit = env.MAX_CONCURRENT_UPLOADS;
+    let enter!: () => void, release!: () => void;
+    const entered = new Promise<void>((resolve) => {
+      enter = resolve;
+    });
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    storage.put = async (...args) => {
+      enter();
+      await held;
+      return original(...args);
+    };
+    env.MAX_CONCURRENT_UPLOADS = 1;
+    let first: Promise<request.Response> | undefined;
+    try {
+      const token = await csrf(p.a);
+      first = p.a
+        .post('/api/v1/identity/documents')
+        .set('X-CSRF-Token', token)
+        .field('category', 'NATIONAL_ID')
+        .attach('file', pdf, { filename: 'identity.pdf', contentType: 'application/pdf' })
+        .then((response) => response);
+      await entered;
+      const other = await p.a
+        .post('/api/v1/identity/documents')
+        .set('X-CSRF-Token', token)
+        .field('category', 'PASSPORT')
+        .attach('file', pdf, { filename: 'passport.pdf', contentType: 'application/pdf' });
+      expect(other.body.error.code).toBe('UPLOAD_BUSY');
+      release();
+      expect((await first).status).toBe(201);
+    } finally {
+      release();
+      if (first) await first;
+      storage.put = original;
+      env.MAX_CONCURRENT_UPLOADS = limit;
+    }
+  });
+  it('retries infected object deletion without rescanning or serving the object', async () => {
+    const p = await applicant();
+    const id = await uploadIdentity(p.a);
+    const original = storage.remove;
+    let calls = 0;
+    storage.remove = async (key) => {
+      if (++calls === 1) throw new Error('Temporary deletion outage');
+      return original(key);
+    };
+    vi.mocked(scanFile).mockResolvedValueOnce('INFECTED');
+    try {
+      await expect(scanDocument(id)).rejects.toThrow('Temporary deletion outage');
+      expect((await prisma.document.findUniqueOrThrow({ where: { id } })).cleanupPending).toBe(
+        true,
+      );
+      expect((await p.a.get(`/api/v1/documents/${id}/download`)).status).toBe(409);
+      await scanDocument(id);
+      const row = await prisma.document.findUniqueOrThrow({ where: { id } });
+      expect(row.scanStatus).toBe('INFECTED');
+      expect(row.cleanupPending).toBe(false);
+      expect(row.storageDeletedAt).not.toBeNull();
+      expect(calls).toBe(2);
+    } finally {
+      storage.remove = original;
+    }
+  });
+  it('allows missed unstarted bookings to be rebooked with the same prepared target', async () => {
+    const { p, blueprint, booking } = await interactionFixture();
+    await prisma.assessmentSlot.update({
+      where: { id: booking.slotId },
+      data: { startsAt: new Date(Date.now() - 7200000), endsAt: new Date(Date.now() - 3600000) },
+    });
+    const slot = await prisma.assessmentSlot.findFirstOrThrow({
+      where: { availabilityId: booking.slot.availabilityId, id: { not: booking.slotId } },
+      orderBy: { startsAt: 'asc' },
+    });
+    const replacement = await createBooking(p.id, slot.id, 'missed-window-rebook');
+    expect(replacement.blueprintId).toBe(blueprint.id);
+    expect(
+      (await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: booking.id } })).status,
+    ).toBe('MISSED');
+  });
+  it('expires started assessments while preserving evidence and unlocking a new target', async () => {
+    const { p, booking } = await interactionFixture();
+    const started = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
+    expect(started.status).toBe(200);
+    const old = await prisma.assessmentTarget.findUniqueOrThrow({
+      where: { id: booking.targetId! },
+      include: { industries: true },
+    });
+    await prisma.assessmentSlot.update({
+      where: { id: booking.slotId },
+      data: { startsAt: new Date(Date.now() - 7200000), endsAt: new Date(Date.now() - 3600000) },
+    });
+    await reconcileApplicantBookings(p.id);
+    expect(
+      (await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: booking.id } })).status,
+    ).toBe('EXPIRED');
+    expect(
+      (
+        await prisma.assessmentInteractionSession.findUniqueOrThrow({
+          where: { id: started.body.data.id },
+        })
+      ).status,
+    ).toBe('EXPIRED');
+    expect(
+      await prisma.assessmentConversationMessage.count({
+        where: { sessionId: started.body.data.id },
+      }),
+    ).toBeGreaterThan(0);
+    expect(
+      (await p.a.get(`/api/v1/assessment-sessions/${started.body.data.id}`)).body.data
+        .currentPromptId,
+    ).toBeNull();
+    const next = await post(p.a, '/assessments/targets', {
+      jobRoleId: old.jobRoleId,
+      industryIds: old.industries.map((i) => i.industryId),
+      companyIds: [],
+      qualificationIds: [],
+    });
+    expect(next.status).toBe(201);
+    expect(
+      (await prisma.assessmentTarget.findUniqueOrThrow({ where: { id: old.id } })).status,
+    ).toBe('ABANDONED');
+  });
+  it('requires an administrator to abandon an active assessment and preserves its history', async () => {
+    const { p, booking } = await interactionFixture();
+    const start = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
+    expect(
+      (
+        await post(p.a, `/assessments/targets/${booking.targetId}/abandon`, {
+          reason: 'Recover an interrupted live assessment',
+        })
+      ).body.error.code,
+    ).toBe('ADMIN_RECOVERY_REQUIRED');
+    const a = await adminSession();
+    expect(
+      (
+        await post(a, `/admin/assessment-targets/${booking.targetId}/abandon`, {
+          reason: 'Approved recovery after a documented equipment failure',
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await prisma.assessmentInteractionSession.findUniqueOrThrow({
+          where: { id: start.body.data.id },
+        })
+      ).status,
+    ).toBe('ABANDONED');
+    expect(
+      await prisma.assessmentConversationMessage.count({
+        where: { sessionId: start.body.data.id },
+      }),
+    ).toBeGreaterThan(0);
+    expect((await post(p.a, `/assessment-sessions/${start.body.data.id}/resume`, {})).status).toBe(
+      409,
+    );
+  });
+  it('finishes all 80 supported answers with safe idempotent retries', async () => {
+    const { p, booking, blueprint } = await interactionFixture();
+    const requirements = await prisma.assessmentRequirement.findMany({
+      where: { attempt: { targetId: booking.targetId! } },
+    });
+    await prisma.blueprintScenario.deleteMany({ where: { blueprintId: blueprint.id } });
+    for (let i = 0; i < 20; i++) {
+      const scenario = await prisma.assessmentScenario.create({
+        data: {
+          code: `BUDGET-${++sequence}`,
+          version: 1,
+          title: 'Maximum supported assessment',
+          prompt: 'Explain a safe engineering diagnostic procedure in this approved scenario.',
+          evaluationCriteria:
+            'Evaluate the supplied competency rubric using the confirmed evidence.',
+          competencyIds: requirements.map((r) => r.competencyId),
+          maxFollowups: 3,
+          approved: true,
+        },
+      });
+      await prisma.blueprintScenario.create({
+        data: { blueprintId: blueprint.id, scenarioId: scenario.id, position: i },
+      });
+    }
+    vi.mocked(interviewer.invoke).mockImplementation(async (input) =>
+      input.followups < 3
+        ? {
+            action: 'FOLLOW_UP',
+            message: 'Explain the evidence supporting that engineering decision.',
+            evaluations: [],
+          }
+        : {
+            action: 'COMPLETE',
+            message: 'Your technical evidence has been recorded.',
+            evaluations: input.requirements.map((r) => ({
+              competencyId: r.competencyId,
+              score: 70,
+              evidence: 'The confirmed response explains an evidence-based engineering procedure.',
+            })),
+          },
+    );
+    let view = (await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.data;
+    for (let i = 0; i < 80; i++) {
+      const prompt = view.currentPromptId as string,
+        key = `maximum-answer-${i}`;
+      const response = await answer(p.a, view.id, prompt, key);
+      expect(response.status).toBe(200);
+      view = response.body.data;
+      if (i % 10 === 0) expect((await answer(p.a, view.id, prompt, key)).status).toBe(200);
+    }
+    expect(view.status).toBe('AWAITING_REVIEW');
+    expect(await prisma.assessmentResponse.count({ where: { sessionId: view.id } })).toBe(80);
+    // Expiration must preserve a completed submission awaiting assessor review.
+    await prisma.assessmentSlot.update({
+      where: { id: booking.slotId },
+      data: { startsAt: new Date(Date.now() - 7200000), endsAt: new Date(Date.now() - 3600000) },
+    });
+    await reconcileApplicantBookings(p.id);
+    expect(
+      (await prisma.assessmentInteractionSession.findUniqueOrThrow({ where: { id: view.id } }))
+        .status,
+    ).toBe('AWAITING_REVIEW');
+  }, 60000);
+  it('returns browser Google flows to fixed frontend routes without putting credentials in URLs', async () => {
+    const a = request.agent(server);
+    const start = vi.spyOn(googleProvider, 'start').mockResolvedValue({
+      url: 'https://accounts.google.com/authorize',
+      state: 'browser-state',
+      nonce: 'nonce',
+      verifier: 'verifier',
+    });
+    const finish = vi.spyOn(googleProvider, 'finish').mockResolvedValue({
+      subject: 'browser-google-subject',
+      email: 'browser-google@example.test',
+      name: 'Browser Applicant',
+    });
+    try {
+      await a.get('/api/v1/auth/google');
+      const registration = await a
+        .get(
+          '/api/v1/auth/google/callback?state=browser-state&code=valid&returnTo=https://untrusted.test',
+        )
+        .set('Accept', 'text/html');
+      expect(registration.status).toBe(303);
+      expect(registration.headers.location).toBe(
+        `${env.FRONTEND_URL}/register/google?status=registrationRequired`,
+      );
+      expect(
+        (
+          await post(a, '/auth/google/complete', {
+            phone: '0712345678',
+            consentVersion: env.PRIVACY_NOTICE_VERSION,
+          })
+        ).status,
+      ).toBe(201);
+      await a.get('/api/v1/auth/google');
+      const login = await a
+        .get('/api/v1/auth/google/callback?state=browser-state&code=valid')
+        .set('Accept', 'text/html');
+      expect(login.headers.location).toBe(
+        `${env.FRONTEND_URL}/auth/google/callback?status=authenticated`,
+      );
+      expect(login.headers.location).not.toContain('csrf');
+      expect((await a.get('/api/v1/auth/me')).body.data.email).toBe('browser-google@example.test');
+      const failure = await request
+        .agent(server)
+        .get('/api/v1/auth/google/callback')
+        .set('Accept', 'text/html');
+      expect(failure.status).toBe(303);
+      expect(failure.headers.location).toBe(`${env.FRONTEND_URL}/login?error=GOOGLE_FLOW_INVALID`);
+    } finally {
+      start.mockRestore();
+      finish.mockRestore();
     }
   });
 });

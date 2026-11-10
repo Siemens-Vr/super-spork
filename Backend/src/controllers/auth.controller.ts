@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import type { Request, Response, RequestHandler } from 'express';
 import * as service from '../services/auth.service.js';
 import { prisma, userLock } from '../config/prisma.js';
 import { env } from '../config/env.js';
@@ -60,7 +60,12 @@ export const me: RequestHandler = (req, res) => {
 };
 export const sessions: RequestHandler = async (req, res) => {
   const rows = await prisma.session.findMany({
-    where: { userId: req.principal!.id, expiresAt: { gt: new Date() } },
+    where: {
+      userId: req.principal!.id,
+      revokedAt: null,
+      absoluteExpiresAt: { gt: new Date() },
+      expiresAt: { gt: new Date() },
+    },
     select: { sid: true, createdAt: true, expiresAt: true },
   });
   res.json({
@@ -74,7 +79,10 @@ export const sessions: RequestHandler = async (req, res) => {
 };
 export const revokeSession: RequestHandler = async (req, res) => {
   const id = String(req.params.id);
-  await prisma.session.deleteMany({ where: { sid: id, userId: req.principal!.id } });
+  await prisma.session.updateMany({
+    where: { sid: id, userId: req.principal!.id },
+    data: { revokedAt: new Date(), data: {} },
+  });
   res.status(204).end();
 };
 export const reauthenticate: RequestHandler = async (req, res) => {
@@ -107,6 +115,7 @@ export function googleStart(link = false): RequestHandler {
         'Reauthenticate before linking Google',
       );
     const start = await googleProvider.start();
+    delete req.session.pendingGoogle;
     req.session.oauth = {
       state: start.state,
       nonce: start.nonce,
@@ -120,9 +129,25 @@ export function googleStart(link = false): RequestHandler {
     res.redirect(start.url);
   };
 }
-export const googleCallback: RequestHandler = async (req, res) => {
+function googleResult(
+  req: Request,
+  res: Response,
+  status: 'authenticated' | 'registrationRequired' | 'linked',
+  data: object,
+) {
+  if (req.accepts(['json', 'html']) === 'html') {
+    const destination = new URL(
+      status === 'registrationRequired' ? '/register/google' : '/auth/google/callback',
+      env.FRONTEND_URL,
+    );
+    destination.searchParams.set('status', status);
+    res.redirect(303, destination.href);
+  } else res.json({ data });
+}
+const handleGoogleCallback: RequestHandler = async (req, res) => {
   const flow = req.session.oauth;
   delete req.session.oauth;
+  delete req.session.pendingGoogle;
   await new Promise<void>((resolve, reject) =>
     req.session.save((e) => (e ? reject(e) : resolve())),
   );
@@ -161,7 +186,7 @@ export const googleCallback: RequestHandler = async (req, res) => {
       });
       await audit(tx, user.id, 'auth.google_linked', user.id);
     });
-    res.json({ data: { linked: true } });
+    googleResult(req, res, 'linked', { linked: true });
     return;
   }
   const identity = await prisma.authIdentity.findUnique({
@@ -176,7 +201,7 @@ export const googleCallback: RequestHandler = async (req, res) => {
       'Account is restricted',
     );
     await service.rotateSession(req, identity.user);
-    res.json({ data: { authenticated: true, csrfToken: req.session.csrf } });
+    googleResult(req, res, 'authenticated', { authenticated: true, csrfToken: req.session.csrf });
     return;
   }
   if (await prisma.user.findUnique({ where: { email: claims.email } }))
@@ -186,7 +211,29 @@ export const googleCallback: RequestHandler = async (req, res) => {
       'Sign in to the existing account and explicitly link Google',
     );
   req.session.pendingGoogle = { ...claims, createdAt: Date.now() };
-  res.json({ data: { registrationRequired: true, requiredFields: ['phone', 'consentVersion'] } });
+  await new Promise<void>((resolve, reject) =>
+    req.session.save((error) => (error ? reject(error) : resolve())),
+  );
+  googleResult(req, res, 'registrationRequired', {
+    registrationRequired: true,
+    requiredFields: ['phone', 'consentVersion'],
+  });
+};
+export const googleCallback: RequestHandler = async (req, res, next) => {
+  try {
+    await handleGoogleCallback(req, res, next);
+  } catch (error) {
+    if (req.accepts(['json', 'html']) !== 'html') {
+      next(error);
+      return;
+    }
+    const destination = new URL('/login', env.FRONTEND_URL);
+    destination.searchParams.set(
+      'error',
+      error instanceof AppError ? error.code : 'GOOGLE_FLOW_INVALID',
+    );
+    res.redirect(303, destination.href);
+  }
 };
 export const completeGoogle: RequestHandler = async (req, res) => {
   const pending = req.session.pendingGoogle;
