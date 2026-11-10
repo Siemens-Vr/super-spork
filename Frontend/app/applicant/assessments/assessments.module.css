@@ -1,0 +1,11 @@
+.page {
+  min-width: 0;
+  width: 100%;
+  display: flow-root;
+}
+
+@media (max-width: 760px) {
+  .page {
+    overflow-wrap: anywhere;
+  }
+}

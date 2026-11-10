@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "private": true,
+  "name": "vml-nexus-admin",
+  "scripts": {
+    "start": "node ../../server.mjs admin",
+    "dev": "node ../../server.mjs admin"
+  }
+}

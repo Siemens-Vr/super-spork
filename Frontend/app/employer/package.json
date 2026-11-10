@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "private": true,
+  "name": "vml-nexus-employer",
+  "scripts": {
+    "start": "node ../../server.mjs employer",
+    "dev": "node ../../server.mjs employer"
+  }
+}

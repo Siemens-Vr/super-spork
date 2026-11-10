@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "private": true,
+  "name": "vml-nexus-trainer",
+  "scripts": {
+    "start": "node ../../server.mjs trainer",
+    "dev": "node ../../server.mjs trainer"
+  }
+}
