@@ -6,7 +6,7 @@ const portal = process.argv[2] || 'applicant';
 if (!Object.hasOwn(portals, portal)) throw new Error('Choose applicant, employer, admin, or trainer');
 const root = new URL('./', import.meta.url);
 let builder;
-if (portal === 'applicant') {
+{
   if (process.env.NODE_ENV === 'production') await buildApplicant();
   else builder = await watchApplicant();
 }
@@ -14,12 +14,13 @@ const paths = [
   'styles/globals.css', 'components/html.js', 'hooks/navigation.js',
   ...(portal === 'applicant' ? [
     'dist/app.js', 'dist/app.css', 'styles/auth.css',
-  ] : []),
+  ] : [`dist/${portal}.js`, `dist/${portal}.css`]),
 ];
 const files = Object.fromEntries(paths.map(path => [
   `/${path}`, [new URL(path, root), path.endsWith('.css') ? 'text/css' : 'text/javascript'],
 ]));
 files['/'] = [new URL(`app/${portal}/index.html`, root), 'text/html'];
+files['/assets/vml-logo.jpeg'] = [new URL('assets/vml-logo.jpeg', root), 'image/jpeg'];
 const authPaths = new Set(['/login', '/signup', '/register', '/forgot-password', '/reset-password', '/verify-email']);
 const server = http.createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -32,7 +33,7 @@ const server = http.createServer(async (req, res) => {
   if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end(); }
   try {
     const body = await readFile(entry[0]);
-    res.setHeader('Content-Type', `${entry[1]}; charset=utf-8`);
+    res.setHeader('Content-Type', entry[1].startsWith('image/') ? entry[1] : `${entry[1]}; charset=utf-8`);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.end(req.method === 'HEAD' ? undefined : body);
   } catch { res.writeHead(500); res.end('Unable to load page'); }

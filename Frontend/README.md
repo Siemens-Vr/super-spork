@@ -17,7 +17,7 @@ Frontend/
     employer/        # Future employer portal
     admin/           # Future admin portal
     trainer/         # Future trainer portal
-  components/        # Shared rendering primitives and future UI components
+  components/        # Shared sidebar, topbar, footer, icon and dashboard-layout folders
   context/           # Authentication/session state and authentication flows
   hooks/             # Shared framework-independent helpers (currently navigation)
   lib/               # API client and public configuration
@@ -29,7 +29,7 @@ Frontend/
   Dockerfile
 ```
 
-Applicant pages are typed TSX render functions with scoped CSS modules. Esbuild compiles them into `dist/app.js` and `dist/app.css`; the existing HTML rendering and delegated events remain in use without adding React. `context` and `hooks` organize reusable state and helpers. Page markup lives in the page folders, while shared state, layout and event wiring remain in `app/applicant/app.js`. `page-context.ts` defines the typed page dependencies.
+Applicant pages are typed TSX render functions with scoped CSS modules. Esbuild compiles every portal entry and its shared components into `dist/<portal>.js` and `dist/<portal>.css` (applicant uses `app.js` / `app.css`); the existing HTML rendering and delegated events remain in use without adding React. `context` and `hooks` organize reusable state and helpers. Page markup lives in the page folders, while shared state and event wiring remain in `app/applicant/app.js`. `page-context.ts` defines the typed page dependencies.
 
 ## Run locally
 
@@ -38,11 +38,11 @@ From Frontend, use a separate terminal for each portal:
 | Command | Address | Status |
 | --- | --- | --- |
 | npm run dev:applicant | http://localhost:3000 | Applicant portal |
-| npm run dev:employer | http://localhost:3001 | Placeholder |
-| npm run dev:admin | http://localhost:3002 | Placeholder |
-| npm run dev:trainer | http://localhost:3003 | Placeholder |
+| npm run dev:employer | http://localhost:3001 | Shared layout preview |
+| npm run dev:admin | http://localhost:3002 | Shared layout preview |
+| npm run dev:trainer | http://localhost:3003 | Shared layout preview |
 
-Run `npm ci` from Frontend first. Each `app/<portal>` folder also supports `npm run dev` independently. `npm run dev` and `npm start` from Frontend default to the applicant portal. The server builds applicant assets at startup and watches TSX/CSS changes in development; refresh the browser after edits. Stop with Ctrl+C. Restart previously running frontend servers after this restructure.
+Run `npm ci` from Frontend first. Each `app/<portal>` folder also supports `npm run dev` independently. `npm run dev` and `npm start` from Frontend default to the applicant portal. The server builds all portal assets at startup and watches TSX/CSS changes in development; refresh the browser after edits. Stop with Ctrl+C. Restart previously running frontend servers after this restructure.
 
 Use localhost consistently, matching the backend's default CORS configuration. The frontend and backend must use compatible same-site hosting for session cookies. Primary color is #262262, background is light grey, and the requested system font stack is retained.
 
@@ -76,3 +76,11 @@ docker run --rm -p 3003:3003 nexus-frontend node server.mjs trainer
 ```
 
 The image runs as an unprivileged user, binds to 0.0.0.0 inside the container, and contains only explicitly copied frontend directories. `HOST` and `PORT` can override the server defaults. `lib/config.js` is served to the browser: its API URL must be reachable from the user's browser, not merely from the container. Production HTTPS, API CORS and same-site cookie deployment must be configured for the target environment.
+
+## Shared dashboard components
+
+Each shared UI component lives in `components/<name>/<name>.tsx` with a matching `<name>.module.css`: `sidebar`, `topbar`, `footer`, `icon`, and `dashboard-layout`. These follow the existing TSX string-rendering approach; React is not required.
+
+Every portal imports `dashboardLayout` and supplies its role, current route, display name, trusted page markup and navigation links. Each portal owns `app/<role>/navigation.ts`, so changing one role’s links does not change another role. Links use typed `[route, label, icon]` tuples. The shared sidebar handles active links, mobile navigation, the VML logo, settings and optional sign out. Authentication still controls applicant access; navigation is not an authorization check.
+
+Admin, employer and trainer use the shared layout for clearly labeled previews. Their proposed links can be edited in their navigation files; the linked pages have no backend functionality yet.

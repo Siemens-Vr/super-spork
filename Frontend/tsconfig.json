@@ -5,8 +5,9 @@
     "moduleResolution": "Bundler",
     "jsx": "preserve",
     "strict": true,
+    "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx", "lib/**/*.d.ts"]
+  "include": ["app/**/*.ts", "app/**/*.tsx", "components/**/*.tsx", "lib/**/*.d.ts"]
 }

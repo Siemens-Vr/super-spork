@@ -35,6 +35,8 @@ ClamAV needs time to download signatures and initialize. Until scanning succeeds
 
 The Compose database is available at `127.0.0.1:55432` (container port `5432`). Use the matching `DATABASE_URL` from `.env.example`; `localhost:5432` may reach a separately installed PostgreSQL server and reject the Compose credentials. After changing an existing `.env`, restart the backend and worker.
 
+If startup reports a Redis connection failure (or `Connection is closed.`), run `docker compose up -d redis` from `Backend`, then check `docker compose exec redis redis-cli ping` returns `PONG` and restart `npm run dev`. The local Redis service listens on `127.0.0.1:6379`; set `REDIS_URL=redis://127.0.0.1:6379` if `localhost` resolves to an unavailable IPv6 address. Redis is required for API readiness and background queues.
+
 Local object storage uses the [PGSTY Silo MinIO fork](https://github.com/pgsty/silo) and its matching client, pinned to `RELEASE.2026-10-26T00-00-00Z`. The upstream `minio/minio` and `minio/mc` images are no longer publicly pullable. Silo supports the existing S3 endpoint, `MINIO_*` credentials, and storage volume. If an older checkout fails with `pull access denied for minio/mc`, use the updated Compose file, run `docker compose pull`, then `docker compose up -d`.
 
 - Swagger UI: [http://localhost:4000/docs](http://localhost:4000/docs)

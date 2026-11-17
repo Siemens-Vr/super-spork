@@ -9,7 +9,7 @@
     "dev:admin": "npm --prefix app/admin run dev",
     "dev:trainer": "npm --prefix app/trainer run dev",
     "check": "npm --prefix app/applicant run check && node --check server.mjs && npm run typecheck && npm run build",
-    "test": "npm --prefix app/applicant test",
+    "test": "npm --prefix app/applicant test && node --test components/dashboard-layout/dashboard-layout.test.mjs",
     "start": "node server.mjs",
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit"

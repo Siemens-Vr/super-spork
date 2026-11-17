@@ -10,6 +10,7 @@ COPY --chown=node:node context ./context
 COPY --chown=node:node hooks ./hooks
 COPY --chown=node:node lib ./lib
 COPY --chown=node:node styles ./styles
+COPY --chown=node:node assets ./assets
 RUN mkdir -p /frontend/dist && chown node:node /frontend/dist
 USER node
 EXPOSE 3000 3001 3002 3003

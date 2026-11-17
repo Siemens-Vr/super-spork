@@ -3,7 +3,12 @@ import { fileURLToPath } from "node:url";
 
 const options = {
   absWorkingDir: fileURLToPath(new URL("./", import.meta.url)),
-  entryPoints: ["app/applicant/app.js"],
+  entryPoints: {
+    app: "app/applicant/app.js",
+    admin: "app/admin/app.tsx",
+    trainer: "app/trainer/app.tsx",
+    employer: "app/employer/app.tsx",
+  },
   outdir: "dist",
   bundle: true,
   format: "esm",
@@ -24,5 +29,5 @@ export async function watchApplicant() {
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await buildApplicant();
-  console.log("Applicant TSX pages and CSS modules built in dist/.");
+  console.log("All portal pages and shared CSS modules built in dist/.");
 }
