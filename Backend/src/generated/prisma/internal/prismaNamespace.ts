@@ -5075,6 +5075,7 @@ export const DocumentVerificationScalarFieldEnum = {
   outcome: 'outcome',
   reason: 'reason',
   internalNotes: 'internalNotes',
+  applicantReadAt: 'applicantReadAt',
   evidenceReference: 'evidenceReference',
   createdAt: 'createdAt'
 } as const

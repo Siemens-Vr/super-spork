@@ -320,6 +320,7 @@ model DocumentVerification {
   outcome           VerificationStatus
   reason            String
   internalNotes     String?
+  applicantReadAt   DateTime?          @db.Timestamptz(3)
   evidenceReference String?
   createdAt         DateTime           @default(now()) @db.Timestamptz(3)
 }

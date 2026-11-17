@@ -17,5 +17,5 @@ export function dashboardLayout(props: DashboardLayoutProps){
     <div class="${styles.content}">
        ${props.body}${footer()}
      </div>
-</main>`;
+</main><button class="${styles.backdrop}" data-action="close-menu" aria-label="Close navigation" hidden></button>`;
 }
