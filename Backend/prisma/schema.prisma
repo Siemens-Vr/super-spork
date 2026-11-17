@@ -16,6 +16,7 @@ enum AccountStatus {
 enum ChallengePurpose {
   EMAIL_VERIFICATION
   PASSWORD_RESET
+  EMAIL_MFA
 }
 
 enum DocumentCategory {
@@ -86,23 +87,27 @@ enum LearningStatus {
 }
 
 model User {
-  id              String              @id @default(uuid()) @db.Uuid
-  email           String              @unique
-  legalName       String
-  phone           String?
-  passwordHash    String?
-  emailVerifiedAt DateTime?           @db.Timestamptz(3)
-  status          AccountStatus       @default(ACTIVE)
-  sessionVersion  Int                 @default(0)
-  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
-  profile         ApplicantProfile?
-  roles           UserRole[]
-  identities      AuthIdentity[]
-  challenges      AuthChallenge[]
-  sessions        Session[]
-  mfa             AdminMfaCredential?
-  documents       Document[]
+  id                         String              @id @default(uuid()) @db.Uuid
+  email                      String              @unique
+  legalName                  String
+  phone                      String?
+  passwordHash               String?
+  emailVerifiedAt            DateTime?           @db.Timestamptz(3)
+  status                     AccountStatus       @default(ACTIVE)
+  sessionVersion             Int                 @default(0)
+  createdAt                  DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime            @updatedAt @db.Timestamptz(3)
+  trainerProfile             TrainerProfile?
+  trainerInvitationsSent     TrainerInvitation[] @relation("TrainerInviter")
+  trainerInvitationsAccepted TrainerInvitation[] @relation("TrainerInvitee")
+  trainerReviews             TrainerReview[]
+  profile                    ApplicantProfile?
+  roles                      UserRole[]
+  identities                 AuthIdentity[]
+  challenges                 AuthChallenge[]
+  sessions                   Session[]
+  mfa                        AdminMfaCredential?
+  documents                  Document[]
 
   bookings          AssessmentBooking[]
   reviews           DocumentVerification[]
@@ -871,4 +876,96 @@ model AssessmentGraphWrite {
   data         Bytes
 
   @@id([sessionId, namespace, checkpointId, taskId, idx])
+}
+
+enum TrainerStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum TrainerInvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
+model TrainerInvitation {
+  id           String                  @id @default(uuid()) @db.Uuid
+  email        String
+  tokenHash    String                  @unique
+  status       TrainerInvitationStatus @default(PENDING)
+  invitedById  String                  @db.Uuid
+  invitedBy    User                    @relation("TrainerInviter", fields: [invitedById], references: [id], onDelete: Restrict)
+  acceptedById String?                 @db.Uuid
+  acceptedBy   User?                   @relation("TrainerInvitee", fields: [acceptedById], references: [id], onDelete: Restrict)
+  expiresAt    DateTime                @db.Timestamptz(3)
+  acceptedAt   DateTime?               @db.Timestamptz(3)
+  createdAt    DateTime                @default(now()) @db.Timestamptz(3)
+
+  @@index([email, status])
+}
+
+model TrainerProfile {
+  id              String                 @id @default(uuid()) @db.Uuid
+  userId          String                 @unique @db.Uuid
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  headline        String                 @default("")
+  biography       String                 @default("")
+  country         String                 @default("KE")
+  region          String                 @default("")
+  yearsExperience Int                    @default(0)
+  expertise       String[]               @default([])
+  status          TrainerStatus          @default(DRAFT)
+  version         Int                    @default(0)
+  submittedAt     DateTime?              @db.Timestamptz(3)
+  reviewedAt      DateTime?              @db.Timestamptz(3)
+  qualifications  TrainerQualification[]
+  reviews         TrainerReview[]
+  createdAt       DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime               @updatedAt @db.Timestamptz(3)
+
+  @@index([status, updatedAt])
+}
+
+model TrainerQualification {
+  cleanupPending   Boolean        @default(false)
+  storageDeletedAt DateTime?      @db.Timestamptz(3)
+  id               String         @id @default(uuid()) @db.Uuid
+  trainerProfileId String         @db.Uuid
+  trainerProfile   TrainerProfile @relation(fields: [trainerProfileId], references: [id], onDelete: Restrict)
+  category         String
+  title            String
+  issuer           String
+  issuedAt         DateTime       @db.Timestamptz(3)
+  expiresAt        DateTime?      @db.Timestamptz(3)
+  storageKey       String         @unique
+  mimeType         String
+  size             Int
+  sha256           String
+  scanStatus       ScanStatus     @default(QUARANTINED)
+  withdrawnAt      DateTime?      @db.Timestamptz(3)
+  createdAt        DateTime       @default(now()) @db.Timestamptz(3)
+
+  @@index([trainerProfileId, withdrawnAt])
+  @@index([scanStatus])
+}
+
+model TrainerReview {
+  id                String         @id @default(uuid()) @db.Uuid
+  trainerProfileId  String         @db.Uuid
+  trainerProfile    TrainerProfile @relation(fields: [trainerProfileId], references: [id], onDelete: Restrict)
+  reviewerId        String         @db.Uuid
+  reviewer          User           @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  fromStatus        TrainerStatus
+  outcome           TrainerStatus
+  reason            String
+  evidenceReference String?
+  snapshot          Json
+  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
+
+  @@index([trainerProfileId, createdAt])
 }

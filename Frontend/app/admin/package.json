@@ -3,6 +3,8 @@
   "private": true,
   "name": "vml-nexus-admin",
   "scripts": {
+    "check": "node --check app.js && node --check api.js && node --check store.js && node --check views.js && node --check availability-calendar.js && node --check trainer-views.js",
+    "test": "node --test admin.test.js server.test.js trainers.test.js",
     "start": "node ../../server.mjs admin",
     "dev": "node ../../server.mjs admin"
   }

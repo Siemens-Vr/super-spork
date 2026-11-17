@@ -1,4 +1,5 @@
 import { prisma, userLock, type Tx } from '../config/prisma.js';
+import { mayFinishAcceptedAnswer } from './assessment-processing.js';
 import { audit } from '../utils/audit.js';
 import { requireCondition } from '../errors/app-error.js';
 
@@ -6,7 +7,7 @@ import { requireCondition } from '../errors/app-error.js';
 export async function expireBookingsForUser(tx: Tx, applicantId: string, now = new Date()) {
   const bookings = await tx.assessmentBooking.findMany({
     where: { applicantId, status: 'SCHEDULED', slot: { endsAt: { lte: now } } },
-    include: { target: { include: { attempt: { include: { interaction: true } } } } },
+    include: { slot: true, target: { include: { attempt: { include: { interaction: true } } } } },
   });
   for (const booking of bookings) {
     const target = booking.target;
@@ -18,6 +19,13 @@ export async function expireBookingsForUser(tx: Tx, applicantId: string, now = n
       interaction?.status === 'COMPLETED'
     )
       continue;
+    const pending = interaction?.pendingResponseId
+      ? await tx.assessmentResponse.findUnique({
+          where: { id: interaction.pendingResponseId },
+          select: { createdAt: true },
+        })
+      : null;
+    if (mayFinishAcceptedAnswer(booking, pending, now)) continue;
     const started = target?.status === 'IN_PROGRESS';
     await tx.assessmentBooking.update({
       where: { id: booking.id },

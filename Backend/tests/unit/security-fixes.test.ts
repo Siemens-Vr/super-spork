@@ -41,6 +41,7 @@ describe('security configuration and catalogue update contracts', () => {
         NODE_ENV: 'production',
         APP_URL: 'https://api.example.test',
         FRONTEND_URL: 'https://frontend.example.test',
+        TRAINER_URL: 'https://trainers.example.test',
       }).FRONTEND_URL,
     ).toBe('https://frontend.example.test');
   });

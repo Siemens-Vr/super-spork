@@ -4,6 +4,8 @@
   "name": "vml-nexus-trainer",
   "scripts": {
     "start": "node ../../server.mjs trainer",
-    "dev": "node ../../server.mjs trainer"
+    "dev": "node ../../server.mjs trainer",
+    "check": "node --check app.js && node --check api.js && node --check store.js && node --check views.js",
+    "test": "node --test *.test.js"
   }
 }

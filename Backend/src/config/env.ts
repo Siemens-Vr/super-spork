@@ -8,7 +8,12 @@ const schema = z
     DATABASE_URL: z.url(),
     REDIS_URL: z.url().default('redis://127.0.0.1:6379'),
     APP_URL: z.url().default('http://localhost:4000'),
-    CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:4000'),
+    CORS_ORIGINS: z
+      .string()
+      .default(
+        'http://localhost:3000,http://localhost:3002,http://localhost:3003,http://localhost:4000',
+      ),
+    TRAINER_URL: z.url().default('http://localhost:3003'),
     FRONTEND_URL: z.url().default('http://localhost:3000'),
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
     SESSION_SECRET: z.string().min(48),
@@ -87,6 +92,26 @@ const schema = z
         code: 'custom',
         path: ['FRONTEND_URL'],
         message: 'Production frontend requires HTTPS',
+      });
+    const trainerOrigin = new URL(v.TRAINER_URL);
+    if (
+      !['http:', 'https:'].includes(trainerOrigin.protocol) ||
+      trainerOrigin.username ||
+      trainerOrigin.password ||
+      trainerOrigin.search ||
+      trainerOrigin.hash ||
+      trainerOrigin.pathname !== '/'
+    )
+      ctx.addIssue({
+        code: 'custom',
+        path: ['TRAINER_URL'],
+        message: 'Use a trusted trainer origin without a path, credentials, query or fragment',
+      });
+    if (v.NODE_ENV === 'production' && !v.TRAINER_URL.startsWith('https://'))
+      ctx.addIssue({
+        code: 'custom',
+        path: ['TRAINER_URL'],
+        message: 'Production trainer invitation links require HTTPS',
       });
     if (v.NODE_ENV === 'production' && !v.APP_URL.startsWith('https://'))
       ctx.addIssue({ code: 'custom', path: ['APP_URL'], message: 'Production requires HTTPS' });

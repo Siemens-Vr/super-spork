@@ -6,7 +6,7 @@ Each assessment has one career target. Its industries, employers and educational
 
 All endpoints are under `/api/v1`. Authenticate with a verified applicant account, use the same browser/cookie jar, and provide CSRF for mutations. Swagger handles CSRF automatically.
 
-1. Complete the profile, including `discipline`, and submit identity. Booking/start require a current clean identity. Submit qualifications through `/documents` and wait for clean scans before selecting them.
+1. Complete the profile, including `discipline`, and submit identity. Booking/start require a current, clean, non-rejected identity, with human authentication when required by the assessment. Submit qualifications through `/documents` and wait for clean scans before selecting them.
 2. Browse `/industries`, `/careers` and `/companies`. Career/company lists accept `industryIds=<uuid>,<uuid>` for up to three selected industries. Career results match every selected industry; company results match at least one. Each selected industry must be linked to the chosen career; each selected company must operate in at least one selected industry.
 3. `POST /assessments/targets` creates a draft. Use catalogue UUIDs, not names:
 
@@ -29,6 +29,14 @@ Choose 1–3 distinct industries, 0–3 distinct companies, and up to 10 qualifi
 9. `GET /assessments/targets` provides paginated history. `GET /assessments/attempts/{id}` returns the frozen context, requirements, results and learning plan. Ownership applies to every applicant read and mutation.
 
 Target states are `DRAFT → PREPARED → IN_PROGRESS → COMPLETED`. Cancelling a booking keeps its prepared target locked; rebook the same target to finish it. There is deliberately no career-switch bypass through cancellation. Learning may continue after the next career assessment is chosen.
+
+## Identity readiness and rejection recovery
+
+Eligibility, slot access, booking/rescheduling, preflight and assessment start share the identity rule: use at least one owned, current National ID/passport whose malware scan is `CLEAN` and whose verification status is not `REJECTED`. When the assessment requires authenticated identity, the qualifying document must also be `AUTHENTICATED`. Preparation pins the start policy in the attempt snapshot. A clean malware scan does not establish authenticity, and a rejected identity does not invalidate a separate qualifying passport or National ID.
+
+If all current identities are rejected, eligibility reports `IDENTITY_REJECTED` and `identityRecovery: { documentId }`; preflight returns the recovery document and an actionable blocking message. The document ID belongs to the authenticated applicant and links to existing verification-history, evidence and replacement routes. Booking remains server-enforced even if the identity was rejected after the browser last read eligibility; rejected attempts do not reserve a seat. If another current identity is awaiting its scan, the normal submission/scan requirement is reported instead. Optional human review may continue in parallel where assessment policy permits it.
+
+Uploading a replacement immediately excludes its predecessor, including an authenticated predecessor. The replacement must pass its own scan and any required human review. Rejection after booking does not cancel the booking or erase history; preflight/start remain blocked until a qualifying identity is available. The applicant can review feedback, replace the file or provide requested evidence and refresh readiness. Existing booking change deadlines and cancellation rules continue to apply. No database migration or document re-upload is required for this policy fix itself.
 
 ## How the four inputs affect the rubric
 

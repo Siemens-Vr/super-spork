@@ -25,7 +25,7 @@ describe('HTTP security without external services', () => {
     expect(r.body.error.code).toBe('CSRF_INVALID');
     expect(r.body.error.requestId).toBeTruthy();
   });
-  it.each(['http://localhost:3000', 'http://localhost:4000'])(
+  it.each(['http://localhost:3000', 'http://localhost:3002', 'http://localhost:4000'])(
     'allows credentialed frontend and Swagger requests from %s while enforcing CSRF',
     async (origin) => {
       const preflight = await request(app)

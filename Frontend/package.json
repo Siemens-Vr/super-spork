@@ -8,14 +8,15 @@
     "dev:employer": "npm --prefix app/employer run dev",
     "dev:admin": "npm --prefix app/admin run dev",
     "dev:trainer": "npm --prefix app/trainer run dev",
-    "check": "npm --prefix app/applicant run check && node --check server.mjs && npm run typecheck && npm run build",
-    "test": "npm --prefix app/applicant test && node --test components/dashboard-layout/dashboard-layout.test.mjs",
+    "check": "npm --prefix app/applicant run check && npm --prefix app/admin run check && npm --prefix app/trainer run check && node --check server.mjs && npm run typecheck && npm run build",
+    "test": "npm --prefix app/applicant test && npm --prefix app/admin test && npm --prefix app/trainer test",
     "start": "node server.mjs",
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

@@ -7,6 +7,7 @@ import { activeTargetStatuses, targetForBooking } from './assessment-target.serv
 import { audit } from '../utils/audit.js';
 import { applicantProfileSelect, isProfileComplete } from '../utils/applicant-profile.js';
 import type { availabilitySchema } from '../validators/assessment.schema.js';
+import { assessmentIdentityReadiness, currentAssessmentDocuments, identityMessages } from './assessment-identity-policy.js';
 const bookingInclude = {
   target: { select: { attempt: { select: { id: true } } } },
   blueprint: { include: { jobRole: true } },
@@ -18,7 +19,7 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
     where: { id: applicantId },
     include: {
       profile: { select: applicantProfileSelect },
-      documents: { where: { replacement: null } },
+      documents: { where: currentAssessmentDocuments },
       assessmentTargets: {
         where: { status: { in: [...activeTargetStatuses] } },
         include: { jobRole: true, attempt: true },
@@ -30,10 +31,8 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
   if (u.status !== 'ACTIVE') reasons.push('ACCOUNT_RESTRICTED');
   if (!u.emailVerifiedAt) reasons.push('EMAIL_NOT_VERIFIED');
   if (!isProfileComplete(u)) reasons.push('PROFILE_INCOMPLETE');
-  const identities = u.documents.filter(
-    (d) => ['NATIONAL_ID', 'PASSPORT'].includes(d.category) && d.scanStatus === 'CLEAN',
-  );
-  if (!identities.length) reasons.push('IDENTITY_SUBMISSION_REQUIRED');
+  const identity = assessmentIdentityReadiness(u.documents);
+  if (identity.reason) reasons.push(identity.reason);
   const target = u.assessmentTargets[0];
   const role = target?.jobRole;
   if (!target) reasons.push('TARGET_REQUIRED');
@@ -53,7 +52,7 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
     blueprintId: b.id,
     reasons: [
       ...reasons,
-      ...(b.requiresAuthenticatedIdentity && !identities.some((d) => d.status === 'AUTHENTICATED')
+      ...(!identity.reason && assessmentIdentityReadiness(u.documents, b.requiresAuthenticatedIdentity).reason
         ? ['IDENTITY_AUTHENTICATION_REQUIRED']
         : []),
       ...(b.requiresAuthenticatedAcademic &&
@@ -72,6 +71,7 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
     attemptId: target?.attempt?.id ?? null,
     eligible: policies.some((p) => !p.reasons.length),
     reasons,
+    identityRecovery: identity.recovery,
     blueprints: policies,
     timezone: 'Africa/Nairobi',
   };
@@ -145,7 +145,7 @@ export async function availableSlots(
     e.eligible,
     409,
     'ASSESSMENT_NOT_ELIGIBLE',
-    'Complete the required onboarding steps',
+    e.identityRecovery ? identityMessages.IDENTITY_REJECTED : 'Complete the required onboarding steps',
   );
   const now = new Date(),
     start = from ? new Date(from) : now,
@@ -284,7 +284,7 @@ async function reserve(
     e.eligible,
     409,
     'ASSESSMENT_NOT_ELIGIBLE',
-    'Required onboarding or verification is incomplete',
+    e.identityRecovery ? identityMessages.IDENTITY_REJECTED : 'Required onboarding or verification is incomplete',
   );
   const used = new Set(slot.bookings.map((x) => x.seat));
   const seat = Array.from({ length: a.capacity }, (_, i) => i + 1).find((i) => !used.has(i));
@@ -385,6 +385,13 @@ export async function cancelBooking(actorId: string, id: string, reason: string,
 export function confirmation(b: Awaited<ReturnType<typeof booking>>) {
   return {
     bookingId: b.id,
+    slotId: b.slotId,
+    changePolicy: {
+      deadline: new Date(
+        b.slot.startsAt.getTime() - b.slot.availability.cancellationNoticeMinutes * 60000,
+      ).toISOString(),
+      reschedulesRemaining: Math.max(0, b.slot.availability.rescheduleLimit - b.rescheduleCount),
+    },
     targetId: b.targetId,
     attemptId: b.target?.attempt?.id ?? null,
     applicantId: b.applicantId,

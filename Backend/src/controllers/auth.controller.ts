@@ -91,6 +91,7 @@ export const reauthenticate: RequestHandler = async (req, res) => {
   res.json({ data: { csrfToken: req.session.csrf } });
 };
 export const setupMfa: RequestHandler = async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   requireCondition(
     req.session.authenticatedAt && Date.now() - req.session.authenticatedAt < 300000,
     403,
@@ -103,6 +104,17 @@ export const verifyMfa: RequestHandler = async (req, res) => {
   await service.verifyMfa(req.principal!.id, req.body.code);
   const u = await prisma.user.findUniqueOrThrow({ where: { id: req.principal!.id } });
   await service.rotateSession(req, u, Date.now());
+  res.json({ data: { csrfToken: req.session.csrf, mfaVerified: true } });
+};
+export const sendEmailMfa: RequestHandler = async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ data: await service.sendEmailMfa(req.principal!.id, req.sessionID) });
+};
+export const verifyEmailMfa: RequestHandler = async (req, res) => {
+  await service.verifyEmailMfa(req.principal!.id, req.sessionID, req.body.code);
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: req.principal!.id } });
+  await service.rotateSession(req, user, Date.now());
+  res.setHeader('Cache-Control', 'no-store');
   res.json({ data: { csrfToken: req.session.csrf, mfaVerified: true } });
 };
 export function googleStart(link = false): RequestHandler {
@@ -234,6 +246,25 @@ export const googleCallback: RequestHandler = async (req, res, next) => {
     );
     res.redirect(303, destination.href);
   }
+};
+// The identity comes only from the verified, cookie-bound pending OAuth flow.
+// This read does not extend the ten-minute registration deadline.
+export const googleRegistration: RequestHandler = (req, res) => {
+  const pending = req.session.pendingGoogle;
+  res.set('Cache-Control', 'no-store');
+  requireCondition(
+    pending && Date.now() - pending.createdAt < 600000,
+    400,
+    'GOOGLE_FLOW_INVALID',
+    'Your signup session expired. Continue with Google to start again.',
+  );
+  res.json({
+    data: {
+      email: pending.email,
+      name: pending.name,
+      expiresAt: new Date(pending.createdAt + 600000).toISOString(),
+    },
+  });
 };
 export const completeGoogle: RequestHandler = async (req, res) => {
   const pending = req.session.pendingGoogle;

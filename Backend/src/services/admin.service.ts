@@ -51,7 +51,15 @@ export async function listCatalogue(kind: CatalogueKind, skip: number, take: num
         orderBy: { createdAt: 'desc' },
       });
     case 'blueprints':
-      return prisma.assessmentBlueprint.findMany({ skip, take, orderBy: { createdAt: 'desc' } });
+      return prisma.assessmentBlueprint.findMany({
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          framework: { select: { approved: true, scope: true } },
+          jobRole: { select: { title: true, active: true } },
+        },
+      });
   }
 }
 export async function createCatalogue(kind: CatalogueKind, actorId: string, body: unknown) {

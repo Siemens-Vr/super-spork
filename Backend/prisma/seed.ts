@@ -10,7 +10,13 @@ export const applicantPermissions = [
   'documents.read.self',
   'assessments.schedule.self',
 ];
+export const trainerPermissions = [
+  'trainer.profile.read.self',
+  'trainer.profile.update.self',
+  'trainer.qualifications.manage.self',
+];
 export const adminPermissions = [
+  'trainers.manage',
   'documents.verify',
   'documents.review',
   'industries.manage',
@@ -24,6 +30,7 @@ export const adminPermissions = [
 export async function seed() {
   for (const [name, permissions] of [
     ['APPLICANT', applicantPermissions],
+    ['TRAINER', trainerPermissions],
     ['ADMIN', adminPermissions],
   ] as const) {
     const role = await prisma.role.upsert({ where: { name }, create: { name }, update: {} });

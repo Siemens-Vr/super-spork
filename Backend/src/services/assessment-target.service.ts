@@ -7,6 +7,8 @@ import { requireCondition } from '../errors/app-error.js';
 import { audit } from '../utils/audit.js';
 import { applicantProfileSelect } from '../utils/applicant-profile.js';
 import { targetSchema, completeAttemptSchema } from '../validators/assessment-target.schema.js';
+import { qualificationCategories } from '../validators/document-list.schema.js';
+import { assessmentIdentityReadiness, currentAssessmentDocuments } from './assessment-identity-policy.js';
 
 export const activeTargetStatuses = ['DRAFT', 'PREPARED', 'IN_PROGRESS'] as const;
 const qualificationSelect = {
@@ -106,15 +108,7 @@ async function validateChoices(tx: Tx, applicantId: string, input: TargetInput) 
       applicantId,
       replacement: null,
       category: {
-        in: [
-          'BACHELOR',
-          'MASTER',
-          'PHD',
-          'DIPLOMA',
-          'SHORT_COURSE',
-          'INDUSTRY_CERTIFICATION',
-          'PROFESSIONAL_REGISTRATION',
-        ],
+        in: [...qualificationCategories],
       },
       scanStatus: 'CLEAN',
       status: { not: 'REJECTED' },
@@ -479,16 +473,14 @@ export async function startAttempt(applicantId: string, id: string) {
       })
       .parse(attempt.contextSnapshot).blueprint;
     const documents = await tx.document.findMany({
-      where: { applicantId, replacement: null, scanStatus: 'CLEAN', status: { not: 'REJECTED' } },
+      where: { applicantId, ...currentAssessmentDocuments },
     });
-    const identities = documents.filter(
-      (d) => d.category === 'NATIONAL_ID' || d.category === 'PASSPORT',
-    );
+    const identity = assessmentIdentityReadiness(documents, policy.requiresAuthenticatedIdentity);
     requireCondition(
-      identities.some((d) => !policy.requiresAuthenticatedIdentity || d.status === 'AUTHENTICATED'),
+      !identity.reason,
       409,
-      'IDENTITY_SUBMISSION_REQUIRED',
-      'A current clean identity meeting the frozen verification policy is required',
+      identity.reason || 'IDENTITY_SUBMISSION_REQUIRED',
+      identity.message,
     );
     requireCondition(
       !policy.requiresAuthenticatedAcademic ||
@@ -496,7 +488,7 @@ export async function startAttempt(applicantId: string, id: string) {
           (d) =>
             d.category !== 'NATIONAL_ID' &&
             d.category !== 'PASSPORT' &&
-            d.status === 'AUTHENTICATED',
+            d.status === 'AUTHENTICATED' && d.scanStatus === 'CLEAN',
         ),
       409,
       'ACADEMIC_AUTHENTICATION_REQUIRED',

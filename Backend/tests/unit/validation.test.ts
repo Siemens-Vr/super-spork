@@ -1,12 +1,40 @@
 import { describe, it, expect } from 'vitest';
 import { registerSchema, resetSchema, phone } from '../../src/validators/auth.schema.js';
 import { targetSchema } from '../../src/validators/assessment-target.schema.js';
+import { blueprintSchema } from '../../src/validators/admin.schema.js';
 import { reviewSchema } from '../../src/validators/document.schema.js';
 import { generateSlots } from '../../src/services/scheduling.service.js';
 import { encrypt, decrypt, verifier } from '../../src/utils/crypto.js';
 import { loadEnv } from '../../src/config/env.js';
 const uuid = () => crypto.randomUUID();
 describe('validation and cryptographic protections', () => {
+  it.each([9, 10, 240, 241])(
+    'validates an assessment duration of %i minutes',
+    (durationMinutes) => {
+      expect(
+        blueprintSchema.safeParse({
+          jobRoleId: uuid(),
+          frameworkId: uuid(),
+          version: 1,
+          title: 'PLC Programmer assessment',
+          durationMinutes,
+          instructions: 'Explain PLC inputs, outputs, troubleshooting and safe practice.',
+        }).success,
+      ).toBe(durationMinutes >= 10 && durationMinutes <= 240);
+    },
+  );
+  it('generates consecutive ten-minute assessment places', () => {
+    const slots = generateSlots(
+      new Date('2026-12-01T09:00:00+03:00'),
+      new Date('2026-12-01T09:35:00+03:00'),
+      10,
+    );
+    expect(slots).toHaveLength(3);
+    expect(
+      slots.every((slot) => slot.endsAt.getTime() - slot.startsAt.getTime() === 10 * 60000),
+    ).toBe(true);
+    expect(slots[2]!.endsAt.toISOString()).toBe('2026-12-01T06:30:00.000Z');
+  });
   it('normalizes Kenyan phone numbers', () =>
     expect(phone.parse('0712345678')).toBe('+254712345678'));
   it('rejects invalid phone numbers', () => expect(() => phone.parse('1234')).toThrow());

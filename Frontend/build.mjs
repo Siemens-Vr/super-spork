@@ -1,33 +1,39 @@
 import { build, context } from "esbuild";
 import { fileURLToPath } from "node:url";
 
-const options = {
+const options = (portal = 'applicant') => ({
   absWorkingDir: fileURLToPath(new URL("./", import.meta.url)),
-  entryPoints: {
-    app: "app/applicant/app.js",
-    admin: "app/admin/app.tsx",
-    trainer: "app/trainer/app.tsx",
-    employer: "app/employer/app.tsx",
-  },
-  outdir: "dist",
+  entryPoints: [`app/${portal}/app.js`],
+  outdir: portal === 'applicant' ? 'dist' : `dist/${portal}`,
   bundle: true,
   format: "esm",
   platform: "browser",
   target: ["es2022"],
   sourcemap: process.env.NODE_ENV !== "production",
   minify: process.env.NODE_ENV === "production",
-};
+});
 
 export async function buildApplicant() {
-  await build(options);
+  await build(options());
 }
 export async function watchApplicant() {
-  const builder = await context(options);
+  const builder = await context(options());
   await builder.rebuild();
   await builder.watch();
   return builder;
 }
+export async function buildAdmin() { await build(options('admin')); }
+export async function watchAdmin() {
+  const builder = await context(options('admin'));
+  await builder.rebuild();
+  await builder.watch();
+  return builder;
+}
+export async function buildTrainer() { await build(options('trainer')); }
+export async function watchTrainer() {const builder=await context(options('trainer'));await builder.rebuild();await builder.watch();return builder;}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await buildApplicant();
-  console.log("All portal pages and shared CSS modules built in dist/.");
+  await buildAdmin();
+  await buildTrainer();
+  console.log("Applicant, admin and trainer assets built in dist/.");
 }

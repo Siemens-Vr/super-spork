@@ -1,10 +1,45 @@
 import type { RequestHandler } from 'express';
 import { prisma } from '../config/prisma.js';
 import * as s from '../services/document.service.js';
-import { documentSchema, metadataSchema } from '../validators/document.schema.js';
+import {
+  academicDocumentRules,
+  documentSchema,
+  metadataSchema,
+} from '../validators/document.schema.js';
 import { uuid } from '../validators/auth.schema.js';
 import { requireCondition } from '../errors/app-error.js';
+import { env } from '../config/env.js';
 import { audit } from '../utils/audit.js';
+import { listDocuments } from '../services/document-list.service.js';
+export const requirements: RequestHandler = (_req, res) => {
+  res.json({
+    data: {
+      categories: [
+        {
+          category: 'NATIONAL_ID',
+          label: 'National ID',
+          institutionRequired: false,
+          requiredFields: [],
+          transcriptsRequired: false,
+        },
+        {
+          category: 'PASSPORT',
+          label: 'Passport',
+          institutionRequired: false,
+          requiredFields: [],
+          transcriptsRequired: false,
+        },
+        ...Object.entries(academicDocumentRules).map(([category, rules]) => ({
+          category,
+          ...rules,
+        })),
+      ],
+      maxFileBytes: env.MAX_UPLOAD_MB * 1024 * 1024,
+      maxTotalBytes: env.MAX_UPLOAD_TOTAL_MB * 1024 * 1024,
+      maxTranscripts: 5,
+    },
+  });
+};
 export function upload(identity: boolean, replacement = false): RequestHandler {
   return async (req, res) => {
     const id = replacement ? uuid.parse(req.params.id) : undefined;
@@ -23,21 +58,7 @@ export function upload(identity: boolean, replacement = false): RequestHandler {
 }
 export function list(identity = false): RequestHandler {
   return async (req, res) => {
-    res.json({
-      data: (
-        await prisma.document.findMany({
-          where: {
-            applicantId: req.principal!.id,
-            category: identity
-              ? { in: ['NATIONAL_ID', 'PASSPORT'] }
-              : { notIn: ['NATIONAL_ID', 'PASSPORT'] },
-          },
-          orderBy: { createdAt: 'desc' },
-          include: { transcripts: true },
-          take: 100,
-        })
-      ).map(s.publicDocument),
-    });
+    res.json(await listDocuments(req.principal!.id, identity, req.query));
   };
 }
 export const get: RequestHandler = async (req, res) => {

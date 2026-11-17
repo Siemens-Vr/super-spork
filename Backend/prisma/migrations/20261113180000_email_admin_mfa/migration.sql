@@ -1,0 +1,1 @@
+ALTER TYPE "ChallengePurpose" ADD VALUE 'EMAIL_MFA';

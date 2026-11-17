@@ -50,6 +50,7 @@ authRouter.post(
 );
 authRouter.get('/google', rateLimit('google', 20, 900), c.googleStart());
 authRouter.get('/google/callback', c.googleCallback);
+authRouter.get('/google/registration', c.googleRegistration);
 authRouter.post('/google/complete', validate(v.googleCompleteSchema), c.completeGoogle);
 authRouter.use(authenticate);
 authRouter.get('/me', c.me);
@@ -65,6 +66,19 @@ authRouter.post(
 );
 authRouter.post('/google/link', c.googleStart(true));
 authRouter.post('/mfa/setup', admin, c.setupMfa);
+authRouter.post(
+  '/mfa/email/send',
+  admin,
+  rateLimit('mfa-email-send', 5, 900, true),
+  c.sendEmailMfa,
+);
+authRouter.post(
+  '/mfa/email/verify',
+  admin,
+  rateLimit('mfa-email-verify', 10, 900, true),
+  validate(v.mfaEmailSchema),
+  c.verifyEmailMfa,
+);
 authRouter.post(
   '/mfa/verify',
   admin,

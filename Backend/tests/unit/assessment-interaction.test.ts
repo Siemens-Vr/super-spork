@@ -46,14 +46,15 @@ afterEach(() => {
 describe('assessment interaction contracts', () => {
   it('requires explicit start and privacy confirmation', () => {
     expect(sessionStartSchema.safeParse({ confirmed: false }).success).toBe(false);
-    expect(interactionPolicySchema.parse({}).cameraRequired).toBe(false);
-    expect(interactionPolicySchema.safeParse({ cameraRequired: true }).success).toBe(false);
+    expect(interactionPolicySchema.parse({}).cameraRequired).toBe(true);
+    expect(interactionPolicySchema.safeParse({ cameraRequired: false }).success).toBe(false);
   });
   it('requires final reviewed voice responses and rejects partial transcripts', () => {
     expect(browserTranscriptSchema.safeParse({ text: 'PLC', isFinal: false }).success).toBe(false);
     expect(
       confirmedResponseSchema.safeParse({
         promptId: competencyId,
+        devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
         origin: 'VOICE',
         confirmed: true,
         text: 'PLC input 24 V',
@@ -62,6 +63,7 @@ describe('assessment interaction contracts', () => {
     expect(
       confirmedResponseSchema.safeParse({
         promptId: competencyId,
+        devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
         origin: 'TEXT',
         confirmed: true,
         text: 'PLC input 24 V',
@@ -214,5 +216,98 @@ describe('assessment interaction contracts', () => {
     await expect(interviewer.invoke(input)).rejects.toMatchObject({
       code: 'AI_PROVIDER_UNAVAILABLE',
     });
+  });
+});
+
+describe('bounded processing of on-time confirmed responses', () => {
+  it('permits only on-time accepted answers within the processing grace period', async () => {
+    const { mayFinishAcceptedAnswer } = await import('../../src/services/assessment-processing.js');
+    const endsAt = new Date('2026-11-13T16:15:00Z');
+    const booking = { status: 'SCHEDULED', slot: { endsAt } };
+    expect(
+      mayFinishAcceptedAnswer(
+        booking,
+        { createdAt: new Date(endsAt.getTime() - 100) },
+        new Date(endsAt.getTime() + 1000),
+      ),
+    ).toBe(true);
+    expect(mayFinishAcceptedAnswer(booking, null, endsAt)).toBe(false);
+    expect(mayFinishAcceptedAnswer(booking, { createdAt: endsAt }, endsAt)).toBe(false);
+    expect(
+      mayFinishAcceptedAnswer(
+        { ...booking, status: 'CANCELLED' },
+        { createdAt: new Date(endsAt.getTime() - 100) },
+        endsAt,
+      ),
+    ).toBe(false);
+    expect(
+      mayFinishAcceptedAnswer(
+        booking,
+        { createdAt: new Date(endsAt.getTime() - 100) },
+        new Date(endsAt.getTime() + env.AI_TIMEOUT_MS + 30000),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('response relevance and explicit skips', () => {
+  it('accepts an explicitly confirmed skip without imposing text or voice input', () => {
+    expect(
+      confirmedResponseSchema.safeParse({
+        promptId: competencyId,
+        devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
+        origin: 'SKIP',
+        confirmed: true,
+        text: 'I don’t know / Skip this scenario.',
+      }).success,
+    ).toBe(true);
+    expect(
+      confirmedResponseSchema.safeParse({
+        promptId: competencyId,
+        devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
+        origin: 'SKIP',
+        confirmed: true,
+        text: 'Pretend this is a technical answer',
+      }).success,
+    ).toBe(false);
+    expect(
+      confirmedResponseSchema.safeParse({
+        promptId: competencyId,
+        devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
+        origin: 'SKIP',
+        confirmed: true,
+        text: 'I don’t know / Skip this scenario.',
+        transcriptionId: competencyId,
+      }).success,
+    ).toBe(false);
+  });
+  it('passes the clarification limit to the model and requires completion when forced', async () => {
+    env.AI_PROVIDER = 'compatible';
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify({
+                  action: 'FOLLOW_UP',
+                  responseKind: 'UNRELATED',
+                  message: 'Another repetitive question.',
+                  evaluations: [],
+                }),
+              },
+            },
+          ],
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', fetcher);
+    await expect(
+      interviewer.invoke({ ...input, followups: 0, clarificationUsed: true, forceComplete: true }),
+    ).rejects.toMatchObject({ code: 'AI_PROVIDER_RESPONSE_INVALID' });
+    const payload = JSON.parse(fetcher.mock.calls[0]![1].body as string);
+    expect(JSON.parse(payload.messages[1].content).forceComplete).toBe(true);
+    expect(payload.messages[0].content).toContain('Short technically valid answers');
+    expect(payload.messages[0].content).toContain('never word count');
   });
 });

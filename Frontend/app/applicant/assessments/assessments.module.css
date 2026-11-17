@@ -9,3 +9,8 @@
     overflow-wrap: anywhere;
   }
 }
+
+.fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.fields :global(.slots) { max-height: 420px; overflow-y: auto; }
+:global(.assessment-fields) { min-width: 0; border: 0; padding: 0; margin: 0; }
+:global(.assessment-fields:disabled) { opacity: .7; }

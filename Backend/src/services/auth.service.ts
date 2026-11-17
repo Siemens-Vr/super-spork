@@ -247,3 +247,85 @@ export async function verifyMfa(userId: string, code: string) {
   });
   requireCondition(result, 401, 'MFA_INVALID', 'Invalid or already used MFA code');
 }
+
+export async function sendEmailMfa(userId: string, sessionId: string) {
+  return prisma.$transaction(async (tx) => {
+    await userLock(tx, userId);
+    const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
+    requireCondition(
+      user.status === 'ACTIVE' && user.emailVerifiedAt,
+      403,
+      'EMAIL_VERIFICATION_REQUIRED',
+      'A verified email is required',
+    );
+    const last = await tx.authChallenge.findFirst({
+      where: { userId, purpose: 'EMAIL_MFA' },
+      orderBy: { createdAt: 'desc' },
+    });
+    requireCondition(
+      !last || Date.now() - last.createdAt.getTime() >= env.OTP_RESEND_SECONDS * 1000,
+      429,
+      'RATE_LIMITED',
+      'Please wait before requesting another email code',
+    );
+    await tx.authChallenge.updateMany({
+      where: { userId, purpose: 'EMAIL_MFA', consumedAt: null },
+      data: { consumedAt: new Date() },
+    });
+    const id = crypto.randomUUID(),
+      code = String(randomInt(0, 1000000)).padStart(6, '0');
+    await tx.authChallenge.create({
+      data: {
+        id,
+        userId,
+        purpose: 'EMAIL_MFA',
+        verifier: verifier(`EMAIL_MFA:${id}:${sessionId}:${code}`),
+        expiresAt: new Date(Date.now() + env.OTP_TTL_SECONDS * 1000),
+      },
+    });
+    await notify(
+      tx,
+      user.email,
+      'Your administrator sign-in code',
+      `Your NEXUS administrator sign-in code is ${code}. It expires in ${env.OTP_TTL_SECONDS / 60} minutes. If you did not request this, do not share the code.`,
+    );
+    await audit(tx, userId, 'auth.email_mfa_sent', userId);
+    return { expiresInSeconds: env.OTP_TTL_SECONDS, resendAfterSeconds: env.OTP_RESEND_SECONDS };
+  });
+}
+
+export async function verifyEmailMfa(userId: string, sessionId: string, code: string) {
+  const ok = await prisma.$transaction(async (tx) => {
+    await userLock(tx, userId);
+    const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
+    if (user.status !== 'ACTIVE' || !user.emailVerifiedAt) return false;
+    const challenge = await tx.authChallenge.findFirst({
+      where: { userId, purpose: 'EMAIL_MFA', consumedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (
+      !challenge ||
+      challenge.expiresAt <= new Date() ||
+      challenge.attempts >= env.OTP_MAX_ATTEMPTS
+    )
+      return false;
+    await tx.authChallenge.update({
+      where: { id: challenge.id },
+      data: { attempts: { increment: 1 } },
+    });
+    if (!safeEqual(challenge.verifier, verifier(`EMAIL_MFA:${challenge.id}:${sessionId}:${code}`)))
+      return false;
+    await tx.authChallenge.update({
+      where: { id: challenge.id },
+      data: { consumedAt: new Date() },
+    });
+    await audit(tx, userId, 'auth.email_mfa_verified', userId);
+    return true;
+  });
+  requireCondition(
+    ok,
+    401,
+    'MFA_INVALID',
+    'Invalid, expired or already used email code. Request a code in this browser session.',
+  );
+}

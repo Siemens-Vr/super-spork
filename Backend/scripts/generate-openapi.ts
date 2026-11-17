@@ -2,6 +2,7 @@ import { writeFileSync } from 'node:fs';
 import YAML from 'yaml';
 import { format } from 'prettier';
 import { z } from 'zod';
+import * as trainer from '../src/validators/trainer.schema.js';
 import * as auth from '../src/validators/auth.schema.js';
 import * as career from '../src/validators/career.schema.js';
 import * as document from '../src/validators/document.schema.js';
@@ -97,6 +98,10 @@ const schemas: Record<string, Schema> = {
     institutionName: { type: ['string', 'null'] },
     qualificationId: { type: ['string', 'null'], format: 'uuid' },
     transcripts: array(ref('Document')),
+    isCurrent: {
+      type: 'boolean',
+      description: 'False when this file or its parent qualification has a replacement.',
+    },
     issuedAt: { type: ['string', 'null'], format: 'date-time' },
     expiresAt: { type: ['string', 'null'], format: 'date-time' },
     verificationUrl: { type: ['string', 'null'] },
@@ -231,6 +236,11 @@ const schemas: Record<string, Schema> = {
     attemptId: { type: ['string', 'null'], format: 'uuid' },
     eligible: { type: 'boolean' },
     reasons: array(str),
+    identityRecovery: {
+      anyOf: [object({ documentId: id }), { type: 'null' }],
+      description:
+        'Owned current rejected identity to review or replace when no non-rejected current identity is available.',
+    },
     blueprints: array(object({ blueprintId: id, reasons: array(str) })),
     timezone: str,
   }),
@@ -252,6 +262,11 @@ const schemas: Record<string, Schema> = {
   Booking: object(
     {
       bookingId: id,
+      slotId: id,
+      changePolicy: object({
+        deadline: date,
+        reschedulesRemaining: { type: 'integer', minimum: 0 },
+      }),
       targetId: { type: ['string', 'null'], format: 'uuid' },
       attemptId: { type: ['string', 'null'], format: 'uuid' },
       applicantId: id,
@@ -336,6 +351,7 @@ const inputs = {
   ResetPassword: auth.resetSchema,
   Reauthenticate: auth.reauthSchema,
   MfaCode: auth.mfaSchema,
+  EmailMfaCode: auth.mfaEmailSchema,
   GoogleComplete: auth.googleCompleteSchema,
   ProfileUpdate: profileSchema,
   SuggestionInput: career.suggestionSchema,
@@ -347,6 +363,9 @@ const inputs = {
   AssessmentTargetInput: target.targetSchema,
   PrepareTargetInput: target.prepareTargetSchema,
   CompleteAttemptInput: target.completeAttemptSchema,
+  ApproveAssessmentInput: z
+    .object({ results: target.completeAttemptSchema.shape.results.optional() })
+    .strict(),
   LearningProgressInput: target.learningProgressSchema,
   CancelInput: assessment.reasonSchema,
   RescheduleInput: assessment.rescheduleSchema,
@@ -453,6 +472,7 @@ schemas.AssessmentTarget = object({
 });
 schemas.InteractionPolicy = json(interaction.interactionPolicySchema);
 schemas.SessionStartInput = json(interaction.sessionStartSchema);
+schemas.SessionResumeInput = json(interaction.sessionResumeSchema);
 schemas.ConfirmedResponseInput = json(interaction.confirmedResponseSchema);
 schemas.BrowserTranscriptionInput = json(interaction.browserTranscriptSchema);
 schemas.SpeechInput = json(interaction.speechRequestSchema);
@@ -537,6 +557,8 @@ schemas.AssessmentPreflight = object({
   endsAt: date,
   timezone: str,
   canStart: { type: 'boolean' },
+  blockingReasons: array(str),
+  identityRecovery: { anyOf: [object({ documentId: id }), { type: 'null' }] },
   policy: ref('InteractionPolicy'),
   aiReady: { type: 'boolean' },
   speech: ref('SpeechConfiguration'),
@@ -670,13 +692,14 @@ for (const field of ['issuedAt', 'expiresAt']) {
 }
 const paths: Record<string, Record<string, unknown>> = {};
 interface Options {
+  meta?: Schema;
   input?: string;
   output?: Schema;
   status?: number;
   public?: boolean;
   multipart?: boolean;
   description?: string;
-  parameters?: unknown[];
+  parameters?: readonly unknown[];
   redirect?: boolean;
   download?: boolean;
 }
@@ -727,11 +750,13 @@ function add(method: string, path: string, summary: string, tag: string, o: Opti
                     : object(
                         {
                           data: output,
-                          meta: object({
-                            page: { type: 'integer' },
-                            limit: { type: 'integer' },
-                            total: { type: 'integer' },
-                          }),
+                          meta:
+                            o.meta ??
+                            object({
+                              page: { type: 'integer' },
+                              limit: { type: 'integer' },
+                              total: { type: 'integer' },
+                            }),
                         },
                         ['data'],
                       ),
@@ -826,6 +851,8 @@ add('get', '/auth/google', 'Start Google authorization code flow', 'Authenticati
   public: true,
   status: 302,
   redirect: true,
+  description:
+    'Starts a fresh flow with prompt=select_account so Google requests account selection. Does not force repeated consent.',
 });
 add(
   'get',
@@ -843,6 +870,18 @@ add(
     }),
     description:
       'OIDC verifies signatures, issuer, audience, expiration, state, nonce and PKCE. JSON clients receive the documented JSON response. Browsers accepting HTML receive a 303 redirect to fixed routes under FRONTEND_URL: /auth/google/callback for login/linking, /register/google for registration, or /login for errors. No authentication tokens are included in redirect URLs. An email collision requires explicit authenticated linking.',
+  },
+);
+add(
+  'get',
+  '/auth/google/registration',
+  'Read the pending Google signup identity',
+  'Authentication',
+  {
+    public: true,
+    output: object({ email: { type: 'string', format: 'email' }, name: str, expiresAt: date }),
+    description:
+      'Requires the cookie-bound pending Google registration. Returns only the verified display identity and the original ten-minute expiry, with Cache-Control: no-store. Reading does not extend expiry. Missing or expired state returns GOOGLE_FLOW_INVALID. No query-supplied identity is accepted.',
   },
 );
 add(
@@ -877,6 +916,32 @@ add(
   'Authentication',
   { input: 'MfaCode', output: object({ csrfToken: str, mfaVerified: { type: 'boolean' } }) },
 );
+add(
+  'post',
+  '/auth/mfa/email/send',
+  'Send a session-bound admin MFA code to the verified account email',
+  'Authentication',
+  {
+    output: object({
+      expiresInSeconds: { type: 'integer' },
+      resendAfterSeconds: { type: 'integer' },
+    }),
+    description:
+      'Admin session and verified email required. Rate limited and subject to resend cooldown. No code is returned.',
+  },
+);
+add(
+  'post',
+  '/auth/mfa/email/verify',
+  'Verify a six-digit email MFA code and rotate session',
+  'Authentication',
+  {
+    input: 'EmailMfaCode',
+    output: object({ csrfToken: str, mfaVerified: { type: 'boolean' } }),
+    description:
+      'Accepts only a six-digit code issued in this browser session. Codes expire, have attempt limits, and are consumed once.',
+  },
+);
 add('get', '/applicants/me', 'Read private applicant profile', 'Applicants', {
   output: ref('Profile'),
 });
@@ -891,6 +956,51 @@ add(
   'Applicants',
   { output: ref('Onboarding') },
 );
+add(
+  'get',
+  '/documents/requirements',
+  'Read document categories, required metadata and upload limits',
+  'Documents',
+  {
+    output: object({
+      categories: array(
+        object({
+          category: str,
+          label: str,
+          institutionRequired: { type: 'boolean' },
+          requiredFields: array(str),
+          transcriptsRequired: { type: 'boolean' },
+        }),
+      ),
+      maxFileBytes: { type: 'integer' },
+      maxTotalBytes: { type: 'integer' },
+      maxTranscripts: { type: 'integer' },
+    }),
+    description:
+      'Requires a verified applicant with documents.read.self. Uses the same category rules and configured file limits as upload validation.',
+  },
+);
+const documentListOptions: Options = {
+  output: array(ref('Document')),
+  parameters: [
+    query('limit', { type: 'integer', minimum: 1, maximum: 100, default: 100 }),
+    query('cursor', {
+      type: 'string',
+      maxLength: 512,
+      description: 'Opaque nextCursor returned by the previous page.',
+    }),
+    query('eligibleForAssessment', { type: 'boolean', default: false }),
+  ],
+  meta: object({
+    limit: { type: 'integer' },
+    total: { type: 'integer' },
+    hasMore: { type: 'boolean' },
+    nextCursor: { type: ['string', 'null'] },
+    summary: object({ current: { type: 'integer' }, authenticated: { type: 'integer' } }),
+  }),
+  description:
+    'Returns up to 100 owned records ordered by createdAt and UUID descending. Follow nextCursor while hasMore is true; page numbers are not used. Totals and current/authenticated counts cover the entire matching collection, independently of the cursor. isCurrent also excludes transcripts whose qualification was replaced. eligibleForAssessment=true returns only current, clean, non-rejected qualification categories, excluding identity files, transcripts and other documents.',
+};
 for (const prefix of ['/identity/documents', '/documents']) {
   add('post', prefix, 'Upload private quarantined document', 'Documents', {
     input: prefix.startsWith('/identity') ? 'IdentityUpload' : 'Upload',
@@ -902,7 +1012,7 @@ for (const prefix of ['/identity/documents', '/documents']) {
       : String(schemas.Upload.description) +
         ' A current identity document must have been submitted first.',
   });
-  add('get', prefix, 'List owned documents', 'Documents', { output: array(ref('Document')) });
+  add('get', prefix, 'List owned documents', 'Documents', documentListOptions);
   add(
     'post',
     `${prefix}/{id}/replace`,
@@ -918,9 +1028,13 @@ for (const prefix of ['/identity/documents', '/documents']) {
     },
   );
 }
-add('get', '/identity/status', 'Read identity submissions and review status', 'Documents', {
-  output: array(ref('Document')),
-});
+add(
+  'get',
+  '/identity/status',
+  'Read identity submissions and review status',
+  'Documents',
+  documentListOptions,
+);
 add('get', '/documents/{id}', 'Read owned document metadata', 'Documents', {
   output: ref('Document'),
 });
@@ -1402,7 +1516,7 @@ add(
     input: 'SessionStartInput',
     output: ref('AssessmentSession'),
     description:
-      'Requires the scheduled start window and approved scenario coverage. Initialization is idempotent per prepared attempt. Device permission does not imply recording consent. No video is uploaded.',
+      'Requires the scheduled start window and approved scenario coverage. Initialization is idempotent per prepared attempt. Camera and microphone READY status is required for every assessment, including text mode and existing attempts. Readiness is self-reported by the client and does not attest hardware access. Device permission does not imply recording consent. No video is uploaded.',
   },
 );
 add(
@@ -1494,7 +1608,7 @@ add(
   '/assessment-sessions/{id}/resume',
   'Resume persisted LangGraph checkpoints after interruption',
   'Assessment sessions',
-  { output: ref('AssessmentSession') },
+  { input: 'SessionResumeInput', output: ref('AssessmentSession') },
 );
 add(
   'post',
@@ -1553,6 +1667,25 @@ add(
 );
 add(
   'get',
+  '/admin/assessment-sessions',
+  'List assessment sessions for assessor review',
+  'Administration',
+  {
+    output: array({ type: 'object' }),
+    parameters: [
+      ...pages,
+      query('status', {
+        type: 'string',
+        enum: ['ACTIVE', 'INTERRUPTED', 'AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'],
+      }),
+    ],
+    description:
+      adminDescription +
+      ' Requires assessments.review. Returns applicant and assessment identifiers without exposing the scenario bank.',
+  },
+);
+add(
+  'get',
   '/admin/assessment-sessions/{id}',
   'Review a conversation and proposed AI scores',
   'Administration',
@@ -1570,16 +1703,215 @@ add(
 add(
   'post',
   '/admin/assessment-sessions/{id}/approve-results',
-  'Approve AI proposals and publish the existing skill-gap report',
+  'Publish assessor-reviewed results and the skill-gap report',
   'Administration',
   {
+    input: 'ApproveAssessmentInput',
     output: ref('AssessmentAttempt'),
     parameters: [idem],
     description:
       adminDescription +
-      ' Review the conversation and evidence first. This uses existing immutable completion and deterministic learning-plan rules. Use the existing assessor completion endpoint to submit corrected scores instead.',
+      ' Review the conversation and evidence first. Optionally submit corrected results using the CompleteAttemptInput schema; otherwise approve the proposals. Results are immutable after publication. New answers close at the booking deadline; an on-time accepted pending response has a bounded AI processing grace period.',
   },
 );
+
+// Trainer onboarding is separate from applicant identity records and assessment scoring.
+for (const [name, schema] of Object.entries({
+  TrainerInviteInput: trainer.trainerInviteSchema,
+  TrainerAcceptInput: trainer.acceptTrainerInviteSchema,
+  TrainerProfileInput: trainer.trainerProfileSchema,
+  TrainerVersionInput: trainer.trainerVersionSchema,
+  TrainerQualificationInput: trainer.trainerQualificationSchema,
+  TrainerReviewInput: trainer.trainerReviewSchema,
+}))
+  schemas[name] = json(schema);
+schemas.TrainerQualification = object({
+  id,
+  category: str,
+  title: str,
+  issuer: str,
+  issuedAt: date,
+  expiresAt: { type: ['string', 'null'], format: 'date-time' },
+  mimeType: str,
+  size: { type: 'integer' },
+  scanStatus: { type: 'string', enum: ['QUARANTINED', 'CLEAN', 'INFECTED', 'FAILED'] },
+  withdrawnAt: { type: ['string', 'null'], format: 'date-time' },
+  createdAt: date,
+});
+schemas.TrainerReview = object({
+  id,
+  fromStatus: str,
+  outcome: str,
+  reason: str,
+  evidenceReference: { type: ['string', 'null'] },
+  createdAt: date,
+});
+schemas.TrainerProfile = object({
+  id,
+  userId: id,
+  headline: str,
+  biography: str,
+  country: str,
+  region: str,
+  yearsExperience: { type: 'integer' },
+  expertise: array(str),
+  status: { type: 'string', enum: [...trainer.trainerStatuses] },
+  version: { type: 'integer' },
+  submittedAt: { type: ['string', 'null'], format: 'date-time' },
+  reviewedAt: { type: ['string', 'null'], format: 'date-time' },
+  user: object({
+    id,
+    legalName: str,
+    email: str,
+    phone: { type: ['string', 'null'] },
+    status: str,
+    emailVerifiedAt: date,
+  }),
+  qualifications: array(ref('TrainerQualification')),
+  reviews: array(ref('TrainerReview')),
+  csrfToken: str,
+  createdAt: date,
+  updatedAt: date,
+});
+schemas.TrainerSummary = object({
+  id,
+  userId: id,
+  headline: str,
+  status: str,
+  version: { type: 'integer' },
+  submittedAt: date,
+  updatedAt: date,
+  user: object({ legalName: str, email: str }),
+  _count: object({ qualifications: { type: 'integer' } }),
+});
+schemas.TrainerInvitation = object({
+  id,
+  email: str,
+  status: { type: 'string', enum: ['PENDING', 'ACCEPTED', 'REVOKED'] },
+  expiresAt: date,
+  acceptedAt: { type: ['string', 'null'], format: 'date-time' },
+  createdAt: date,
+});
+schemas.TrainerQualificationUpload = {
+  ...schemas.TrainerQualificationInput,
+  properties: {
+    ...(schemas.TrainerQualificationInput!.properties as object),
+    file: { type: 'string', format: 'binary' },
+  },
+  required: [...(schemas.TrainerQualificationInput!.required as string[]), 'file'],
+};
+const trainerPolicy =
+  'Requires a verified signed-in TRAINER with the corresponding self permission. Draft, changes-requested and rejected profiles can be edited. Version must match the current record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No learner identity or scoring access is granted.';
+add('post', '/trainers/invitations/accept', 'Accept a single-use trainer invitation', 'Trainers', {
+  input: 'TrainerAcceptInput',
+  output: ref('TrainerProfile'),
+  description:
+    'Sign in with the exact verified invited email. Public registration remains applicant-only. Invitation links expire after seven days and are sent through the encrypted email outbox. Acceptance rotates the session, invalidates old sessions, and adds only trainer onboarding permissions. The invitation token is provided in the request body, never a query parameter.',
+});
+add(
+  'get',
+  '/trainers/me',
+  'Read private trainer profile, qualifications and review feedback',
+  'Trainers',
+  { output: ref('TrainerProfile'), description: trainerPolicy },
+);
+add('patch', '/trainers/me', 'Update the trainer professional profile', 'Trainers', {
+  input: 'TrainerProfileInput',
+  output: ref('TrainerProfile'),
+  description: trainerPolicy,
+});
+add('post', '/trainers/me/submit', 'Submit completed trainer onboarding for review', 'Trainers', {
+  input: 'TrainerVersionInput',
+  output: ref('TrainerProfile'),
+  description:
+    trainerPolicy +
+    ' A complete profile and at least one unexpired qualification are required. Every current evidence file must have a clean malware verdict.',
+});
+add(
+  'post',
+  '/trainers/me/qualifications',
+  'Upload private trainer qualification evidence',
+  'Trainers',
+  {
+    input: 'TrainerQualificationUpload',
+    multipart: true,
+    output: ref('TrainerProfile'),
+    status: 201,
+    description:
+      trainerPolicy +
+      ' Attach one PDF/JPEG/PNG, limited to MAX_UPLOAD_MB (10 MB by default). MIME and signature must match. A separate applicant identity document is not required. Qualification evidence remains quarantined until the worker scans it.',
+  },
+);
+add(
+  'delete',
+  '/trainers/me/qualifications/{id}',
+  'Withdraw qualification while preserving review evidence',
+  'Trainers',
+  { input: 'TrainerVersionInput', output: ref('TrainerProfile'), description: trainerPolicy },
+);
+add(
+  'get',
+  '/trainers/me/qualifications/{id}/download',
+  'Download owned clean qualification evidence',
+  'Trainers',
+  { download: true, description: trainerPolicy },
+);
+for (const [method, path, summary, options] of [
+  [
+    'get',
+    '/admin/trainer-invitations',
+    'List trainer invitation history',
+    { output: array(ref('TrainerInvitation')), parameters: pages },
+  ],
+  [
+    'post',
+    '/admin/trainer-invitations',
+    'Invite a trainer by email',
+    { input: 'TrainerInviteInput', output: ref('TrainerInvitation'), status: 201 },
+  ],
+  [
+    'post',
+    '/admin/trainer-invitations/{id}/revoke',
+    'Revoke a pending invitation',
+    { output: object({ id, status: { const: 'REVOKED' } }) },
+  ],
+  [
+    'get',
+    '/admin/trainers',
+    'Search trainers and filter onboarding status',
+    {
+      output: array(ref('TrainerSummary')),
+      parameters: [
+        ...pages,
+        query('status', { type: 'string', enum: [...trainer.trainerStatuses] }),
+      ],
+    },
+  ],
+  [
+    'get',
+    '/admin/trainers/{id}',
+    'Inspect a trainer profile by user ID',
+    { output: ref('TrainerProfile') },
+  ],
+  [
+    'post',
+    '/admin/trainers/{id}/reviews',
+    'Record a trainer approval, rejection, change request or suspension',
+    { input: 'TrainerReviewInput', output: ref('TrainerProfile'), status: 201 },
+  ],
+  [
+    'get',
+    '/admin/trainer-qualifications/{id}/download',
+    'Download private clean trainer evidence for review',
+    { download: true },
+  ],
+] as const)
+  add(method, path, summary, 'Trainer administration', {
+    ...options,
+    description:
+      adminDescription +
+      ' Requires trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are visible to the trainer; approvals require an independent verification reference. Self-approval and stale versions are rejected. Profile and qualification snapshots, status history and audit entries are preserved. Invitations never return raw tokens or file-storage keys.',
+  });
 
 const spec = {
   openapi: '3.1.0',
@@ -1598,6 +1930,8 @@ const spec = {
     'Assessments',
     'Assessment sessions',
     'Administration',
+    'Trainers',
+    'Trainer administration',
   ].map((name) => ({ name })),
   paths,
   components: {

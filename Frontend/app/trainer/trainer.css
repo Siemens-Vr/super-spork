@@ -1,0 +1,130 @@
+.trainer-hero {
+  display: block;
+  min-height: 230px;
+  background: #262262;
+  color: #fff;
+  margin-bottom: 24px;
+  padding: 32px;
+  border-radius: 18px;
+}
+.trainer-hero h2 {
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.2;
+  margin: 12px 0;
+}
+.trainer-hero p {
+  max-width: 640px;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+.trainer-overview {
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 24px;
+}
+.trainer-stat {
+  font-size: 36px;
+  color: #262262;
+}
+.trainer-status {
+  margin-bottom: 24px;
+}
+.trainer-status p {
+  margin: 8px 0;
+}
+.trainer-qualification-list {
+  list-style: none;
+  margin: 0 0 28px;
+  padding: 0;
+}
+.trainer-qualification-list li {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 18px 0;
+  flex-wrap: wrap;
+}
+.trainer-qualification-list li > div:first-child {
+  flex: 1;
+  min-width: 180px;
+}
+.trainer-qualification-list p {
+  margin: 6px 0;
+}
+.trainer-main .field textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.trainer-gate {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.trainer-gate > .card {
+  max-width: 620px;
+  width: 100%;
+}
+.trainer-main {
+  padding-bottom: 32px;
+}
+.trainer-main .admin-timeline {
+  list-style: none;
+  padding: 0;
+}
+.trainer-main .admin-timeline small {
+  display: block;
+  color: #64748b;
+  margin-top: 5px;
+}
+@media (max-width: 760px) {
+  .trainer-sidebar {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .trainer-sidebar nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .trainer-sidebar .sidebar-bottom {
+    position: static;
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .trainer-main {
+    margin-left: 0 !important;
+  }
+  .trainer-overview {
+    grid-template-columns: 1fr;
+  }
+  .trainer-sidebar .nav-label {
+    margin-top: 12px;
+  }
+  .trainer-main .page-heading {
+    align-items: start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .trainer-main .content {
+    padding: 20px 16px;
+  }
+  .trainer-qualification-list li {
+    align-items: flex-start;
+  }
+}
+/* Admin's off-canvas mobile navigation is replaced by an always-visible trainer nav. */
+.trainer-sidebar {
+  visibility: visible !important;
+}
+.trainer-sidebar button.nav-link {
+  background: none;
+  border: 0;
+  text-align: left;
+}

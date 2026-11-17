@@ -116,15 +116,8 @@ export const blueprintSchema = z
     frameworkId: z.uuid(),
     version: z.number().int().min(1),
     title: z.string().min(3).max(200),
-    durationMinutes: z.number().int().min(15).max(240),
-    interactionPolicy: interactionPolicySchema.default({
-      cameraRequired: false,
-      microphoneRequired: false,
-      allowText: true,
-      language: 'en',
-      accommodationInstructions:
-        'Contact an administrator to request an equipment exception before starting.',
-    }),
+    durationMinutes: z.number().int().min(10).max(240),
+    interactionPolicy: interactionPolicySchema.default(interactionPolicySchema.parse({})),
     instructions: z.string().min(10).max(4000),
     active: z.boolean().default(false),
     requiresAuthenticatedIdentity: z.boolean().default(false),

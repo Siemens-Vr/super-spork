@@ -20,6 +20,7 @@ import { applicantRouter } from './routes/applicant.routes.js';
 import { documentRouter, identityRouter } from './routes/document.routes.js';
 import { catalogueRouter } from './routes/catalogue.routes.js';
 import { assessmentRouter } from './routes/assessment.routes.js';
+import { trainerRouter, trainerAdminRouter } from './routes/trainer.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
 import {
   assessmentSessionRouter,
@@ -134,6 +135,8 @@ export function createApp() {
   app.use('/api/v1/identity', identityRouter);
   app.use('/api/v1/documents', documentRouter);
   app.use('/api/v1/assessments', assessmentRouter);
+  app.use('/api/v1/trainers', trainerRouter);
+  app.use('/api/v1/admin', trainerAdminRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/admin', assessmentInteractionAdminRouter);
   app.use('/api/v1/assessment-sessions', assessmentSessionRouter);
