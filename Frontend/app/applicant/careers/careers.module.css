@@ -4,6 +4,22 @@
   display: flow-root;
 }
 
+.fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.remove {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 4px;
+}
+
 @media (max-width: 760px) {
   .page {
     overflow-wrap: anywhere;

@@ -1,30 +1,39 @@
 import { z } from 'zod';
 export const interactionPolicySchema = z
   .object({
-    cameraRequired: z.boolean().default(false),
-    microphoneRequired: z.boolean().default(false),
+    cameraRequired: z.literal(true).default(true),
+    microphoneRequired: z.literal(true).default(true),
     allowText: z.boolean().default(true),
     language: z.string().trim().min(2).max(20).default('en'),
-    cameraPurpose: z.string().trim().min(10).max(1000).optional(),
+    cameraPurpose: z
+      .string()
+      .trim()
+      .min(10)
+      .max(1000)
+      .default(
+        'Camera and microphone access is required for every assessment. The camera preview stays on your device; no video is recorded or uploaded.',
+      ),
     accommodationInstructions: z
       .string()
       .trim()
       .min(10)
       .max(1000)
       .default(
-        'Contact an administrator to request a camera or microphone exception or a text-based assessment before starting.',
+        'Camera and microphone access is mandatory. Contact your assessment provider if your device is unavailable; text input does not waive device requirements.',
       ),
   })
   .strict()
   .refine((v) => !v.cameraRequired || !!v.cameraPurpose, 'Explain why the camera is required');
 const device = z.enum(['READY', 'DENIED', 'UNAVAILABLE', 'NOT_REQUESTED']);
+export const deviceReadinessSchema = z
+  .object({ camera: device, microphone: device, speakerConfirmed: z.boolean().default(false) })
+  .strict();
+export const sessionResumeSchema = z.object({ devices: deviceReadinessSchema }).strict();
 export const sessionStartSchema = z
   .object({
     confirmed: z.literal(true),
     mode: z.enum(['TEXT', 'VOICE']),
-    devices: z
-      .object({ camera: device, microphone: device, speakerConfirmed: z.boolean() })
-      .strict(),
+    devices: deviceReadinessSchema,
     privacyAcknowledged: z.literal(true),
     audioProcessingConsent: z.boolean().default(false),
   })
@@ -32,7 +41,8 @@ export const sessionStartSchema = z
 export const confirmedResponseSchema = z
   .object({
     promptId: z.uuid(),
-    origin: z.enum(['TEXT', 'VOICE']),
+    devices: deviceReadinessSchema,
+    origin: z.enum(['TEXT', 'VOICE', 'SKIP']),
     confirmed: z.literal(true),
     text: z.string().trim().min(1).max(12000),
     transcriptionId: z.uuid().optional(),
@@ -45,6 +55,12 @@ export const confirmedResponseSchema = z
   .refine(
     (v) => v.origin !== 'TEXT' || !v.transcriptionId,
     'Text responses cannot reference a transcription',
+  )
+  .refine(
+    (v) =>
+      v.origin !== 'SKIP' ||
+      (v.text === 'I don’t know / Skip this scenario.' && !v.transcriptionId),
+    'Use the explicit skip confirmation without a transcription',
   );
 export const browserTranscriptSchema = z
   .object({
@@ -62,8 +78,8 @@ export const sessionEventSchema = z
   .strict();
 export const accommodationSchema = z
   .object({
-    waiveCamera: z.boolean().default(false),
-    waiveMicrophone: z.boolean().default(false),
+    waiveCamera: z.literal(false).default(false),
+    waiveMicrophone: z.literal(false).default(false),
     allowText: z.boolean().default(false),
     reason: z.string().trim().min(10).max(2000),
   })
@@ -98,3 +114,9 @@ export const scenarioAssignmentSchema = z
   .strict();
 export const frozenScenarioSchema = scenarioSchema.extend({ id: z.uuid() }).strip();
 export type FrozenScenario = z.infer<typeof frozenScenarioSchema>;
+
+export const sessionListSchema = z.object({
+  status: z
+    .enum(['ACTIVE', 'INTERRUPTED', 'AWAITING_REVIEW', 'COMPLETED', 'EXPIRED', 'ABANDONED'])
+    .optional(),
+});

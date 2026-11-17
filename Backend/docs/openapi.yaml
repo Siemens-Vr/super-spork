@@ -20,6 +20,8 @@ tags:
   - name: Assessments
   - name: Assessment sessions
   - name: Administration
+  - name: Trainers
+  - name: Trainer administration
 paths:
   /auth/csrf:
     get:
@@ -1348,6 +1350,9 @@ paths:
       tags:
         - Authentication
       summary: Start Google authorization code flow
+      description:
+        Starts a fresh flow with prompt=select_account so Google requests account selection.
+        Does not force repeated consent.
       security: []
       parameters: []
       responses:
@@ -1469,6 +1474,114 @@ paths:
                         type: array
                         items:
                           type: string
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/google/registration:
+    get:
+      operationId: get__auth_google_registration
+      tags:
+        - Authentication
+      summary: Read the pending Google signup identity
+      description: 'Requires the cookie-bound pending Google registration. Returns only the verified
+        display identity and the original ten-minute expiry, with Cache-Control: no-store. Reading
+        does not extend expiry. Missing or expired state returns GOOGLE_FLOW_INVALID. No
+        query-supplied identity is accepted.'
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+                      name:
+                        type: string
+                      expiresAt:
+                        type: string
+                        format: date-time
                   meta:
                     type: object
                     properties:
@@ -1964,6 +2077,233 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /auth/mfa/email/send:
+    post:
+      operationId: post__auth_mfa_email_send
+      tags:
+        - Authentication
+      summary: Send a session-bound admin MFA code to the verified account email
+      description:
+        Admin session and verified email required. Rate limited and subject to resend cooldown.
+        No code is returned.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      expiresInSeconds:
+                        type: integer
+                      resendAfterSeconds:
+                        type: integer
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/mfa/email/verify:
+    post:
+      operationId: post__auth_mfa_email_verify
+      tags:
+        - Authentication
+      summary: Verify a six-digit email MFA code and rotate session
+      description: Accepts only a six-digit code issued in this browser session. Codes expire, have
+        attempt limits, and are consumed once.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailMfaCode'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      csrfToken:
+                        type: string
+                      mfaVerified:
+                        type: boolean
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /applicants/me:
     get:
       operationId: get__applicants_me
@@ -2264,6 +2604,129 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /documents/requirements:
+    get:
+      operationId: get__documents_requirements
+      tags:
+        - Documents
+      summary: Read document categories, required metadata and upload limits
+      description:
+        Requires a verified applicant with documents.read.self. Uses the same category rules
+        and configured file limits as upload validation.
+      security:
+        - sessionCookie: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category:
+                              type: string
+                            label:
+                              type: string
+                            institutionRequired:
+                              type: boolean
+                            requiredFields:
+                              type: array
+                              items:
+                                type: string
+                            transcriptsRequired:
+                              type: boolean
+                      maxFileBytes:
+                        type: integer
+                      maxTotalBytes:
+                        type: integer
+                      maxTranscripts:
+                        type: integer
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /identity/documents:
     post:
       operationId: post__identity_documents
@@ -2381,9 +2844,36 @@ paths:
       tags:
         - Documents
       summary: List owned documents
+      description: Returns up to 100 owned records ordered by createdAt and UUID descending. Follow
+        nextCursor while hasMore is true; page numbers are not used. Totals and
+        current/authenticated counts cover the entire matching collection, independently of the
+        cursor. isCurrent also excludes transcripts whose qualification was replaced.
+        eligibleForAssessment=true returns only current, clean, non-rejected qualification
+        categories, excluding identity files, transcripts and other documents.
       security:
         - sessionCookie: []
-      parameters: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+            maxLength: 512
+            description: Opaque nextCursor returned by the previous page.
+        - in: query
+          name: eligibleForAssessment
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Success
@@ -2399,12 +2889,23 @@ paths:
                   meta:
                     type: object
                     properties:
-                      page:
-                        type: integer
                       limit:
                         type: integer
                       total:
                         type: integer
+                      hasMore:
+                        type: boolean
+                      nextCursor:
+                        type:
+                          - string
+                          - 'null'
+                      summary:
+                        type: object
+                        properties:
+                          current:
+                            type: integer
+                          authenticated:
+                            type: integer
                 required:
                   - data
         '400':
@@ -2743,9 +3244,36 @@ paths:
       tags:
         - Documents
       summary: List owned documents
+      description: Returns up to 100 owned records ordered by createdAt and UUID descending. Follow
+        nextCursor while hasMore is true; page numbers are not used. Totals and
+        current/authenticated counts cover the entire matching collection, independently of the
+        cursor. isCurrent also excludes transcripts whose qualification was replaced.
+        eligibleForAssessment=true returns only current, clean, non-rejected qualification
+        categories, excluding identity files, transcripts and other documents.
       security:
         - sessionCookie: []
-      parameters: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+            maxLength: 512
+            description: Opaque nextCursor returned by the previous page.
+        - in: query
+          name: eligibleForAssessment
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Success
@@ -2761,12 +3289,23 @@ paths:
                   meta:
                     type: object
                     properties:
-                      page:
-                        type: integer
                       limit:
                         type: integer
                       total:
                         type: integer
+                      hasMore:
+                        type: boolean
+                      nextCursor:
+                        type:
+                          - string
+                          - 'null'
+                      summary:
+                        type: object
+                        properties:
+                          current:
+                            type: integer
+                          authenticated:
+                            type: integer
                 required:
                   - data
         '400':
@@ -2959,9 +3498,36 @@ paths:
       tags:
         - Documents
       summary: Read identity submissions and review status
+      description: Returns up to 100 owned records ordered by createdAt and UUID descending. Follow
+        nextCursor while hasMore is true; page numbers are not used. Totals and
+        current/authenticated counts cover the entire matching collection, independently of the
+        cursor. isCurrent also excludes transcripts whose qualification was replaced.
+        eligibleForAssessment=true returns only current, clean, non-rejected qualification
+        categories, excluding identity files, transcripts and other documents.
       security:
         - sessionCookie: []
-      parameters: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+            maxLength: 512
+            description: Opaque nextCursor returned by the previous page.
+        - in: query
+          name: eligibleForAssessment
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Success
@@ -2977,12 +3543,23 @@ paths:
                   meta:
                     type: object
                     properties:
-                      page:
-                        type: integer
                       limit:
                         type: integer
                       total:
                         type: integer
+                      hasMore:
+                        type: boolean
+                      nextCursor:
+                        type:
+                          - string
+                          - 'null'
+                      summary:
+                        type: object
+                        properties:
+                          current:
+                            type: integer
+                          authenticated:
+                            type: integer
                 required:
                   - data
         '400':
@@ -11407,8 +11984,10 @@ paths:
       summary: Confirm equipment, consent and start one interaction session
       description:
         Requires the scheduled start window and approved scenario coverage. Initialization is
-        idempotent per prepared attempt. Device permission does not imply recording consent. No
-        video is uploaded.
+        idempotent per prepared attempt. Camera and microphone READY status is required for every
+        assessment, including text mode and existing attempts. Readiness is self-reported by the
+        client and does not attest hardware access. Device permission does not imply recording
+        consent. No video is uploaded.
       security:
         - sessionCookie: []
       parameters:
@@ -12248,6 +12827,12 @@ paths:
             type: string
           description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
             reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionResumeInput'
       responses:
         '200':
           description: Success
@@ -13021,6 +13606,141 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /admin/assessment-sessions:
+    get:
+      operationId: get__admin_assessment_sessions
+      tags:
+        - Administration
+      summary: List assessment sessions for assessor review
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        assessments.review. Returns applicant and assessment identifiers without exposing the
+        scenario bank.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - INTERRUPTED
+              - AWAITING_REVIEW
+              - COMPLETED
+              - EXPIRED
+              - ABANDONED
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /admin/assessment-sessions/{id}:
     get:
       operationId: get__admin_assessment_sessions_id_
@@ -13183,12 +13903,14 @@ paths:
       operationId: post__admin_assessment_sessions_id_approve_results
       tags:
         - Administration
-      summary: Approve AI proposals and publish the existing skill-gap report
+      summary: Publish assessor-reviewed results and the skill-gap report
       description:
         Requires ADMIN role, the operation-specific permission, verified email, and a recent
         successful MFA verification. All consequential changes are audited. Review the conversation
-        and evidence first. This uses existing immutable completion and deterministic learning-plan
-        rules. Use the existing assessor completion endpoint to submit corrected scores instead.
+        and evidence first. Optionally submit corrected results using the CompleteAttemptInput
+        schema; otherwise approve the proposals. Results are immutable after publication. New
+        answers close at the booking deadline; an on-time accepted pending response has a bounded AI
+        processing grace period.
       security:
         - sessionCookie: []
       parameters:
@@ -13216,6 +13938,12 @@ paths:
             type: string
           description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
             reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveAssessmentInput'
       responses:
         '200':
           description: Success
@@ -13237,6 +13965,1613 @@ paths:
                         type: integer
                 required:
                   - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/invitations/accept:
+    post:
+      operationId: post__trainers_invitations_accept
+      tags:
+        - Trainers
+      summary: Accept a single-use trainer invitation
+      description: Sign in with the exact verified invited email. Public registration remains
+        applicant-only. Invitation links expire after seven days and are sent through the encrypted
+        email outbox. Acceptance rotates the session, invalidates old sessions, and adds only
+        trainer onboarding permissions. The invitation token is provided in the request body, never
+        a query parameter.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerAcceptInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/me:
+    get:
+      operationId: get__trainers_me
+      tags:
+        - Trainers
+      summary: Read private trainer profile, qualifications and review feedback
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted.
+      security:
+        - sessionCookie: []
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      operationId: patch__trainers_me
+      tags:
+        - Trainers
+      summary: Update the trainer professional profile
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerProfileInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/me/submit:
+    post:
+      operationId: post__trainers_me_submit
+      tags:
+        - Trainers
+      summary: Submit completed trainer onboarding for review
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted. A complete profile and at least one unexpired
+        qualification are required. Every current evidence file must have a clean malware verdict.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerVersionInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/me/qualifications:
+    post:
+      operationId: post__trainers_me_qualifications
+      tags:
+        - Trainers
+      summary: Upload private trainer qualification evidence
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted. Attach one PDF/JPEG/PNG, limited to
+        MAX_UPLOAD_MB (10 MB by default). MIME and signature must match. A separate applicant
+        identity document is not required. Qualification evidence remains quarantined until the
+        worker scans it.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TrainerQualificationUpload'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/me/qualifications/{id}:
+    delete:
+      operationId: delete__trainers_me_qualifications_id_
+      tags:
+        - Trainers
+      summary: Withdraw qualification while preserving review evidence
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerVersionInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trainers/me/qualifications/{id}/download:
+    get:
+      operationId: get__trainers_me_qualifications_id_download
+      tags:
+        - Trainers
+      summary: Download owned clean qualification evidence
+      description:
+        Requires a verified signed-in TRAINER with the corresponding self permission. Draft,
+        changes-requested and rejected profiles can be edited. Version must match the current
+        record; refresh after a conflict. Submitted/approved/suspended profiles are locked. No
+        learner identity or scoring access is granted.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainer-invitations:
+    get:
+      operationId: get__admin_trainer_invitations
+      tags:
+        - Trainer administration
+      summary: List trainer invitation history
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TrainerInvitation'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      operationId: post__admin_trainer_invitations
+      tags:
+        - Trainer administration
+      summary: Invite a trainer by email
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerInviteInput'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerInvitation'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainer-invitations/{id}/revoke:
+    post:
+      operationId: post__admin_trainer_invitations_id_revoke
+      tags:
+        - Trainer administration
+      summary: Revoke a pending invitation
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      status:
+                        const: REVOKED
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainers:
+    get:
+      operationId: get__admin_trainers
+      tags:
+        - Trainer administration
+      summary: Search trainers and filter onboarding status
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - SUBMITTED
+              - CHANGES_REQUESTED
+              - APPROVED
+              - REJECTED
+              - SUSPENDED
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TrainerSummary'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainers/{id}:
+    get:
+      operationId: get__admin_trainers_id_
+      tags:
+        - Trainer administration
+      summary: Inspect a trainer profile by user ID
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainers/{id}/reviews:
+    post:
+      operationId: post__admin_trainers_id_reviews
+      tags:
+        - Trainer administration
+      summary: Record a trainer approval, rejection, change request or suspension
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainerReviewInput'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrainerProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/trainer-qualifications/{id}/download:
+    get:
+      operationId: get__admin_trainer_qualifications_id_download
+      tags:
+        - Trainer administration
+      summary: Download private clean trainer evidence for review
+      description:
+        Requires ADMIN role, the operation-specific permission, verified email, and a recent
+        successful MFA verification. All consequential changes are audited. Requires
+        trainers.manage. Profile detail/review IDs identify the trainer User. Review reasons are
+        visible to the trainer; approvals require an independent verification reference.
+        Self-approval and stale versions are rejected. Profile and qualification snapshots, status
+        history and audit entries are preserved. Invitations never return raw tokens or file-storage
+        keys.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '400':
           description: Invalid request or code
           content:
@@ -13500,6 +15835,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Document'
+        isCurrent:
+          type: boolean
+          description: False when this file or its parent qualification has a replacement.
         issuedAt:
           type:
             - string
@@ -13840,11 +16178,13 @@ components:
           type: object
           properties:
             cameraRequired:
-              default: false
+              default: true
               type: boolean
+              const: true
             microphoneRequired:
-              default: false
+              default: true
               type: boolean
+              const: true
             allowText:
               default: true
               type: boolean
@@ -13854,13 +16194,16 @@ components:
               minLength: 2
               maxLength: 20
             cameraPurpose:
+              default:
+                Camera and microphone access is required for every assessment. The camera preview stays on
+                your device; no video is recorded or uploaded.
               type: string
               minLength: 10
               maxLength: 1000
             accommodationInstructions:
               default:
-                Contact an administrator to request a camera or microphone exception or a text-based
-                assessment before starting.
+                Camera and microphone access is mandatory. Contact your assessment provider if your device
+                is unavailable; text input does not waive device requirements.
               type: string
               minLength: 10
               maxLength: 1000
@@ -13899,6 +16242,17 @@ components:
           type: array
           items:
             type: string
+        identityRecovery:
+          anyOf:
+            - type: object
+              properties:
+                documentId:
+                  type: string
+                  format: uuid
+            - type: 'null'
+          description:
+            Owned current rejected identity to review or replace when no non-rejected current
+            identity is available.
         blueprints:
           type: array
           items:
@@ -13956,6 +16310,18 @@ components:
         bookingId:
           type: string
           format: uuid
+        slotId:
+          type: string
+          format: uuid
+        changePolicy:
+          type: object
+          properties:
+            deadline:
+              type: string
+              format: date-time
+            reschedulesRemaining:
+              type: integer
+              minimum: 0
         targetId:
           type:
             - string
@@ -14302,6 +16668,15 @@ components:
       required:
         - code
       additionalProperties: false
+    EmailMfaCode:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{6}$
+      required:
+        - code
+      additionalProperties: false
     GoogleComplete:
       type: object
       properties:
@@ -14572,6 +16947,34 @@ components:
             additionalProperties: false
       required:
         - results
+      additionalProperties: false
+    ApproveAssessmentInput:
+      type: object
+      properties:
+        results:
+          minItems: 1
+          maxItems: 400
+          type: array
+          items:
+            type: object
+            properties:
+              requirementId:
+                type: string
+                format: uuid
+                pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              score:
+                type: integer
+                minimum: 0
+                maximum: 100
+              evidence:
+                type: string
+                minLength: 10
+                maxLength: 4000
+            required:
+              - requirementId
+              - score
+              - evidence
+            additionalProperties: false
       additionalProperties: false
     LearningProgressInput:
       type: object
@@ -15046,11 +17449,13 @@ components:
       type: object
       properties:
         cameraRequired:
-          default: false
+          default: true
           type: boolean
+          const: true
         microphoneRequired:
-          default: false
+          default: true
           type: boolean
+          const: true
         allowText:
           default: true
           type: boolean
@@ -15060,13 +17465,16 @@ components:
           minLength: 2
           maxLength: 20
         cameraPurpose:
+          default:
+            Camera and microphone access is required for every assessment. The camera preview stays on
+            your device; no video is recorded or uploaded.
           type: string
           minLength: 10
           maxLength: 1000
         accommodationInstructions:
           default:
-            Contact an administrator to request a camera or microphone exception or a text-based
-            assessment before starting.
+            Camera and microphone access is mandatory. Contact your assessment provider if your device
+            is unavailable; text input does not waive device requirements.
           type: string
           minLength: 10
           maxLength: 1000
@@ -15100,11 +17508,11 @@ components:
                 - UNAVAILABLE
                 - NOT_REQUESTED
             speakerConfirmed:
+              default: false
               type: boolean
           required:
             - camera
             - microphone
-            - speakerConfirmed
           additionalProperties: false
         privacyAcknowledged:
           type: boolean
@@ -15118,6 +17526,36 @@ components:
         - devices
         - privacyAcknowledged
       additionalProperties: false
+    SessionResumeInput:
+      type: object
+      properties:
+        devices:
+          type: object
+          properties:
+            camera:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            microphone:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            speakerConfirmed:
+              default: false
+              type: boolean
+          required:
+            - camera
+            - microphone
+          additionalProperties: false
+      required:
+        - devices
+      additionalProperties: false
     ConfirmedResponseInput:
       type: object
       properties:
@@ -15125,11 +17563,36 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        devices:
+          type: object
+          properties:
+            camera:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            microphone:
+              type: string
+              enum:
+                - READY
+                - DENIED
+                - UNAVAILABLE
+                - NOT_REQUESTED
+            speakerConfirmed:
+              default: false
+              type: boolean
+          required:
+            - camera
+            - microphone
+          additionalProperties: false
         origin:
           type: string
           enum:
             - TEXT
             - VOICE
+            - SKIP
         confirmed:
           type: boolean
           const: true
@@ -15143,6 +17606,7 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - promptId
+        - devices
         - origin
         - confirmed
         - text
@@ -15263,9 +17727,11 @@ components:
         waiveCamera:
           default: false
           type: boolean
+          const: false
         waiveMicrophone:
           default: false
           type: boolean
+          const: false
         allowText:
           default: false
           type: boolean
@@ -15508,6 +17974,18 @@ components:
           type: string
         canStart:
           type: boolean
+        blockingReasons:
+          type: array
+          items:
+            type: string
+        identityRecovery:
+          anyOf:
+            - type: object
+              properties:
+                documentId:
+                  type: string
+                  format: uuid
+            - type: 'null'
         policy:
           $ref: '#/components/schemas/InteractionPolicy'
         aiReady:
@@ -16258,23 +18736,30 @@ components:
           maxLength: 200
         durationMinutes:
           type: integer
-          minimum: 15
+          minimum: 10
           maximum: 240
         interactionPolicy:
           default:
-            cameraRequired: false
-            microphoneRequired: false
+            cameraRequired: true
+            microphoneRequired: true
             allowText: true
             language: en
-            accommodationInstructions: Contact an administrator to request an equipment exception before starting.
+            cameraPurpose:
+              Camera and microphone access is required for every assessment. The camera preview
+              stays on your device; no video is recorded or uploaded.
+            accommodationInstructions:
+              Camera and microphone access is mandatory. Contact your assessment
+              provider if your device is unavailable; text input does not waive device requirements.
           type: object
           properties:
             cameraRequired:
-              default: false
+              default: true
               type: boolean
+              const: true
             microphoneRequired:
-              default: false
+              default: true
               type: boolean
+              const: true
             allowText:
               default: true
               type: boolean
@@ -16284,13 +18769,16 @@ components:
               minLength: 2
               maxLength: 20
             cameraPurpose:
+              default:
+                Camera and microphone access is required for every assessment. The camera preview stays on
+                your device; no video is recorded or uploaded.
               type: string
               minLength: 10
               maxLength: 1000
             accommodationInstructions:
               default:
-                Contact an administrator to request a camera or microphone exception or a text-based
-                assessment before starting.
+                Camera and microphone access is mandatory. Contact your assessment provider if your device
+                is unavailable; text input does not waive device requirements.
               type: string
               minLength: 10
               maxLength: 1000
@@ -16323,4 +18811,382 @@ components:
           type: boolean
       required:
         - active
+      additionalProperties: false
+    TrainerInviteInput:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+      additionalProperties: false
+    TrainerAcceptInput:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{43}$
+      required:
+        - token
+      additionalProperties: false
+    TrainerProfileInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        headline:
+          type: string
+          minLength: 3
+          maxLength: 120
+        biography:
+          type: string
+          minLength: 40
+          maxLength: 3000
+        country:
+          type: string
+          pattern: ^[A-Z]{2}$
+        region:
+          type: string
+          minLength: 2
+          maxLength: 100
+        yearsExperience:
+          type: integer
+          minimum: 0
+          maximum: 60
+        expertise:
+          minItems: 1
+          maxItems: 10
+          type: array
+          items:
+            type: string
+            minLength: 2
+            maxLength: 80
+      required:
+        - version
+        - headline
+        - biography
+        - country
+        - region
+        - yearsExperience
+        - expertise
+      additionalProperties: false
+    TrainerVersionInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - version
+      additionalProperties: false
+    TrainerQualificationInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        category:
+          type: string
+          enum:
+            - DEGREE
+            - DIPLOMA
+            - CERTIFICATION
+            - REGISTRATION
+            - OTHER
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        issuer:
+          type: string
+          minLength: 2
+          maxLength: 200
+        issuedAt:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+        expiresAt:
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              const: ''
+      required:
+        - version
+        - category
+        - title
+        - issuer
+        - issuedAt
+      additionalProperties: false
+    TrainerReviewInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        outcome:
+          type: string
+          enum:
+            - APPROVED
+            - CHANGES_REQUESTED
+            - REJECTED
+            - SUSPENDED
+        reason:
+          type: string
+          minLength: 10
+          maxLength: 2000
+        evidenceReference:
+          type: string
+          minLength: 5
+          maxLength: 1000
+      required:
+        - version
+        - outcome
+        - reason
+      additionalProperties: false
+    TrainerQualification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        title:
+          type: string
+        issuer:
+          type: string
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        mimeType:
+          type: string
+        size:
+          type: integer
+        scanStatus:
+          type: string
+          enum:
+            - QUARANTINED
+            - CLEAN
+            - INFECTED
+            - FAILED
+        withdrawnAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    TrainerReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fromStatus:
+          type: string
+        outcome:
+          type: string
+        reason:
+          type: string
+        evidenceReference:
+          type:
+            - string
+            - 'null'
+        createdAt:
+          type: string
+          format: date-time
+    TrainerProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        headline:
+          type: string
+        biography:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        yearsExperience:
+          type: integer
+        expertise:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - SUBMITTED
+            - CHANGES_REQUESTED
+            - APPROVED
+            - REJECTED
+            - SUSPENDED
+        version:
+          type: integer
+        submittedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        reviewedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            legalName:
+              type: string
+            email:
+              type: string
+            phone:
+              type:
+                - string
+                - 'null'
+            status:
+              type: string
+            emailVerifiedAt:
+              type: string
+              format: date-time
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainerQualification'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainerReview'
+        csrfToken:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TrainerSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        headline:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+        submittedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        user:
+          type: object
+          properties:
+            legalName:
+              type: string
+            email:
+              type: string
+        _count:
+          type: object
+          properties:
+            qualifications:
+              type: integer
+    TrainerInvitation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - ACCEPTED
+            - REVOKED
+        expiresAt:
+          type: string
+          format: date-time
+        acceptedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    TrainerQualificationUpload:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        category:
+          type: string
+          enum:
+            - DEGREE
+            - DIPLOMA
+            - CERTIFICATION
+            - REGISTRATION
+            - OTHER
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        issuer:
+          type: string
+          minLength: 2
+          maxLength: 200
+        issuedAt:
+          type: string
+          format: date
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+        expiresAt:
+          anyOf:
+            - type: string
+              format: date
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+            - type: string
+              const: ''
+        file:
+          type: string
+          format: binary
+      required:
+        - version
+        - category
+        - title
+        - issuer
+        - issuedAt
+        - file
       additionalProperties: false

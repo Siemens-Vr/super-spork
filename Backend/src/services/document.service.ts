@@ -15,9 +15,22 @@ import { requireCondition } from '../errors/app-error.js';
 import { encrypt } from '../utils/crypto.js';
 import { audit } from '../utils/audit.js';
 import { notify } from './email.service.js';
-import type { Document, VerificationStatus } from '../generated/prisma/client.js';
+import type { Document, VerificationStatus, Prisma } from '../generated/prisma/client.js';
+const documentVersionInclude = {
+  replacement: { select: { id: true } },
+  qualification: { select: { replacement: { select: { id: true } } } },
+} satisfies Prisma.DocumentInclude;
+export const documentInclude = {
+  ...documentVersionInclude,
+  transcripts: { include: documentVersionInclude },
+} satisfies Prisma.DocumentInclude;
+type VersionedDocument = Document & {
+  replacement?: { id: string } | null;
+  qualification?: { replacement: { id: string } | null } | null;
+  transcripts?: VersionedDocument[];
+};
 export const isIdentity = (category: string) => identityCategories.some((c) => c === category);
-function documentMetadata(d: Document) {
+function documentMetadata(d: VersionedDocument) {
   return {
     id: d.id,
     category: d.category,
@@ -38,9 +51,10 @@ function documentMetadata(d: Document) {
     replacesId: d.replacesId,
     createdAt: d.createdAt,
     updatedAt: d.updatedAt,
+    ...('replacement' in d ? { isCurrent: !d.replacement && !d.qualification?.replacement } : {}),
   };
 }
-export function publicDocument(d: Document & { transcripts?: Document[] }) {
+export function publicDocument(d: VersionedDocument) {
   return {
     ...documentMetadata(d),
     ...(d.transcripts ? { transcripts: d.transcripts.map(documentMetadata) } : {}),
@@ -49,7 +63,7 @@ export function publicDocument(d: Document & { transcripts?: Document[] }) {
 export async function ownedDocument(id: string, applicantId: string) {
   const d = await prisma.document.findFirst({
     where: { id, applicantId },
-    include: { transcripts: true },
+    include: documentInclude,
   });
   requireCondition(d, 404, 'NOT_FOUND', 'Document not found');
   return d;

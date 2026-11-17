@@ -19,6 +19,7 @@ The first admin router also applies authentication, verified email and ADMIN che
 | POST   | `/api/v1/auth/reset-password`                           | rate limit                                                            | [source](../src/routes/auth.routes.ts)               |
 | GET    | `/api/v1/auth/google`                                   | rate limit                                                            | [source](../src/routes/auth.routes.ts)               |
 | GET    | `/api/v1/auth/google/callback`                          | OAuth state/nonce/PKCE + session-bound flow                           | [source](../src/routes/auth.routes.ts)               |
+| GET    | `/api/v1/auth/google/registration`                      | session-bound pending identity, original ten-minute expiry, no-store   | [source](../src/routes/auth.routes.ts)               |
 | POST   | `/api/v1/auth/google/complete`                          | session-bound verified Google identity, phone/consent validation      | [source](../src/routes/auth.routes.ts)               |
 | GET    | `/api/v1/auth/me`                                       | authenticate                                                          | [source](../src/routes/auth.routes.ts)               |
 | POST   | `/api/v1/auth/logout`                                   | authenticate                                                          | [source](../src/routes/auth.routes.ts)               |
@@ -38,6 +39,7 @@ The first admin router also applies authentication, verified email and ADMIN che
 | POST   | `/api/v1/identity/documents/:id/replace`                | authenticate, verified, applicant, permission + admin MFA, rate limit | [source](../src/routes/document.routes.ts)           |
 | POST   | `/api/v1/documents`                                     | authenticate, verified, applicant, permission + admin MFA, rate limit | [source](../src/routes/document.routes.ts)           |
 | GET    | `/api/v1/documents`                                     | authenticate, verified, applicant, permission + admin MFA             | [source](../src/routes/document.routes.ts)           |
+| GET    | `/api/v1/documents/requirements`                        | authenticate, verified, applicant, documents.read.self               | [source](../src/routes/document.routes.ts)           |
 | GET    | `/api/v1/documents/:id`                                 | authenticate, verified, applicant, permission + admin MFA             | [source](../src/routes/document.routes.ts)           |
 | PATCH  | `/api/v1/documents/:id`                                 | authenticate, verified, applicant, permission + admin MFA             | [source](../src/routes/document.routes.ts)           |
 | GET    | `/api/v1/documents/:id/verification`                    | authenticate, verified, applicant, permission + admin MFA             | [source](../src/routes/document.routes.ts)           |
@@ -107,6 +109,7 @@ The first admin router also applies authentication, verified email and ADMIN che
 | POST   | `/api/v1/admin/scenarios`                               | authenticate, verified, admin, permission + admin MFA                 | [source](../src/routes/assessment-session.routes.ts) |
 | PUT    | `/api/v1/admin/blueprints/:id/scenarios`                | authenticate, verified, admin, permission + admin MFA                 | [source](../src/routes/assessment-session.routes.ts) |
 | PUT    | `/api/v1/admin/assessment-attempts/:id/accommodation`   | authenticate, verified, admin, permission + admin MFA                 | [source](../src/routes/assessment-session.routes.ts) |
+| GET    | `/api/v1/admin/assessment-sessions` | authenticate, verified, admin, assessments.review + admin MFA | [source](../src/routes/assessment-session.routes.ts) |
 | GET    | `/api/v1/admin/assessment-sessions/:id`                 | authenticate, verified, admin, permission + admin MFA                 | [source](../src/routes/assessment-session.routes.ts) |
 | POST   | `/api/v1/admin/assessment-sessions/:id/approve-results` | authenticate, verified, admin, permission + admin MFA                 | [source](../src/routes/assessment-session.routes.ts) |
 | GET    | `/api/v1/assessment-sessions/:id`                       | authenticate, verified, applicant, permission + admin MFA             | [source](../src/routes/assessment-session.routes.ts) |
@@ -134,3 +137,12 @@ The first admin router also applies authentication, verified email and ADMIN che
 
 | POST | `/api/v1/assessments/targets/:id/abandon` | authenticate, verified, applicant, permission + admin MFA, owner, cancellation policy | [source](../src/routes/assessment.routes.ts) |
 | POST | `/api/v1/admin/assessment-targets/:id/abandon` | authenticate, verified, admin, assessments.manage + recent MFA | [source](../src/routes/admin.routes.ts) |
+
+| POST | `/api/v1/auth/mfa/email/send` | authenticated admin, verified email, CSRF, account rate limit, resend cooldown | Session-bound expiring code sent only to verified account email |
+| POST | `/api/v1/auth/mfa/email/verify` | authenticated admin, CSRF, account rate limit, six-digit validation | Session-bound verifier, expiry, attempt cap, one-time consumption; rotates session and CSRF with MFA proof |
+
+## Trainer onboarding additions
+
+`/api/v1/trainers` is separate from applicant APIs. It requires an active cookie session and verified email. Invitation acceptance binds to the verified email and a single-use seven-day verifier, is rate-limited, and rotates/revokes sessions. All remaining trainer routes require TRAINER plus the respective self permission. Qualification reads enforce ownership and clean scan/integrity; edits, uploads, withdrawals and submission enforce editable status and profile version.
+
+`/api/v1/admin/trainer-invitations`, `/admin/trainers` and `/admin/trainer-qualifications` require ADMIN, verified email, recent MFA and `trainers.manage`. Their route guard falls through for unrelated admin paths, preserving granular existing permissions. Approval requires independent evidence and excludes self-review. Profile reads, private downloads, invites, acceptances, mutations, scans and decisions are audited. Review snapshots and withdrawn evidence remain historical records. See [trainers.md](trainers.md) for the full route table and status transitions.

@@ -3,8 +3,8 @@
   "private": true,
   "name": "vml-nexus-applicant",
   "scripts": {
-    "test": "node --test auth.test.js",
-    "check": "node --check app.js && node --check ../../context/auth.js && node --check ../../lib/api.js",
+    "test": "node --test auth.test.js profile.test.js documents.test.js google-redirect.test.js careers.test.js navigation.test.js bookings.test.js assessment.test.js assessment-speech.test.js learning.test.js",
+    "check": "node --check app.js && node --check ../../context/auth.js && node --check ../../lib/api.js && node --check ../../context/profile.js && node --check ../../context/documents.js && node --check ../../context/document-dialog.js && node --check ../../context/careers.js && node --check ../../context/bookings.js && node --check ../../context/assessment.js && node --check ../../context/learning.js && node --check ../../context/assessment-views.js && node --check ../../context/assessment-devices.js && node --check ../../context/assessment-speech.js",
     "start": "node ../../server.mjs applicant",
     "dev": "node ../../server.mjs applicant"
   }

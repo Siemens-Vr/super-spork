@@ -136,3 +136,15 @@ For local Ollama, use `AI_BASE_URL=http://127.0.0.1:11434/v1`, `AI_API_KEY=ollam
 ## Security fixes and frontend integration
 
 See [security remediation](docs/security-remediation.md) for the required migrations, bounded upload settings, Google browser return routes, and audited assessment recovery endpoints. Run migrations and restart both the API and worker when updating an existing installation.
+
+## Trainer onboarding
+
+Invitation-based trainer onboarding is now implemented with a dedicated portal, professional profiles, private qualification evidence, admin approval/change requests/rejection/suspension, audit history and queued notifications. Apply `20261116130000_trainer_onboarding`, configure `TRAINER_URL` and trainer CORS origin, then keep the existing worker running. The migration provisions TRAINER onboarding permissions and `trainers.manage` for ADMIN. See [trainer setup, APIs and boundaries](docs/trainers.md). Teaching/cohort/course delivery is outside this onboarding milestone.
+
+## Trainer onboarding
+
+The trainer onboarding milestone adds admin-issued invitations, shared sign-in role routing, professional profiles, private qualification evidence, submission, administrator approval/change requests/rejection/suspension, and preserved review snapshots. It reuses the secure session, CSRF, outbox, object storage and scanning infrastructure without granting applicant-record or assessment-scoring access to trainers.
+
+Apply `npm run db:generate` and `npm run db:migrate`, configure `TRAINER_URL` and allow the trainer origin in `CORS_ORIGINS`, then keep the API and worker running. From Frontend, run `npm run dev:trainer` (port 3003) and `npm run dev:admin` (port 3002). MFA-verified admins use **Trainer invitations** and **Trainers**. The migration installs the new role/permissions for existing administrator roles; seed also maintains them.
+
+See [trainer workflow, API and deployment guide](docs/trainers.md). Course delivery, cohorts, learner assignments and attendance are future milestones.

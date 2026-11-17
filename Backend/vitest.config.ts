@@ -17,7 +17,7 @@ export default defineConfig({
       OTP_PEPPER: 'isolated-test-otp-pepper-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
       DATA_ENCRYPTION_KEY: '11'.repeat(32),
       APP_URL: 'http://localhost:4000',
-      CORS_ORIGINS: 'http://localhost:3000,http://localhost:4000',
+      CORS_ORIGINS: 'http://localhost:3000,http://localhost:3002,http://localhost:4000',
       ENABLE_SWAGGER: 'true',
       AI_PROVIDER: 'disabled',
       AI_BASE_URL: 'https://ai.example.test/v1',

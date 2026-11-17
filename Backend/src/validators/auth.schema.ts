@@ -38,6 +38,7 @@ export const resetSchema = z
     message: 'Passwords must match',
   });
 export const mfaSchema = z.object({ code: z.string().min(6).max(64) }).strict();
+export const mfaEmailSchema = z.object({ code: z.string().regex(/^\d{6}$/) }).strict();
 export const reauthSchema = z.object({ password: z.string().min(1).max(128) }).strict();
 export const googleCompleteSchema = z
   .object({ phone, consentVersion: z.string().min(1).max(40) })

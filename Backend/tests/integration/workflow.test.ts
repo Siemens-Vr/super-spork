@@ -193,7 +193,7 @@ async function availability(blueprintId: string, capacity = 1) {
 const preflightInput = {
   confirmed: true,
   mode: 'TEXT',
-  devices: { camera: 'NOT_REQUESTED', microphone: 'NOT_REQUESTED', speakerConfirmed: false },
+  devices: { camera: 'READY', microphone: 'READY', speakerConfirmed: false },
   privacyAcknowledged: true,
   audioProcessingConsent: true,
 };
@@ -336,6 +336,7 @@ async function answer(
     .set('Idempotency-Key', key)
     .send({
       promptId,
+      devices: preflightInput.devices,
       origin: 'TEXT',
       confirmed: true,
       text: 'I would inspect the event logs and compare the observed sensor input against the approved drawing, using an authorised safe investigation.',
@@ -384,6 +385,63 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     vi.restoreAllMocks();
     await new Promise<void>((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
     await prisma.$disconnect();
+  });
+  it('paginates all owned documents and filters eligible qualifications beyond the first 100 records', async () => {
+    const p = await applicant();
+    const other = await applicant();
+    const createdAt = new Date('2025-01-01T00:00:00Z');
+    const base = { applicantId: p.id, mimeType: 'application/pdf', size: 100, sha256: '0'.repeat(64), scanStatus: 'CLEAN' as const, status: 'AUTHENTICATED' as const, createdAt };
+    const fillerIds = Array.from({ length: 110 }, () => crypto.randomUUID());
+    await prisma.document.createMany({ data: fillerIds.map(id => ({ ...base, id, category: 'OTHER', title: 'Synthetic paginated document', storageKey: crypto.randomUUID() })) });
+    const current = await prisma.document.create({ data: { ...base, category: 'BACHELOR', title: 'Older current qualification', courseName: 'Engineering', createdAt: new Date('2020-01-01T00:00:00Z'), storageKey: crypto.randomUUID() } });
+    const old = await prisma.document.create({ data: { ...base, category: 'DIPLOMA', title: 'Previous qualification', courseName: 'Engineering', createdAt: new Date('2020-01-01T00:00:00Z'), storageKey: crypto.randomUUID() } });
+    const oldTranscript = await prisma.document.create({ data: { ...base, category: 'TRANSCRIPT', title: 'Previous transcript', qualificationId: old.id, status: 'UNDER_REVIEW', createdAt: new Date('2020-01-01T00:00:00Z'), storageKey: crypto.randomUUID() } });
+    const replacement = await prisma.document.create({ data: { ...base, category: 'DIPLOMA', title: 'Current replacement qualification', courseName: 'Engineering', replacesId: old.id, createdAt: new Date('2021-01-01T00:00:00Z'), storageKey: crypto.randomUUID() } });
+    await prisma.document.create({ data: { ...base, category: 'TRANSCRIPT', title: 'Current transcript', qualificationId: replacement.id, status: 'UNDER_REVIEW', createdAt: new Date('2021-01-01T00:00:00Z'), storageKey: crypto.randomUUID() } });
+    await prisma.document.createMany({ data: [
+      { ...base, category: 'MASTER', title: 'Rejected qualification', courseName: 'Engineering', status: 'REJECTED', createdAt: new Date('2020-01-01T00:00:00Z'), storageKey: crypto.randomUUID() },
+      { ...base, category: 'PHD', title: 'Unscanned qualification', courseName: 'Engineering', status: 'UPLOADED', scanStatus: 'QUARANTINED', createdAt: new Date('2020-01-01T00:00:00Z'), storageKey: crypto.randomUUID() },
+    ] });
+    await prisma.verificationStatusHistory.create({ data: { documentId: current.id, toStatus: 'AUTHENTICATED', actorId: p.id, reason: 'Synthetic historical verification evidence' } });
+    const first = await p.a.get('/api/v1/documents');
+    expect(first.status).toBe(200);
+    expect(first.body.data).toHaveLength(100);
+    expect(first.body.meta).toMatchObject({ total: 117, limit: 100, hasMore: true, summary: { current: 115, authenticated: 112 } });
+    expect(first.body.data.map((doc: { id: string }) => doc.id)).toEqual([...fillerIds].sort().reverse().slice(0, 100));
+    const next = await p.a.get('/api/v1/documents').query({ cursor: first.body.meta.nextCursor });
+    expect(next.status).toBe(200);
+    expect(next.body.data).toHaveLength(17);
+    expect(next.body.meta).toMatchObject({ hasMore: false, nextCursor: null, total: 117 });
+    const ids = [...first.body.data, ...next.body.data].map((doc: { id: string }) => doc.id);
+    expect(new Set(ids).size).toBe(117);
+    expect(next.body.data.find((doc: { id: string }) => doc.id === old.id).isCurrent).toBe(false);
+    expect(next.body.data.find((doc: { id: string }) => doc.id === oldTranscript.id).isCurrent).toBe(false);
+    expect(next.body.data.find((doc: { id: string }) => doc.id === current.id).isCurrent).toBe(true);
+    expect(first.text + next.text).not.toContain('storageKey');
+    const history = await p.a.get(`/api/v1/documents/${current.id}/verification`);
+    expect(history.status).toBe(200);
+    expect(history.body.data.history[0].reason).toBe('Synthetic historical verification evidence');
+    const eligible = await p.a.get('/api/v1/documents').query({ eligibleForAssessment: true, limit: 1 });
+    const eligibleNext = await p.a.get('/api/v1/documents').query({ eligibleForAssessment: true, limit: 1, cursor: eligible.body.meta.nextCursor });
+    expect(eligible.body.meta.total).toBe(2);
+    expect([eligible.body.data[0].id, eligibleNext.body.data[0].id].sort()).toEqual([current.id, replacement.id].sort());
+    const foreignCursor = await other.a.get('/api/v1/documents').query({ cursor: first.body.meta.nextCursor });
+    expect(foreignCursor.status).toBe(200);
+    expect(foreignCursor.body.data).toEqual([]);
+    expect(foreignCursor.body.meta.total).toBe(0);
+    for (const query of [{ cursor: 'not-a-document-cursor' }, { limit: 101 }, { limit: 0 }, { eligibleForAssessment: 'invalid' }]) {
+      expect((await p.a.get('/api/v1/documents').query(query)).status).toBe(422);
+    }
+    // Newer uploads between page reads must not shift the remaining records.
+    await prisma.document.create({ data: { ...base, category: 'OTHER', title: 'Newer concurrent upload', createdAt: new Date(), storageKey: crypto.randomUUID() } });
+    const afterInsert = await p.a.get('/api/v1/documents').query({ cursor: first.body.meta.nextCursor });
+    expect(afterInsert.body.data.map((doc: { id: string }) => doc.id)).toEqual(next.body.data.map((doc: { id: string }) => doc.id));
+    await prisma.document.createMany({ data: Array.from({ length: 103 }, () => ({ ...base, category: 'NATIONAL_ID', title: 'Synthetic identity version', storageKey: crypto.randomUUID() })) });
+    const identityPage = await p.a.get('/api/v1/identity/documents');
+    const identityNext = await p.a.get('/api/v1/identity/documents').query({ cursor: identityPage.body.meta.nextCursor });
+    expect(identityPage.body.data).toHaveLength(100);
+    expect(identityNext.body.data).toHaveLength(3);
+    expect(identityNext.body.meta).toMatchObject({ total: 103, hasMore: false, summary: { current: 103, authenticated: 103 } });
   });
   it('registers, verifies and logs in without exposing password or OTP', async () => {
     const p = await applicant();
@@ -974,6 +1032,22 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
   });
   it('supports institution search, typed institutions and linked quarantined transcripts', async () => {
     const p = await applicant();
+    const requirements = await p.a.get('/api/v1/documents/requirements');
+    expect(requirements.status).toBe(200);
+    expect(requirements.body.data.maxFileBytes).toBe(env.MAX_UPLOAD_MB * 1024 * 1024);
+    expect(requirements.body.data.maxTotalBytes).toBe(env.MAX_UPLOAD_TOTAL_MB * 1024 * 1024);
+    expect(requirements.body.data.maxTranscripts).toBe(5);
+    expect(
+      requirements.body.data.categories.find(
+        (rule: { category: string }) => rule.category === 'BACHELOR',
+      ),
+    ).toMatchObject({
+      institutionRequired: true,
+      requiredFields: ['courseName'],
+      transcriptsRequired: true,
+    });
+    expect((await request.agent(server).get('/api/v1/documents/requirements')).status).toBe(401);
+
     await uploadIdentity(p.a);
     const institutions = await p.a.get('/api/v1/institutions?search=Dedan');
     expect(institutions.status).toBe(200);
@@ -1434,6 +1508,95 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       data: { requiresAuthenticatedIdentity: false },
     });
   });
+  it('rejects booking after identity rejection without taking capacity, but accepts a valid alternative passport', async () => {
+    const p = await readyApplicant(), window = await availability(p.blueprintId);
+    expect((await eligibility(p.id)).eligible).toBe(true);
+    const admin = await adminSession();
+    expect((await post(admin, `/admin/documents/${p.identityId}/reviews`, {
+      outcome: 'REJECTED', method: 'MANUAL', reason: 'The identity image cannot be verified; submit a clear replacement.',
+    })).status).toBe(201);
+    const readiness = await p.a.get('/api/v1/assessments/eligibility');
+    expect(readiness.body.data).toMatchObject({ eligible: false, reasons: ['IDENTITY_REJECTED'], identityRecovery: { documentId: p.identityId } });
+    const slots = await p.a.get(`/api/v1/assessments/available-slots?blueprintId=${p.blueprintId}`);
+    expect(slots.status).toBe(409);
+    const blocked = await p.a.post('/api/v1/assessments/bookings').set('X-CSRF-Token', await csrf(p.a))
+      .set('Idempotency-Key', 'rejected-identity-booking').send({ slotId: window.slots[0]!.id });
+    expect(blocked.status).toBe(409);
+    expect(blocked.body.error.code).toBe('ASSESSMENT_NOT_ELIGIBLE');
+    expect(blocked.body.error.message).toContain('identity document was rejected');
+    expect(await prisma.assessmentBooking.count({ where: { applicantId: p.id } })).toBe(0);
+    expect(await prisma.assessmentBooking.count({ where: { slotId: window.slots[0]!.id } })).toBe(0);
+    const passport = await p.a.post('/api/v1/identity/documents').set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'PASSPORT').attach('file', pdf, { filename: 'passport.pdf', contentType: 'application/pdf' });
+    expect(passport.status).toBe(201); await scanDocument(passport.body.data.id);
+    expect(await eligibility(p.id)).toMatchObject({ eligible: true, identityRecovery: null });
+    const booked = await createBooking(p.id, window.slots[0]!.id, 'valid-alternative-passport');
+    expect(booked.status).toBe('SCHEDULED');
+    expect((await prisma.document.findUniqueOrThrow({ where: { id: p.identityId } })).status).toBe('REJECTED');
+    const stranger = await applicant();
+    expect((await stranger.a.get(`/api/v1/documents/${p.identityId}/verification`)).status).toBe(404);
+    expect((await stranger.a.get('/api/v1/assessments/eligibility')).body.data.identityRecovery).toBeNull();
+  });
+  it('retains a booking after identity rejection and restores preflight/start after a clean replacement', async () => {
+    const { p, booking, attemptId } = await interactionFixture();
+    const admin = await adminSession();
+    const reason = 'The ID details are unreadable. Upload a legible replacement.';
+    expect((await post(admin, `/admin/documents/${p.identityId}/reviews`, { outcome: 'REJECTED', method: 'MANUAL', reason })).status).toBe(201);
+    const preflight = await p.a.get(`/api/v1/assessments/${booking.id}/preflight`);
+    expect(preflight.body.data).toMatchObject({ canStart: false, identityRecovery: { documentId: p.identityId } });
+    expect(preflight.body.data.blockingReasons.join(' ')).toContain('identity document was rejected');
+    expect((await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.error.code).toBe('IDENTITY_REJECTED');
+    expect((await post(p.a, `/assessments/attempts/${attemptId}/start`, {})).body.error.code).toBe('IDENTITY_REJECTED');
+    expect((await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: booking.id } })).status).toBe('SCHEDULED');
+    expect((await p.a.get('/api/v1/assessments/bookings')).body.data.some((item: { bookingId: string }) => item.bookingId === booking.id)).toBe(true);
+    const replacement = await p.a.post(`/api/v1/identity/documents/${p.identityId}/replace`).set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'NATIONAL_ID').attach('file', pdf, { filename: 'replacement-id.pdf', contentType: 'application/pdf' });
+    expect(replacement.status).toBe(201);
+    expect(await eligibility(p.id)).toMatchObject({ eligible: false, reasons: ['IDENTITY_SUBMISSION_REQUIRED'], identityRecovery: null });
+    expect((await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.error.code).toBe('IDENTITY_SUBMISSION_REQUIRED');
+    await scanDocument(replacement.body.data.id);
+    expect(await eligibility(p.id)).toMatchObject({ eligible: true, identityRecovery: null });
+    expect((await p.a.get(`/api/v1/assessments/${booking.id}/preflight`)).body.data).toMatchObject({ canStart: true, identityRecovery: null });
+    const history = await p.a.get(`/api/v1/documents/${p.identityId}/verification`);
+    expect(history.status).toBe(200);
+    expect(JSON.stringify(history.body.data)).toContain(reason);
+    const started = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
+    expect(started.status).toBe(200);
+    expect(started.body.data.bookingId).toBe(booking.id);
+  });
+  it('never uses an authenticated superseded identity while its replacement awaits scan or required human review', async () => {
+    const { p, blueprint, input } = await targetFixture();
+    const strict = await prisma.assessmentBlueprint.create({ data: {
+      jobRoleId: blueprint.jobRoleId, frameworkId: blueprint.frameworkId, version: 100000 + ++sequence,
+      title: 'Identity authentication required', durationMinutes: 60, instructions: 'Verify identity first',
+      active: true, requiresAuthenticatedIdentity: true,
+    } });
+    await prisma.document.update({ where: { id: p.identityId }, data: { status: 'AUTHENTICATED' } });
+    const target = await post(p.a, '/assessments/targets', input);
+    expect(target.status).toBe(201);
+    const prepared = await post(p.a, `/assessments/targets/${target.body.data.id}/prepare`, { blueprintId: strict.id });
+    expect(prepared.status).toBe(200);
+    const replacement = await p.a.post(`/api/v1/identity/documents/${p.identityId}/replace`).set('X-CSRF-Token', await csrf(p.a))
+      .field('category', 'NATIONAL_ID').attach('file', pdf, { filename: 'updated-id.pdf', contentType: 'application/pdf' });
+    expect(replacement.status).toBe(201);
+    expect((await eligibility(p.id)).eligible).toBe(false);
+    await scanDocument(replacement.body.data.id);
+    const readiness = await eligibility(p.id);
+    expect(readiness.eligible).toBe(false);
+    expect(readiness.blueprints[0]!.reasons).toContain('IDENTITY_AUTHENTICATION_REQUIRED');
+    const window = await availability(strict.id);
+    await expect(createBooking(p.id, window.slots[0]!.id, 'unverified-replacement')).rejects.toMatchObject({ code: 'ASSESSMENT_NOT_ELIGIBLE' });
+    await prisma.document.update({ where: { id: replacement.body.data.id }, data: { status: 'AUTHENTICATED' } });
+    expect((await eligibility(p.id)).eligible).toBe(true);
+    const booking = await createBooking(p.id, window.slots[0]!.id, 'verified-replacement');
+    await prisma.assessmentSlot.update({ where: { id: booking.slotId }, data: { startsAt: new Date(Date.now() - 60000), endsAt: new Date(Date.now() + 3600000) } });
+    await prisma.document.update({ where: { id: replacement.body.data.id }, data: { status: 'UNDER_REVIEW' } });
+    const preflight = await p.a.get(`/api/v1/assessments/${booking.id}/preflight`);
+    expect(preflight.body.data.blockingReasons.join(' ')).toContain('needs human verification');
+    expect((await post(p.a, `/assessments/attempts/${prepared.body.data.id}/start`, {})).body.error.code).toBe('IDENTITY_AUTHENTICATION_REQUIRED');
+    await prisma.document.update({ where: { id: replacement.body.data.id }, data: { status: 'AUTHENTICATED' } });
+    expect((await post(p.a, `/assessments/attempts/${prepared.body.data.id}/start`, {})).status).toBe(200);
+  });
   it('completes the HTTP registration-to-booking journey with an outbox confirmation', async () => {
     const p = await readyApplicant(),
       a = await availability(p.blueprintId);
@@ -1750,6 +1913,10 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       await a.get('/api/v1/auth/google/callback?state=expiry-state&code=valid');
       const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 600001);
       try {
+        const expired = await a.get('/api/v1/auth/google/registration');
+        expect(expired.status).toBe(400);
+        expect(expired.body.error.code).toBe('GOOGLE_FLOW_INVALID');
+        expect(expired.headers['cache-control']).toBe('no-store');
         expect(
           (
             await post(a, '/auth/google/complete', {
@@ -1794,6 +1961,74 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     ).toBe(p.id);
     start.mockRestore();
     finish.mockRestore();
+  });
+  it('email MFA requires admin session, binds codes to that session and blocks replay and purpose confusion', async () => {
+    const a = await adminSession(false),
+      other = await adminSession(false);
+    expect((await a.get('/api/v1/admin/applicants')).status).toBe(403);
+    const sent = await post(a, '/auth/mfa/email/send', {});
+    expect(sent.status).toBe(200);
+    expect(sent.body.data.expiresInSeconds).toBeGreaterThan(0);
+    const code = await otp('admin@example.test', 'administrator sign-in');
+    expect(JSON.stringify(sent.body)).not.toContain(code);
+    expect((await post(a, '/auth/mfa/email/send', {})).status).toBe(429);
+    expect((await post(other, '/auth/mfa/email/verify', { code })).status).toBe(401);
+    expect((await post(a, '/auth/mfa/verify', { code })).status).toBe(401);
+    expect((await post(a, '/auth/mfa/email/verify', { code })).status).toBe(200);
+    expect((await a.get('/api/v1/admin/applicants')).status).toBe(200);
+    expect((await post(a, '/auth/mfa/email/verify', { code })).status).toBe(401);
+    const p = await applicant();
+    expect((await post(p.a, '/auth/mfa/email/send', {})).status).toBe(403);
+    const anonymous = request.agent(server);
+    expect((await post(anonymous, '/auth/mfa/email/send', {})).status).toBe(401);
+  });
+  it('email MFA resends invalidate the preceding challenge', async () => {
+    const a = await adminSession(false);
+    await prisma.authChallenge.deleteMany({ where: { userId: adminId, purpose: 'EMAIL_MFA' } });
+    expect((await post(a, '/auth/mfa/email/send', {})).status).toBe(200);
+    const original = await prisma.authChallenge.findFirstOrThrow({
+      where: { userId: adminId, purpose: 'EMAIL_MFA' },
+    });
+    await prisma.authChallenge.update({
+      where: { id: original.id },
+      data: { createdAt: new Date(Date.now() - (env.OTP_RESEND_SECONDS + 1) * 1000) },
+    });
+    expect((await post(a, '/auth/mfa/email/send', {})).status).toBe(200);
+    expect(
+      (await prisma.authChallenge.findUniqueOrThrow({ where: { id: original.id } })).consumedAt,
+    ).not.toBeNull();
+    expect(
+      await prisma.authChallenge.count({
+        where: { userId: adminId, purpose: 'EMAIL_MFA', consumedAt: null },
+      }),
+    ).toBe(1);
+    const code = await otp('admin@example.test', 'administrator sign-in');
+    expect((await post(a, '/auth/mfa/email/verify', { code })).status).toBe(200);
+  });
+  it('email MFA rejects expired codes and persists failed attempt limits', async () => {
+    const a = await adminSession(false);
+    await prisma.authChallenge.deleteMany({ where: { userId: adminId, purpose: 'EMAIL_MFA' } });
+    expect((await post(a, '/auth/mfa/email/send', {})).status).toBe(200);
+    const code = await otp('admin@example.test', 'administrator sign-in');
+    await prisma.authChallenge.updateMany({
+      where: { userId: adminId, purpose: 'EMAIL_MFA' },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    expect((await post(a, '/auth/mfa/email/verify', { code })).status).toBe(401);
+    await prisma.authChallenge.deleteMany({ where: { userId: adminId, purpose: 'EMAIL_MFA' } });
+    expect((await post(a, '/auth/mfa/email/send', {})).status).toBe(200);
+    const fresh = await otp('admin@example.test', 'administrator sign-in');
+    const wrong = fresh === '000000' ? '111111' : '000000';
+    for (let i = 0; i < env.OTP_MAX_ATTEMPTS; i++)
+      expect((await post(a, '/auth/mfa/email/verify', { code: wrong })).status).toBe(401);
+    expect((await post(a, '/auth/mfa/email/verify', { code: fresh })).status).toBe(401);
+    expect(
+      (
+        await prisma.authChallenge.findFirstOrThrow({
+          where: { userId: adminId, purpose: 'EMAIL_MFA' },
+        })
+      ).attempts,
+    ).toBe(env.OTP_MAX_ATTEMPTS);
   });
   it('rejects replayed TOTP and consumes recovery codes exactly once', async () => {
     const a = request.agent(server);
@@ -2436,7 +2671,7 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
         .status,
     ).toBe(422);
   });
-  it('requires camera policy or an audited admin accommodation and initializes once', async () => {
+  it('requires camera and microphone for every assessment and disallows device waivers', async () => {
     const { p, booking, attemptId } = await interactionFixture({
       cameraRequired: true,
       cameraPurpose: 'A human assessor requires a local equipment readiness preview.',
@@ -2460,7 +2695,7 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
             reason: 'Approve a camera exception for the isolated accessibility test.',
           })
       ).status,
-    ).toBe(200);
+    ).toBe(422);
     const first = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
     expect(first.status).toBe(200);
     const second = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
@@ -2477,9 +2712,71 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
         await a
           .put(`/api/v1/admin/assessment-attempts/${attemptId}/accommodation`)
           .set('X-CSRF-Token', await csrf(a))
-          .send({ waiveCamera: true, reason: 'Changing an already frozen session must fail.' })
+          .send({ allowText: true, reason: 'Changing an already frozen session must fail.' })
       ).status,
     ).toBe(409);
+  });
+  it('requires device readiness for start, answers, skip and resume even for legacy optional policies', async () => {
+    const { p, booking } = await interactionFixture({
+      cameraRequired: false,
+      microphoneRequired: false,
+    });
+    const preflight = await p.a.get(`/api/v1/assessments/${booking.id}/preflight`);
+    expect(preflight.body.data.policy).toMatchObject({
+      cameraRequired: true,
+      microphoneRequired: true,
+    });
+    expect(
+      (
+        await post(p.a, `/assessments/${booking.id}/start`, {
+          ...preflightInput,
+          devices: { ...preflightInput.devices, camera: 'NOT_REQUESTED' },
+        })
+      ).body.error.code,
+    ).toBe('CAMERA_REQUIRED');
+    expect(
+      (
+        await post(p.a, `/assessments/${booking.id}/start`, {
+          ...preflightInput,
+          devices: { ...preflightInput.devices, microphone: 'DENIED' },
+        })
+      ).body.error.code,
+    ).toBe('MICROPHONE_REQUIRED');
+    const started = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
+    expect(started.status).toBe(200);
+    const session = started.body.data;
+    expect(
+      (
+        await answer(p.a, session.id, session.currentPromptId, 'no-camera-answer', {
+          devices: { ...preflightInput.devices, camera: 'DENIED' },
+        })
+      ).body.error.code,
+    ).toBe('CAMERA_REQUIRED');
+    expect(
+      (
+        await answer(p.a, session.id, session.currentPromptId, 'no-mic-skip', {
+          origin: 'SKIP',
+          text: 'I don’t know / Skip this scenario.',
+          devices: { ...preflightInput.devices, microphone: 'UNAVAILABLE' },
+        })
+      ).body.error.code,
+    ).toBe('MICROPHONE_REQUIRED');
+    expect((await post(p.a, `/assessment-sessions/${session.id}/resume`, {})).status).toBe(422);
+    expect(
+      (
+        await post(p.a, `/assessment-sessions/${session.id}/resume`, {
+          devices: { ...preflightInput.devices, camera: 'UNAVAILABLE' },
+        })
+      ).body.error.code,
+    ).toBe('CAMERA_REQUIRED');
+    expect(await prisma.assessmentResponse.count({ where: { sessionId: session.id } })).toBe(0);
+    expect(
+      (
+        await post(p.a, `/assessment-sessions/${session.id}/resume`, {
+          devices: preflightInput.devices,
+        })
+      ).status,
+    ).toBe(200);
   });
   it('rejects voice mode without microphone readiness and requires approved scenario coverage', async () => {
     const { p, booking, blueprint } = await interactionFixture();
@@ -2488,10 +2785,10 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
         await post(p.a, `/assessments/${booking.id}/start`, {
           ...preflightInput,
           mode: 'VOICE',
-          devices: { camera: 'UNAVAILABLE', microphone: 'DENIED', speakerConfirmed: true },
+          devices: { camera: 'READY', microphone: 'DENIED', speakerConfirmed: true },
         })
       ).body.error.code,
-    ).toBe('VOICE_PREFLIGHT_REQUIRED');
+    ).toBe('MICROPHONE_REQUIRED');
     const link = await prisma.blueprintScenario.findFirstOrThrow({
       where: { blueprintId: blueprint.id },
     });
@@ -2554,6 +2851,203 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       (await prisma.assessmentTarget.findUniqueOrThrow({ where: { id: booking.targetId! } }))
         .status,
     ).toBe('COMPLETED');
+  });
+  it('preflight reports missing scenario coverage without exposing prompts', async () => {
+    const { p, booking, blueprint } = await interactionFixture();
+    const link = await prisma.blueprintScenario.findFirstOrThrow({
+      where: { blueprintId: blueprint.id },
+    });
+    await prisma.assessmentScenario.update({
+      where: { id: link.scenarioId },
+      data: { approved: false },
+    });
+    const result = await p.a.get(`/api/v1/assessments/${booking.id}/preflight`);
+    expect(result.body.data.canStart).toBe(false);
+    expect(result.body.data.blockingReasons.join(' ')).toContain('Approved assessment scenarios');
+    expect(JSON.stringify(result.body)).not.toContain('evaluationCriteria');
+  });
+  it('finishes an on-time final answer after the deadline without accepting new answers', async () => {
+    const { p, booking } = await interactionFixture();
+    let session = (await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.data;
+    for (let i = 0; i < 5; i++)
+      session = (await answer(p.a, session.id, session.currentPromptId, `deadline-answer-${i}`))
+        .body.data;
+    vi.mocked(interviewer.invoke).mockImplementationOnce(async (input: InterviewInput) => {
+      const pending = await prisma.assessmentResponse.findFirstOrThrow({
+        where: { sessionId: session.id, processedAt: null },
+        orderBy: { createdAt: 'desc' },
+      });
+      await prisma.assessmentSlot.update({
+        where: { id: booking.slotId },
+        data: { endsAt: new Date(pending.createdAt.getTime() + 1) },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      await reconcileApplicantBookings(p.id);
+      expect(
+        (await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: booking.id } })).status,
+      ).toBe('SCHEDULED');
+      return {
+        action: 'COMPLETE',
+        message: 'Your final confirmed answer has been recorded.',
+        evaluations: input.requirements.map((r) => ({
+          competencyId: r.competencyId,
+          score: 60,
+          evidence:
+            'The confirmed answer demonstrates safe fault isolation and evidence collection.',
+        })),
+      };
+    });
+    const final = await answer(p.a, session.id, session.currentPromptId, 'deadline-final-answer');
+    expect(final.status).toBe(200);
+    expect(final.body.data.status).toBe('AWAITING_REVIEW');
+    expect(
+      (await answer(p.a, session.id, session.currentPromptId, 'deadline-new-answer')).status,
+    ).toBe(409);
+    const a = await adminSession();
+    const denied = await adminSession(false);
+    expect((await denied.get('/api/v1/admin/assessment-sessions')).status).toBe(403);
+    expect((await p.a.get('/api/v1/admin/assessment-sessions')).status).toBe(403);
+    const queue = await a.get('/api/v1/admin/assessment-sessions?status=AWAITING_REVIEW');
+    expect(queue.status).toBe(200);
+    expect(queue.body.data.some((s: { id: string }) => s.id === session.id)).toBe(true);
+    expect(JSON.stringify(queue.body)).not.toContain('evaluationCriteria');
+    expect((await a.get('/api/v1/admin/assessment-sessions?status=FAKE')).status).toBe(422);
+    const review = await a.get(`/api/v1/admin/assessment-sessions/${session.id}`);
+    expect(review.body.data.rubric[0].evaluationCriteria).toBeTruthy();
+    const results = review.body.data.evaluation.map((r: { requirementId: string }) => ({
+      requirementId: r.requirementId,
+      score: 75,
+      evidence:
+        'Assessor independently reviewed the saved technical evidence and confirms safe diagnostic reasoning.',
+    }));
+    const approved = await a
+      .post(`/api/v1/admin/assessment-sessions/${session.id}/approve-results`)
+      .set('X-CSRF-Token', await csrf(a))
+      .set('Idempotency-Key', 'deadline-reviewed-results')
+      .send({ results });
+    expect(approved.status).toBe(200);
+    expect(approved.body.data.overallScore).toBe(75);
+    expect(
+      (await p.a.get(`/api/v1/assessment-sessions/${session.id}/results`)).body.data.provisional,
+    ).toBe(false);
+  });
+  it('allows one neutral clarification for unrelated answers and preserves all evidence', async () => {
+    const { p, booking } = await interactionFixture();
+    let session = (await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.data;
+    vi.mocked(interviewer.invoke).mockClear();
+    vi.mocked(interviewer.invoke).mockResolvedValue({
+      action: 'FOLLOW_UP',
+      responseKind: 'UNRELATED',
+      message: 'Repeat the entire question again and again.',
+      evaluations: [],
+    });
+    const first = await answer(p.a, session.id, session.currentPromptId, 'unrelated-one', {
+      text: 'xyzqwerty',
+    });
+    expect(first.status).toBe(200);
+    session = first.body.data;
+    expect(session.messages.at(-1).text).toContain('does not appear to address');
+    const reloaded = await p.a.get(`/api/v1/assessment-sessions/${session.id}`);
+    expect(reloaded.body.data.messages.some((m: { text: string }) => m.text === 'xyzqwerty')).toBe(
+      true,
+    );
+    vi.mocked(interviewer.invoke).mockResolvedValue({
+      action: 'COMPLETE',
+      responseKind: 'PROCESS_QUESTION',
+      message: 'An answer must not be disclosed.',
+      evaluations: [],
+    });
+    const second = await answer(p.a, session.id, session.currentPromptId, 'unrelated-two', {
+      text: 'Why are you asking again?',
+    });
+    expect(second.status).toBe(200);
+    session = second.body.data;
+    expect(session.progress.completedScenarios).toBe(1);
+    expect(
+      session.messages.some((m: { text: string }) => m.text.includes('An answer must not')),
+    ).toBe(false);
+    for (let i = 0; i < 2; i++) {
+      const skipped = await answer(p.a, session.id, session.currentPromptId, `skip-scenario-${i}`, {
+        origin: 'SKIP',
+        text: 'I don’t know / Skip this scenario.',
+      });
+      expect(skipped.status).toBe(200);
+      session = skipped.body.data;
+    }
+    expect(session.status).toBe('AWAITING_REVIEW');
+    const report = await p.a.get(`/api/v1/assessment-sessions/${session.id}/results`);
+    expect(
+      report.body.data.competencies.every(
+        (c: { score: number; evidence: string }) =>
+          c.score === 0 && c.evidence.includes('Insufficient evidence'),
+      ),
+    ).toBe(true);
+    expect(await prisma.assessmentResponse.count({ where: { sessionId: session.id } })).toBe(4);
+    expect(vi.mocked(interviewer.invoke)).toHaveBeenCalledTimes(2);
+  });
+  it('explains a process question once and retains substantive evidence when the rest is skipped', async () => {
+    const { p, booking } = await interactionFixture();
+    let session = (await post(p.a, `/assessments/${booking.id}/start`, preflightInput)).body.data;
+    vi.mocked(interviewer.invoke).mockResolvedValueOnce({
+      action: 'FOLLOW_UP',
+      responseKind: 'PROCESS_QUESTION',
+      message: 'A generic prompt that must be replaced.',
+      evaluations: [],
+    });
+    session = (
+      await answer(p.a, session.id, session.currentPromptId, 'process-question', {
+        text: 'Why is the question repeated?',
+      })
+    ).body.data;
+    expect(session.messages.at(-1).text).toContain('I asked again because');
+    vi.mocked(interviewer.invoke).mockImplementation(async (input: InterviewInput) => {
+      expect(input.forceComplete || input.clarificationUsed).toBe(true);
+      return {
+        action: 'COMPLETE',
+        responseKind: 'RELEVANT',
+        message: 'Internal assessment commentary.',
+        evaluations: input.requirements.map((r) => ({
+          competencyId: r.competencyId,
+          score: 75,
+          evidence:
+            'A concise valid technical answer demonstrates an evidence-based safe investigation.',
+        })),
+      };
+    });
+    session = (
+      await answer(p.a, session.id, session.currentPromptId, 'concise-technical', {
+        text: 'Isolate safely; compare logs with the approved wiring diagram.',
+      })
+    ).body.data;
+    expect(session.progress.completedScenarios).toBe(1);
+    // A relevant answer followed by an explicit skip must still be evaluated.
+    vi.mocked(interviewer.invoke).mockResolvedValueOnce({
+      action: 'FOLLOW_UP',
+      responseKind: 'RELEVANT',
+      message: 'What measurement would distinguish these hypotheses?',
+      evaluations: [],
+    });
+    session = (await answer(p.a, session.id, session.currentPromptId, 'valid-partial')).body.data;
+    session = (
+      await answer(p.a, session.id, session.currentPromptId, 'skip-after-evidence', {
+        origin: 'SKIP',
+        text: 'I don’t know / Skip this scenario.',
+      })
+    ).body.data;
+    expect(session.progress.completedScenarios).toBe(2);
+    const saved = await prisma.assessmentInteractionSession.findUniqueOrThrow({
+      where: { id: session.id },
+    });
+    expect(JSON.stringify(saved.scenarios)).toContain('evaluationCriteria');
+    const last = await answer(p.a, session.id, session.currentPromptId, 'last-skip', {
+      origin: 'SKIP',
+      text: 'I don’t know / Skip this scenario.',
+    });
+    expect(last.status).toBe(200);
+    const report = await p.a.get(`/api/v1/assessment-sessions/${session.id}/results`);
+    expect(
+      report.body.data.competencies.filter((c: { score: number }) => c.score === 75),
+    ).toHaveLength(2);
   });
   it('records final transcripts and corrections and prevents cross-applicant session access', async () => {
     const { p, booking } = await interactionFixture();
@@ -2643,14 +3137,17 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       where: { id: s.id },
       data: { leaseToken: crypto.randomUUID(), leaseExpiresAt: new Date(Date.now() + 60000) },
     });
-    expect((await post(p.a, `/assessment-sessions/${s.id}/resume`, {})).body.error.code).toBe(
-      'SESSION_BUSY',
-    );
+    expect(
+      (await post(p.a, `/assessment-sessions/${s.id}/resume`, { devices: preflightInput.devices }))
+        .body.error.code,
+    ).toBe('SESSION_BUSY');
     await prisma.assessmentInteractionSession.update({
       where: { id: s.id },
       data: { leaseExpiresAt: new Date(Date.now() - 1000) },
     });
-    const resumed = await post(p.a, `/assessment-sessions/${s.id}/resume`, {});
+    const resumed = await post(p.a, `/assessment-sessions/${s.id}/resume`, {
+      devices: preflightInput.devices,
+    });
     expect(resumed.status).toBe(200);
     expect(resumed.body.data.status).toBe('ACTIVE');
     expect(await prisma.assessmentResponse.count({ where: { sessionId: s.id } })).toBe(1);
@@ -2997,6 +3494,42 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       (await prisma.assessmentTarget.findUniqueOrThrow({ where: { id: old.id } })).status,
     ).toBe('ABANDONED');
   });
+  it('abandons a prepared target, cancels its future booking and permits a replacement while preserving history', async () => {
+    const { p, booking, attemptId } = await interactionFixture({}, false);
+    const original = await prisma.assessmentTarget.findUniqueOrThrow({
+      where: { id: booking.targetId! }, include: { industries: true },
+    });
+    const reason = 'Choose another engineering career before starting';
+    const abandoned = await post(p.a, `/assessments/targets/${booking.targetId}/abandon`, { reason });
+    expect(abandoned.status).toBe(200);
+    expect(abandoned.body.data).toEqual({ id: booking.targetId, status: 'ABANDONED' });
+    const cancelled = await prisma.assessmentBooking.findUniqueOrThrow({
+      where: { id: booking.id }, include: { events: true },
+    });
+    expect(cancelled.status).toBe('CANCELLED');
+    expect(cancelled.events.some(event => event.action === 'ABANDONED' && event.reason === reason)).toBe(true);
+    expect(await prisma.assessmentAttempt.findUnique({ where: { id: attemptId } })).not.toBeNull();
+    expect((await post(p.a, `/assessments/targets/${booking.targetId}/abandon`, { reason })).status).toBe(200);
+    expect(await prisma.assessmentBookingEvent.count({ where: { bookingId: booking.id, action: 'ABANDONED' } })).toBe(1);
+    const replacement = await post(p.a, '/assessments/targets', {
+      jobRoleId: original.jobRoleId, industryIds: original.industries.map(link => link.industryId), companyIds: [], qualificationIds: [],
+    });
+    expect(replacement.status).toBe(201);
+    expect(replacement.body.data.id).not.toBe(original.id);
+    const history = await p.a.get('/api/v1/assessments/targets?limit=100');
+    expect(history.body.data.some((target: { id: string; status: string }) => target.id === original.id && target.status === 'ABANDONED')).toBe(true);
+  });
+  it('rejects invalid, foreign and late prepared-target recovery without cancelling the booking', async () => {
+    const { p, booking } = await interactionFixture();
+    expect((await post(p.a, `/assessments/targets/${booking.targetId}/abandon`, { reason: ' ' })).status).toBe(422);
+    const stranger = await applicant();
+    expect((await post(stranger.a, `/assessments/targets/${booking.targetId}/abandon`, { reason: 'Change this career target' })).status).toBe(404);
+    const late = await post(p.a, `/assessments/targets/${booking.targetId}/abandon`, { reason: 'Change this career target' });
+    expect(late.status).toBe(409);
+    expect(late.body.error.code).toBe('CANCELLATION_WINDOW_CLOSED');
+    expect((await prisma.assessmentTarget.findUniqueOrThrow({ where: { id: booking.targetId! } })).status).toBe('PREPARED');
+    expect((await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: booking.id } })).status).toBe('SCHEDULED');
+  });
   it('requires an administrator to abandon an active assessment and preserves its history', async () => {
     const { p, booking } = await interactionFixture();
     const start = await post(p.a, `/assessments/${booking.id}/start`, preflightInput);
@@ -3027,9 +3560,13 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
         where: { sessionId: start.body.data.id },
       }),
     ).toBeGreaterThan(0);
-    expect((await post(p.a, `/assessment-sessions/${start.body.data.id}/resume`, {})).status).toBe(
-      409,
-    );
+    expect(
+      (
+        await post(p.a, `/assessment-sessions/${start.body.data.id}/resume`, {
+          devices: preflightInput.devices,
+        })
+      ).status,
+    ).toBe(409);
   });
   it('finishes all 80 supported answers with safe idempotent retries', async () => {
     const { p, booking, blueprint } = await interactionFixture();
@@ -3118,6 +3655,22 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
       expect(registration.headers.location).toBe(
         `${env.FRONTEND_URL}/register/google?status=registrationRequired`,
       );
+      const selected = await a.get('/api/v1/auth/google/registration');
+      expect(selected.status).toBe(200);
+      expect(selected.headers['cache-control']).toBe('no-store');
+      expect(selected.body.data).toEqual({
+        email: 'browser-google@example.test',
+        name: 'Browser Applicant',
+        expiresAt: expect.any(String),
+      });
+      const refreshed = await a.get('/api/v1/auth/google/registration?email=forged@example.test');
+      expect(refreshed.body.data).toEqual(selected.body.data);
+      expect(
+        await prisma.user.findUnique({ where: { email: 'browser-google@example.test' } }),
+      ).toBeNull();
+      const otherBrowser = await request.agent(server).get('/api/v1/auth/google/registration');
+      expect(otherBrowser.status).toBe(400);
+      expect(otherBrowser.body.error.code).toBe('GOOGLE_FLOW_INVALID');
       expect(
         (
           await post(a, '/auth/google/complete', {
@@ -3126,6 +3679,9 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
           })
         ).status,
       ).toBe(201);
+      expect((await a.get('/api/v1/auth/google/registration')).body.error.code).toBe(
+        'GOOGLE_FLOW_INVALID',
+      );
       await a.get('/api/v1/auth/google');
       const login = await a
         .get('/api/v1/auth/google/callback?state=browser-state&code=valid')

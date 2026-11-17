@@ -15,6 +15,7 @@ documentRouter.post(
   c.upload(false),
 );
 documentRouter.get('/', authorize('documents.read.self'), c.list());
+documentRouter.get('/requirements', authorize('documents.read.self'), c.requirements);
 documentRouter.get('/:id', authorize('documents.read.self'), c.get);
 documentRouter.patch('/:id', authorize('documents.upload.self'), c.patch);
 documentRouter.get('/:id/verification', authorize('documents.read.self'), c.history);

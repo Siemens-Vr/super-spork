@@ -9,3 +9,14 @@
     overflow-wrap: anywhere;
   }
 }
+
+.fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.fields:disabled { opacity: .7; }
+.fields input[readonly] { background: #f4f5f8; color: #626479; }
+.fields small { display: block; margin-top: 6px; font-size: 11px; color: #626479; }
+.error { color: #9c333b; background: #fff0f0; border-radius: 8px; padding: 14px; }

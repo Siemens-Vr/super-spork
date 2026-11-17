@@ -89,6 +89,7 @@ describe('Google OAuth protocol with signed test tokens', () => {
     const params = new URL(start.url).searchParams;
     expect(params.get('redirect_uri')).toBe('http://localhost:4000/api/v1/auth/google/callback');
     expect(params.get('scope')).toBe('openid email profile');
+    expect(params.get('prompt')).toBe('select_account');
     expect(params.get('state')).toBe(start.state);
     expect(params.get('nonce')).toBe(start.nonce);
     expect(params.get('code_challenge_method')).toBe('S256');

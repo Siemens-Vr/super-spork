@@ -22,8 +22,10 @@ export interface Workflow {
   context: unknown;
   cursor: number;
   followups: number;
+  clarificationUsed?: boolean;
+  relevantSeen?: boolean;
   messages: InterviewMessage[];
-  response: { id: string; text: string } | null;
+  response: { id: string; text: string; skip?: boolean } | null;
   processed: string[];
   evaluation: { competencyId: string; score: number; evidence: string }[];
   output: InterviewOutput | null;
@@ -50,9 +52,34 @@ export const assessmentGraph = new StateGraph(state)
   }))
   .addNode('ai_interviewer', async ({ workflow: w }) => {
     const scenario = w.scenarios[w.cursor]!;
+    const requirements = w.requirements.filter((r) =>
+      scenario.competencyIds.includes(r.competencyId),
+    );
+    const priorRelevant =
+      w.relevantSeen ??
+      w.messages.some((m) => m.role === 'APPLICANT' && m.scenarioIndex === w.cursor);
+    if (w.response?.skip && !priorRelevant)
+      return {
+        workflow: {
+          ...w,
+          output: {
+            action: 'COMPLETE' as const,
+            responseKind: 'DECLINED' as const,
+            message: 'This scenario has been skipped.',
+            evaluations: requirements.map((r) => ({
+              competencyId: r.competencyId,
+              score: 0,
+              evidence:
+                'Insufficient evidence: the applicant explicitly skipped this scenario. Human assessor review is required.',
+            })),
+          },
+        },
+      };
     const output = await interviewRunnable.invoke({
       scenario,
       followups: w.followups,
+      clarificationUsed: w.clarificationUsed ?? false,
+      forceComplete: !!w.response?.skip,
       requirements: w.requirements.filter((r) => scenario.competencyIds.includes(r.competencyId)),
       context: w.context,
       conversation: [
@@ -66,14 +93,64 @@ export const assessmentGraph = new StateGraph(state)
   })
   .addNode('followup_or_next_scenario', ({ workflow: w }) => {
     const output = w.output!;
+    const kind = w.response?.skip ? 'DECLINED' : (output.responseKind ?? 'RELEVANT');
+    const unclear = kind === 'UNRELATED' || kind === 'PROCESS_QUESTION';
+    const canClarify = unclear && !w.clarificationUsed;
+    const relevantSeen =
+      (w.relevantSeen ??
+        w.messages.some((m) => m.role === 'APPLICANT' && m.scenarioIndex === w.cursor)) ||
+      kind === 'RELEVANT';
+    if (canClarify)
+      return {
+        workflow: {
+          ...w,
+          messages: [
+            ...w.messages,
+            message('APPLICANT', w.response!.text, w.cursor),
+            message(
+              'AI',
+              kind === 'PROCESS_QUESTION'
+                ? 'I asked again because your previous response did not provide enough information about this scenario. Please describe your approach, or choose “I don’t know / Skip this scenario” to continue.'
+                : 'Your response does not appear to address this scenario. Please describe your approach, or choose “I don’t know / Skip this scenario” to continue.',
+              w.cursor,
+            ),
+          ],
+          processed: [...w.processed, w.response!.id],
+          clarificationUsed: true,
+          relevantSeen,
+          output: null,
+        },
+      };
+    const complete =
+      kind === 'DECLINED' || (unclear && !!w.clarificationUsed) || output.action === 'COMPLETE';
+    const evaluations =
+      complete && !relevantSeen
+        ? w.requirements
+            .filter((r) => w.scenarios[w.cursor]!.competencyIds.includes(r.competencyId))
+            .map((r) => ({
+              competencyId: r.competencyId,
+              score: 0,
+              evidence:
+                'Insufficient evidence: no relevant technical response was provided after the clarification opportunity or explicit skip. Human assessor review is required.',
+            }))
+        : output.evaluations;
     const messages = [
       ...w.messages,
       message('APPLICANT', w.response!.text, w.cursor),
-      message('AI', output.message, w.cursor),
+      ...(!complete ? [message('AI', output.message, w.cursor)] : []),
     ];
     const processed = [...w.processed, w.response!.id];
-    if (output.action === 'FOLLOW_UP')
-      return { workflow: { ...w, messages, processed, followups: w.followups + 1, output: null } };
+    if (!complete)
+      return {
+        workflow: {
+          ...w,
+          messages,
+          processed,
+          followups: w.followups + 1,
+          relevantSeen,
+          output: null,
+        },
+      };
     const cursor = w.cursor + 1,
       finished = cursor >= w.scenarios.length;
     messages.push(
@@ -93,7 +170,9 @@ export const assessmentGraph = new StateGraph(state)
         cursor,
         finished,
         followups: 0,
-        evaluation: [...w.evaluation, ...output.evaluations],
+        clarificationUsed: false,
+        relevantSeen: false,
+        evaluation: [...w.evaluation, ...evaluations],
         output: null,
       },
     };

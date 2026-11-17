@@ -4,16 +4,24 @@ import { prisma } from '../config/prisma.js';
 import { logger } from '../config/logger.js';
 import { queueConnection, emailQueue, documentQueue } from './queues.js';
 import { deliverEmail } from './email.worker.js';
+import { scanTrainerQualification } from './trainer-document.worker.js';
 import { scanDocument } from './document.worker.js';
 const workers = [
   new Worker('nexus-email', (job) => deliverEmail(String(job.data.id)), {
     connection: queueConnection(),
     concurrency: 4,
   }),
-  new Worker('nexus-document-scan', (job) => scanDocument(String(job.data.id)), {
-    connection: queueConnection(),
-    concurrency: 2,
-  }),
+  new Worker(
+    'nexus-document-scan',
+    (job) =>
+      job.data.kind === 'trainer'
+        ? scanTrainerQualification(String(job.data.id))
+        : scanDocument(String(job.data.id)),
+    {
+      connection: queueConnection(),
+      concurrency: 2,
+    },
+  ),
 ];
 for (const worker of workers) {
   worker.on('failed', (job) => {
@@ -27,12 +35,13 @@ for (const worker of workers) {
 let dispatching = false;
 let emailCursor: string | undefined;
 let documentCursor: string | undefined;
+let trainerCursor: string | undefined;
 async function dispatch() {
   if (dispatching) return;
   dispatching = true;
   try {
     await expireAssessmentBookings();
-    const [emails, documents] = await Promise.all([
+    const [emails, documents, trainerQualifications] = await Promise.all([
       prisma.notificationOutbox.findMany({
         where: { status: 'PENDING', ...(emailCursor ? { id: { gt: emailCursor } } : {}) },
         take: 100,
@@ -46,7 +55,22 @@ async function dispatch() {
         take: 100,
         orderBy: { id: 'asc' },
       }),
+      prisma.trainerQualification.findMany({
+        where: {
+          OR: [{ scanStatus: { in: ['QUARANTINED', 'FAILED'] } }, { cleanupPending: true }],
+          ...(trainerCursor ? { id: { gt: trainerCursor } } : {}),
+        },
+        orderBy: { id: 'asc' },
+        take: 100,
+      }),
     ]);
+    trainerCursor = trainerQualifications.at(-1)?.id;
+    for (const q of trainerQualifications)
+      await documentQueue.add(
+        'scan-trainer',
+        { id: q.id, kind: 'trainer' },
+        { jobId: `trainer-${q.id}` },
+      );
     emailCursor = emails.at(-1)?.id;
     documentCursor = documents.at(-1)?.id;
     for (const item of emails) await emailQueue.add('deliver', { id: item.id }, { jobId: item.id });

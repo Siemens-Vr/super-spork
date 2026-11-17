@@ -2,6 +2,7 @@ import {
   expireBookingsForUser,
   reconcileApplicantBookings,
 } from './assessment-lifecycle.service.js';
+import { mayFinishAcceptedAnswer } from './assessment-processing.js';
 import { createHash, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma, userLock } from '../config/prisma.js';
@@ -17,6 +18,7 @@ import {
 import { interviewer } from '../integrations/assessment-interview/provider.js';
 import { speechProviders, validateWav } from '../integrations/speech/providers.js';
 import { env } from '../config/env.js';
+import { assessmentIdentityReadiness, currentAssessmentDocuments } from './assessment-identity-policy.js';
 import {
   interactionPolicySchema,
   frozenScenarioSchema,
@@ -68,17 +70,33 @@ function requireWindow(booking: { status: string; slot: { startsAt: Date; endsAt
 function effectivePolicy(booking: Awaited<ReturnType<typeof ownedBooking>>) {
   const attempt = booking.target!.attempt!;
   const snapshot = attempt.contextSnapshot as { blueprint?: { interactionPolicy?: unknown } };
-  const policy = interactionPolicySchema.parse(
-    snapshot.blueprint?.interactionPolicy ?? booking.blueprint.interactionPolicy,
-  );
+  const policy = interactionPolicySchema.parse({
+    ...((snapshot.blueprint?.interactionPolicy ?? booking.blueprint.interactionPolicy) as object),
+    cameraRequired: true,
+    microphoneRequired: true,
+  });
   const accommodation = attempt.accommodation;
   return {
     ...policy,
-    cameraRequired: policy.cameraRequired && !accommodation?.waiveCamera,
-    microphoneRequired: policy.microphoneRequired && !accommodation?.waiveMicrophone,
+    cameraRequired: true,
+    microphoneRequired: true,
     allowText: policy.allowText || !!accommodation?.allowText,
     accommodationId: accommodation?.id ?? null,
   };
+}
+function requireDevices(devices?: { camera: string; microphone: string }) {
+  requireCondition(
+    devices?.camera === 'READY',
+    422,
+    'CAMERA_REQUIRED',
+    'Allow camera access and complete the camera check before starting or continuing this assessment.',
+  );
+  requireCondition(
+    devices?.microphone === 'READY',
+    422,
+    'MICROPHONE_REQUIRED',
+    'Allow microphone access and complete the microphone check before starting or continuing this assessment.',
+  );
 }
 export async function preflight(applicantId: string, bookingId: string) {
   const b = await ownedBooking(applicantId, bookingId),
@@ -87,6 +105,66 @@ export async function preflight(applicantId: string, bookingId: string) {
     where: { attemptId: b.target!.attempt!.id },
     select: { id: true, status: true },
   });
+  const blockingReasons: string[] = [];
+  let identityRecovery: { documentId: string } | null = null;
+  if (b.status !== 'SCHEDULED') blockingReasons.push('This booking is not scheduled.');
+  if (b.slot.startsAt > new Date())
+    blockingReasons.push('Your scheduled assessment has not started yet.');
+  if (b.slot.endsAt <= new Date())
+    blockingReasons.push('The scheduled assessment window has ended.');
+  if (!session) {
+    if (!['PREPARED', 'IN_PROGRESS'].includes(b.target!.status))
+      blockingReasons.push('Your assessment target is not ready.');
+    if (
+      !b.blueprint.active ||
+      !b.blueprint.framework.approved ||
+      b.blueprint.framework.scope !== 'CORE'
+    )
+      blockingReasons.push('This assessment blueprint is unavailable.');
+    if (!interviewer.ready())
+      blockingReasons.push(
+        'The AI interviewer is not configured. Contact your assessment provider.',
+      );
+    const scenarios = await prisma.blueprintScenario.findMany({
+      where: { blueprintId: b.blueprintId, scenario: { approved: true } },
+      select: { scenario: { select: { competencyIds: true } } },
+    });
+    if (
+      !scenarios.length ||
+      b.target!.attempt!.requirements.some(
+        (r) => !scenarios.some((s) => s.scenario.competencyIds.includes(r.competencyId)),
+      )
+    )
+      blockingReasons.push(
+        'Approved assessment scenarios are not ready. Contact your assessment provider.',
+      );
+    const snapshot = b.target!.attempt!.contextSnapshot as {
+      blueprint: { requiresAuthenticatedIdentity: boolean; requiresAuthenticatedAcademic: boolean };
+    };
+    const docs = await prisma.document.findMany({
+      where: { applicantId, ...currentAssessmentDocuments },
+      select: { id: true, category: true, status: true, scanStatus: true },
+    });
+    const identity = assessmentIdentityReadiness(docs, snapshot.blueprint.requiresAuthenticatedIdentity);
+    if (identity.reason) blockingReasons.push(identity.message);
+    identityRecovery = identity.recovery;
+    if (
+      snapshot.blueprint.requiresAuthenticatedAcademic &&
+      !docs.some(
+        (d) => !['NATIONAL_ID', 'PASSPORT'].includes(d.category) && d.status === 'AUTHENTICATED' && d.scanStatus === 'CLEAN',
+      )
+    )
+      blockingReasons.push('An authenticated academic document is required.');
+    if (
+      await prisma.assessmentTargetQualification.count({
+        where: {
+          targetId: b.targetId!,
+          document: { OR: [{ scanStatus: { not: 'CLEAN' } }, { status: 'REJECTED' }] },
+        },
+      })
+    )
+      blockingReasons.push('A selected qualification no longer meets the assessment policy.');
+  }
   return {
     bookingId: b.id,
     attemptId: b.target!.attempt!.id,
@@ -94,8 +172,9 @@ export async function preflight(applicantId: string, bookingId: string) {
     startsAt: b.slot.startsAt,
     endsAt: b.slot.endsAt,
     timezone: 'Africa/Nairobi',
-    canStart:
-      b.status === 'SCHEDULED' && b.slot.startsAt <= new Date() && b.slot.endsAt > new Date(),
+    canStart: !session && blockingReasons.length === 0,
+    blockingReasons,
+    identityRecovery,
     policy,
     aiReady: interviewer.ready(),
     speech: speechProviders.configuration(),
@@ -136,7 +215,7 @@ export async function getSession(applicantId: string, id: string, asAdmin = fals
     status: s.attempt.completedAt ? 'COMPLETED' : s.status,
     mode: s.mode,
     language: s.language,
-    policy: s.policy,
+    policy: { ...(s.policy as object), cameraRequired: true, microphoneRequired: true },
     preflight: s.preflight,
     messages: s.messages,
     progress: {
@@ -152,7 +231,16 @@ export async function getSession(applicantId: string, id: string, asAdmin = fals
     hasPendingResponse: !!s.pendingResponseId,
     endsAt: s.booking.slot.endsAt,
     speech: speechProviders.configuration(),
-    ...(asAdmin ? { evaluation: s.evaluation } : {}),
+    ...(asAdmin
+      ? {
+          evaluation: s.evaluation,
+          applicantId: s.booking.applicantId,
+          rubric: scenarios.map((scenario) => ({
+            title: scenario.title,
+            evaluationCriteria: scenario.evaluationCriteria,
+          })),
+        }
+      : {}),
   };
 }
 export async function startSession(
@@ -165,6 +253,8 @@ export async function startSession(
     where: { attemptId: b.target!.attempt!.id },
   });
   if (existing) {
+    if (!['COMPLETED', 'AWAITING_REVIEW', 'EXPIRED', 'ABANDONED'].includes(existing.status))
+      requireDevices(input.devices);
     requireCondition(
       existing.bookingId === bookingId,
       409,
@@ -173,7 +263,7 @@ export async function startSession(
     );
     const view = await getSession(applicantId, existing.id);
     return existing.status === 'INTERRUPTED' || !view.messages.length
-      ? resumeSession(applicantId, existing.id)
+      ? resumeSession(applicantId, existing.id, input.devices)
       : view;
   }
   requireWindow(b);
@@ -190,6 +280,7 @@ export async function startSession(
     'The AI interviewer is not configured',
   );
   const policy = effectivePolicy(b);
+  requireDevices(input.devices);
   requireCondition(
     !policy.cameraRequired || input.devices.camera === 'READY',
     422,
@@ -293,13 +384,13 @@ async function runSession(applicantId: string, id: string) {
   );
   try {
     const s = await ownedSession(applicantId, id);
-    requireWindow(s.booking);
     const config = graphConfig(id);
     const checkpoint = await assessmentGraph.getState(config);
     let w = checkpoint.values.workflow as Workflow | undefined;
     const pending = s.pendingResponseId
       ? await prisma.assessmentResponse.findUniqueOrThrow({ where: { id: s.pendingResponseId } })
       : null;
+    if (!mayFinishAcceptedAnswer(s.booking, pending)) requireWindow(s.booking);
     if (!w) {
       const snapshot = s.attempt.contextSnapshot as {
         career?: unknown;
@@ -325,6 +416,8 @@ async function runSession(applicantId: string, id: string) {
         },
         cursor: 0,
         followups: 0,
+        clarificationUsed: false,
+        relevantSeen: false,
         messages: [],
         response: null,
         processed: [],
@@ -341,7 +434,16 @@ async function runSession(applicantId: string, id: string) {
         await assessmentGraph.invoke(
           w.response?.id === pending.id && checkpoint.next.length
             ? null
-            : { workflow: { ...w, response: { id: pending.id, text: pending.confirmedText } } },
+            : {
+                workflow: {
+                  ...w,
+                  response: {
+                    id: pending.id,
+                    text: pending.confirmedText,
+                    skip: pending.origin === 'SKIP',
+                  },
+                },
+              },
           config,
         )
       ).workflow;
@@ -359,6 +461,9 @@ async function runSession(applicantId: string, id: string) {
           const score = Math.round(scores.reduce((n, e) => n + e.score, 0) / scores.length);
           return {
             requirementId: r.id,
+            evidenceStatus: scores.every((e) => e.evidence.startsWith('Insufficient evidence:'))
+              ? 'INSUFFICIENT_EVIDENCE'
+              : 'PROPOSED',
             score,
             evidence: scores
               .map((e) => e.evidence)
@@ -377,7 +482,7 @@ async function runSession(applicantId: string, id: string) {
         where: { id: s.bookingId },
         include: { slot: true },
       });
-      requireWindow(currentBooking);
+      if (!mayFinishAcceptedAnswer(currentBooking, pending)) requireWindow(currentBooking);
       const owned = await tx.assessmentInteractionSession.updateMany({
         where: { id, leaseToken: token },
         data: {
@@ -427,7 +532,10 @@ export async function respond(
   input: z.infer<typeof confirmedResponseSchema>,
 ) {
   const s = await ownedSession(applicantId, id);
-  const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex');
+  requireDevices(input.devices);
+  // Readiness is transport state, not part of the immutable confirmed answer.
+  const { devices: _devices, ...confirmedAnswer } = input;
+  const hash = createHash('sha256').update(JSON.stringify(confirmedAnswer)).digest('hex');
   const previous = await prisma.assessmentResponse.findUnique({
     where: { sessionId_idempotencyKey: { sessionId: id, idempotencyKey: key } },
   });
@@ -449,9 +557,14 @@ export async function respond(
     'This assessment conversation is complete',
   );
   const policy = interactionPolicySchema.parse(
-    Object.fromEntries(
-      Object.entries(s.policy as object).filter(([key]) => key !== 'accommodationId'),
-    ),
+    Object.fromEntries([
+      ...Object.entries(s.policy as object).filter(
+        ([key]) =>
+          key !== 'accommodationId' && !['cameraRequired', 'microphoneRequired'].includes(key),
+      ),
+      ['cameraRequired', true],
+      ['microphoneRequired', true],
+    ]),
   );
   requireCondition(
     input.origin !== 'TEXT' || policy.allowText,
@@ -517,7 +630,7 @@ export async function respond(
         });
     }
     const scenarios = z.array(frozenScenarioSchema).parse(s.scenarios);
-    const budget = scenarios.reduce((sum, scenario) => sum + 1 + scenario.maxFollowups, 0);
+    const budget = scenarios.reduce((sum, scenario) => sum + 2 + scenario.maxFollowups, 0);
     requireCondition(
       (await tx.assessmentResponse.count({ where: { sessionId: id } })) < budget,
       409,
@@ -546,10 +659,21 @@ export async function respond(
   });
   return runSession(applicantId, id);
 }
-export async function resumeSession(applicantId: string, id: string) {
+export async function resumeSession(
+  applicantId: string,
+  id: string,
+  devices?: { camera: string; microphone: string },
+) {
   const s = await ownedSession(applicantId, id);
   if (s.attempt.completedAt || s.status === 'AWAITING_REVIEW') return getSession(applicantId, id);
-  requireWindow(s.booking);
+  requireDevices(devices);
+  const pending = s.pendingResponseId
+    ? await prisma.assessmentResponse.findUnique({
+        where: { id: s.pendingResponseId },
+        select: { createdAt: true },
+      })
+    : null;
+  if (!mayFinishAcceptedAnswer(s.booking, pending)) requireWindow(s.booking);
   await prisma.assessmentSessionEvent.create({ data: { sessionId: id, kind: 'RESUMED' } });
   return runSession(applicantId, id);
 }
@@ -674,7 +798,12 @@ export async function results(applicantId: string, id: string) {
       'AI-proposed scores require an authorised assessor review. Final skill gaps and learning plans are published after approval.',
   };
 }
-export async function approveResults(actorId: string, id: string, key: string) {
+export async function approveResults(
+  actorId: string,
+  id: string,
+  key: string,
+  reviewed?: { results: { requirementId: string; score: number; evidence: string }[] },
+) {
   const s = await ownedSession(actorId, id, true);
   requireCondition(
     s.evaluation,
@@ -691,7 +820,12 @@ export async function approveResults(actorId: string, id: string, key: string) {
       }),
     )
     .parse(s.evaluation);
-  const attempt = await completeAttempt(actorId, s.attemptId, key, { results: proposed });
+  const attempt = await completeAttempt(
+    actorId,
+    s.attemptId,
+    key,
+    reviewed ?? { results: proposed },
+  );
   await prisma.assessmentInteractionSession.update({
     where: { id },
     data: { status: 'COMPLETED' },

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { audioUpload } from '../middleware/upload.js';
 import { authenticate, verified, applicant, authorize, admin } from '../middleware/authenticate.js';
 import { rateLimit } from '../middleware/security.js';
+import { completeAttemptSchema } from '../validators/assessment-target.schema.js';
 import { uuid } from '../validators/auth.schema.js';
 import { idempotencyKey } from '../validators/assessment.schema.js';
 import { pagination } from '../validators/career.schema.js';
@@ -52,7 +53,13 @@ assessmentSessionRouter.post(
   '/:id/resume',
   rateLimit('assessment-resume', 30, 3600, true),
   async (req, res) =>
-    res.json({ data: await sessions.resumeSession(req.principal!.id, uuid.parse(req.params.id)) }),
+    res.json({
+      data: await sessions.resumeSession(
+        req.principal!.id,
+        uuid.parse(req.params.id),
+        schemas.sessionResumeSchema.parse(req.body).devices,
+      ),
+    }),
 );
 assessmentSessionRouter.post(
   '/:id/events',
@@ -117,6 +124,40 @@ assessmentSessionRouter.get('/:id/results', async (req, res) =>
 );
 export const assessmentInteractionAdminRouter = Router();
 assessmentInteractionAdminRouter.use(authenticate, verified, admin);
+assessmentInteractionAdminRouter.get(
+  '/assessment-sessions',
+  authorize('assessments.review'),
+  async (req, res) => {
+    const { page, limit } = pagination.parse(req.query);
+    const filter = schemas.sessionListSchema.parse(req.query);
+    const where = { ...(filter.status ? { status: filter.status } : {}) };
+    const [data, total] = await prisma.$transaction([
+      prisma.assessmentInteractionSession.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        select: {
+          id: true,
+          attemptId: true,
+          bookingId: true,
+          status: true,
+          createdAt: true,
+          completedAt: true,
+          booking: {
+            select: {
+              applicant: { select: { id: true, legalName: true, email: true } },
+              blueprint: { select: { title: true } },
+            },
+          },
+        },
+      }),
+      prisma.assessmentInteractionSession.count({ where }),
+    ]);
+    await audit(prisma, req.principal!.id, 'admin.assessment_queue_viewed');
+    res.json({ data, meta: { page, limit, total } });
+  },
+);
 assessmentInteractionAdminRouter.get(
   '/scenarios',
   authorize('assessments.manage'),
@@ -234,6 +275,7 @@ assessmentInteractionAdminRouter.post(
         req.principal!.id,
         uuid.parse(req.params.id),
         idempotencyKey.parse(req.get('Idempotency-Key')),
+        req.body?.results ? completeAttemptSchema.parse(req.body) : undefined,
       ),
     }),
 );

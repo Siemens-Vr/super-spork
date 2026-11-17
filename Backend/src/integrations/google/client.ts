@@ -36,6 +36,7 @@ export const googleProvider = {
     const url = oidc.buildAuthorizationUrl(c, {
       redirect_uri: new URL('/api/v1/auth/google/callback', env.APP_URL).href,
       scope: 'openid email profile',
+      prompt: 'select_account',
       state,
       nonce,
       code_challenge: await oidc.calculatePKCECodeChallenge(verifier),
