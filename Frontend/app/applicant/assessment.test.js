@@ -180,3 +180,13 @@ test('a rejection detected during start still offers a readiness refresh', async
   assert.ok(html.includes('identity document was rejected')); assert.ok(html.includes('Refresh readiness'));
   assert.equal(store.snapshot().session, null);
 });
+
+test('immediate preflight explains setup deadline and retains device and explicit consent gates', async () => {
+  let starts = 0;
+  const store = createAssessmentStore({ client: client({ bookingPreflight: async () => ({ ...preflight, onDemand: true, setupExpiresAt: '2099-11-13T10:05:00Z' }), startAssessment: async () => { starts++; return session; } }) });
+  await store.load('owner', booking.bookingId);
+  const html = connectedPreflight(context(store.snapshot()));
+  assert.match(html, /Your immediate place is reserved until/); assert.match(html, /full assessment duration begins/); assert.doesNotMatch(html, /scheduled end time stays fixed/);
+  assert.match(html, /privacyAcknowledged/); assert.match(html, /Check camera/);
+  assert.equal(await store.action('start', { confirmed: true, privacyAcknowledged: true, mode: 'TEXT' }), false); assert.equal(starts, 0);
+});

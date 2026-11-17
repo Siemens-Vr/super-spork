@@ -21,6 +21,7 @@ import {
   reasonSchema,
   rescheduleSchema,
   slotQuery,
+  onDemandSchema,
 } from '../validators/assessment.schema.js';
 import { pagination } from '../validators/career.schema.js';
 import { uuid } from '../validators/auth.schema.js';
@@ -111,13 +112,26 @@ assessmentRouter.post('/bookings', validate(bookingSchema), async (req, res) => 
   );
   res.status(201).json({ data: s.confirmation(b) });
 });
+assessmentRouter.post(
+  '/on-demand',
+  rateLimit('assessment-on-demand', 20, 3600, true),
+  validate(onDemandSchema),
+  async (req, res) => {
+    const result = await s.reserveOnDemand(
+      req.principal!.id,
+      req.body.blueprintId,
+      idempotencyKey.parse(req.get('idempotency-key')),
+    );
+    res.status(201).json({ data: s.confirmation(result) });
+  },
+);
 assessmentRouter.get('/bookings', async (req, res) => {
   await reconcileApplicantBookings(req.principal!.id);
   const p = pagination.parse(req.query);
   const rows = await prisma.assessmentBooking.findMany({
     where: { applicantId: req.principal!.id },
     include: {
-      target: { select: { attempt: { select: { id: true } } } },
+      target: { select: { attempt: { select: { id: true, startedAt: true } } } },
       blueprint: { include: { jobRole: true } },
       slot: { include: { availability: true } },
       events: { orderBy: { createdAt: 'asc' } },

@@ -7,7 +7,7 @@ export async function allBookingPages(read) {
   }
 }
 export function createBookingStore({ client, onChange = () => {}, onUnauthorized = () => {}, makeKey = () => crypto.randomUUID() }) {
-  const empty = () => ({ ownerId: null, status: 'idle', eligibility: null, bookings: [], slots: [], blueprintId: '', selectedSlot: '', busy: false, error: '', notice: '', mode: '', reason: '', uncertain: false, requiresMfa: false });
+  const empty = () => ({ ownerId: null, status: 'idle', eligibility: null, bookings: [], slots: [], blueprintId: '', reservationId: '', selectedSlot: '', busy: false, error: '', notice: '', mode: '', reason: '', uncertain: false, requiresMfa: false });
   let state = empty(), generation = 0, pending = null;
   const current = (v, owner) => v === generation && owner === state.ownerId;
   const fail = error => { state.requiresMfa = error.code === 'MFA_REQUIRED'; if (error.status === 401) onUnauthorized(); return error.message || 'Unable to load booking information.'; };
@@ -43,28 +43,34 @@ export function createBookingStore({ client, onChange = () => {}, onUnauthorized
     reason(value) { state.reason = value; },
     async mutate(action) {
       if (state.busy || state.status !== 'ready' || state.uncertain) return false;
+      if (!['book', 'on-demand', 'reschedule', 'cancel'].includes(action)) return false;
       const active = state.bookings.find(item => item.status === 'SCHEDULED');
-      if (action !== 'book' && !active) return false;
-      if (action === 'book' && active) return false;
-      if (action !== 'cancel' && (!state.blueprintId || !state.slots.some(item => item.id === state.selectedSlot))) return false;
-      if (action !== 'book' && state.reason.trim().length < 5) { state.error = 'Enter a reason of at least 5 characters.'; onChange(); return false; }
+      const creating = action === 'book' || action === 'on-demand';
+      if (!creating && !active || creating && active) return false;
+      if (action === 'reschedule' && active.onDemand) return false;
+      if (action === 'on-demand' && !state.eligibility?.blueprints.find(b => b.blueprintId === state.blueprintId)?.onDemand?.available) return false;
+      if (['book', 'reschedule'].includes(action) && (!state.blueprintId || !state.slots.some(item => item.id === state.selectedSlot))) return false;
+      if (!creating && state.reason.trim().length < 5) { state.error = 'Enter a reason of at least 5 characters.'; onChange(); return false; }
       const v = generation, owner = state.ownerId;
       const reason = state.reason.trim(), slot = state.selectedSlot;
-      const signature = JSON.stringify([action, active?.bookingId, slot, reason]);
+      const signature = JSON.stringify([action, state.blueprintId, active?.bookingId, slot, reason]);
       if (!pending || pending.signature !== signature) pending = { signature, key: makeKey() };
       state.busy = true; state.error = ''; state.notice = ''; onChange();
       let saved = false;
       try {
-        if (action === 'book') await client.bookAssessment(slot, pending.key);
+        let reservation;
+        if (action === 'on-demand') reservation = await client.reserveOnDemand(state.blueprintId, pending.key);
+        else if (action === 'book') await client.bookAssessment(slot, pending.key);
         else if (action === 'reschedule') await client.rescheduleBooking(active.bookingId, slot, reason, pending.key);
         else await client.cancelBooking(active.bookingId, reason);
         if (!current(v, owner)) return false;
+        state.reservationId = reservation?.bookingId || '';
         pending = null; state.mode = ''; state.reason = ''; saved = true;
-        state.notice = action === 'book' ? 'Your assessment booking is confirmed.' : action === 'reschedule' ? 'Your assessment has been rescheduled.' : 'Your booking has been cancelled.';
+        state.notice = action === 'on-demand' ? 'Your immediate place is reserved. Complete device checks and consent within five minutes.' : action === 'book' ? 'Your assessment booking is confirmed.' : action === 'reschedule' ? 'Your assessment has been rescheduled.' : 'Your booking has been cancelled.';
       } catch (error) {
         if (!current(v, owner)) return false;
         state.error = fail(error);
-        if (error.code === 'NETWORK_ERROR') { state.uncertain = true; state.error += ' The result is unconfirmed. Refresh bookings before trying again.'; }
+        if (error.code === 'NETWORK_ERROR' || error.status >= 500) { state.uncertain = true; state.error += ' The result is unconfirmed. Refresh bookings before trying again.'; }
         else if (error.status === 409) { state.uncertain = true; state.error += ' Refresh bookings for current availability and booking status.'; }
       } finally {
         if (current(v, owner)) { state.busy = false; onChange(); }

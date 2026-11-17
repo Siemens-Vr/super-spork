@@ -110,3 +110,50 @@ test('refresh after successful identity recovery restores booking eligibility an
   const html = connectedBooking(context(store.snapshot()));
   assert.ok(!html.includes('Review rejected identity')); assert.ok(html.includes('data-slot-id="slot-a"'));
 });
+
+const immediateEligibility = { ...eligibility, blueprints: [{ blueprintId: 'blueprint-a', reasons: [], onDemand: { enabled: true, available: true, remainingCapacity: 1, durationMinutes: 10, setupMinutes: 5, reasons: [] } }] };
+test('immediate admission reserves once without a selected scheduled slot and refreshes owned history', async () => {
+  let rows = [], calls = [];
+  const store = createBookingStore({ client: client({ bookingEligibility: async () => immediateEligibility, bookingSlots: async () => [], bookings: async () => ({ data: rows }), reserveOnDemand: async (id, key) => { calls.push([id, key]); rows = [{ ...booking, onDemand: true, setupExpiresAt: '2099-01-01T00:00:00Z' }]; return rows[0]; } }), makeKey: () => 'immediate-request-key' });
+  await store.load('owner');
+  const before = connectedBooking(context(store.snapshot()));
+  assert.match(before, /Continue now/); assert.match(before, /full assessment time begins/);
+  assert.equal(await store.mutate('on-demand'), true);
+  assert.deepEqual(calls, [['blueprint-a', 'immediate-request-key']]); assert.equal(store.snapshot().reservationId, booking.bookingId);
+  assert.equal(await store.mutate('on-demand'), false);
+  const html = connectedBooking(context(store.snapshot()));
+  assert.match(html, /Your immediate assessment/); assert.match(html, /Complete device checks and start by/);
+  assert.match(html, /data-booking-action="reschedule" disabled/);
+  assert.doesNotMatch(html, /data-booking-action="cancel" disabled/);
+});
+test('full capacity keeps scheduled times available and cannot submit an immediate request', async () => {
+  let reservations = 0;
+  const full = { ...immediateEligibility, blueprints: [{ ...immediateEligibility.blueprints[0], onDemand: { ...immediateEligibility.blueprints[0].onDemand, available: false, remainingCapacity: 0, reasons: ['ON_DEMAND_FULL'] } }] };
+  const store = createBookingStore({ client: client({ bookingEligibility: async () => full, reserveOnDemand: async () => { reservations++; } }) });
+  await store.load('owner'); assert.equal(await store.mutate('on-demand'), false); assert.equal(reservations, 0);
+  const html = connectedBooking(context(store.snapshot()));
+  assert.match(html, /Immediate assessment is currently unavailable/); assert.match(html, /data-slot-id="slot-a"/);
+  assert.match(html, /data-booking-action="on-demand" disabled/);
+});
+test('unknown immediate reservation outcomes require refresh and never replay automatically', async () => {
+  let calls = 0, rows = [];
+  const store = createBookingStore({ client: client({ bookingEligibility: async () => immediateEligibility, bookings: async () => ({ data: rows }), reserveOnDemand: async () => { calls++; rows = [{ ...booking, onDemand: true }]; throw new ApiError('Disconnected'); } }) });
+  await store.load('owner'); assert.equal(await store.mutate('on-demand'), false);
+  assert.equal(store.snapshot().uncertain, true); await store.mutate('on-demand'); assert.equal(calls, 1);
+  await store.load('owner', true); assert.equal(store.snapshot().bookings[0].onDemand, true);
+  assert.equal(await store.mutate('on-demand'), false); assert.equal(calls, 1);
+});
+test('late immediate reservations cannot navigate or restore another account', async () => {
+  let finish;
+  const store = createBookingStore({ client: client({ bookingEligibility: async () => immediateEligibility, reserveOnDemand: () => new Promise(resolve => { finish = resolve; }) }) });
+  await store.load('first'); const pending = store.mutate('on-demand'); store.reset(); await store.load('second');
+  finish({ ...booking, onDemand: true }); assert.equal(await pending, false); assert.equal(store.snapshot().reservationId, ''); assert.equal(store.snapshot().ownerId, 'second');
+});
+test('immediate API carries explicit idempotency and CSRF without starting an interview', async () => {
+  const calls = [];
+  const api = createApi({ base: '/api/v1', fetcher: async (url, options) => { calls.push({ url, ...options }); return reply(url.endsWith('/csrf') ? { csrfToken: 'csrf-immediate' } : booking); } });
+  await api.reserveOnDemand('blueprint-a', 'immediate-key');
+  const call = calls.find(c => c.url.endsWith('/on-demand'));
+  assert.equal(call.method, 'POST'); assert.equal(call.credentials, 'include'); assert.equal(call.headers['Idempotency-Key'], 'immediate-key'); assert.equal(call.headers['X-CSRF-Token'], 'csrf-immediate');
+  assert.deepEqual(JSON.parse(call.body), { blueprintId: 'blueprint-a' }); assert.ok(!calls.some(c => c.url.endsWith('/start')));
+});

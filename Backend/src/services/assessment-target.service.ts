@@ -1,4 +1,5 @@
 import { expireBookingsForUser } from './assessment-lifecycle.service.js';
+import { setupExpiresAt } from './assessment-on-demand-policy.js';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { prisma, userLock, type Tx } from '../config/prisma.js';
@@ -8,7 +9,10 @@ import { audit } from '../utils/audit.js';
 import { applicantProfileSelect } from '../utils/applicant-profile.js';
 import { targetSchema, completeAttemptSchema } from '../validators/assessment-target.schema.js';
 import { qualificationCategories } from '../validators/document-list.schema.js';
-import { assessmentIdentityReadiness, currentAssessmentDocuments } from './assessment-identity-policy.js';
+import {
+  assessmentIdentityReadiness,
+  currentAssessmentDocuments,
+} from './assessment-identity-policy.js';
 
 export const activeTargetStatuses = ['DRAFT', 'PREPARED', 'IN_PROGRESS'] as const;
 const qualificationSelect = {
@@ -452,18 +456,29 @@ export async function startAttempt(applicantId: string, id: string) {
       'Assessment must be prepared and not completed',
     );
     const now = new Date();
+    const reservation = await tx.assessmentBooking.findFirst({
+      where: {
+        targetId: attempt.targetId,
+        status: 'SCHEDULED',
+        slot: { startsAt: { lte: now }, endsAt: { gt: now } },
+      },
+      include: { blueprint: true },
+    });
     requireCondition(
-      await tx.assessmentBooking.count({
-        where: {
-          targetId: attempt.targetId,
-          status: 'SCHEDULED',
-          slot: { startsAt: { lte: now }, endsAt: { gt: now } },
-        },
-      }),
+      reservation,
       409,
       'ASSESSMENT_WINDOW_CLOSED',
       'Start during your scheduled assessment window',
     );
+    if (reservation.onDemand) {
+      await tx.$queryRaw`SELECT id FROM "AssessmentBlueprint" WHERE id=${reservation.blueprintId}::uuid FOR UPDATE`;
+      requireCondition(
+        setupExpiresAt(reservation) > new Date(),
+        409,
+        'ASSESSMENT_WINDOW_CLOSED',
+        'Your immediate reservation expired. Refresh bookings to reserve another place.',
+      );
+    }
     const policy = z
       .object({
         blueprint: z.object({
@@ -488,7 +503,8 @@ export async function startAttempt(applicantId: string, id: string) {
           (d) =>
             d.category !== 'NATIONAL_ID' &&
             d.category !== 'PASSPORT' &&
-            d.status === 'AUTHENTICATED' && d.scanStatus === 'CLEAN',
+            d.status === 'AUTHENTICATED' &&
+            d.scanStatus === 'CLEAN',
         ),
       409,
       'ACADEMIC_AUTHENTICATION_REQUIRED',
@@ -505,7 +521,16 @@ export async function startAttempt(applicantId: string, id: string) {
       'QUALIFICATION_INVALID',
       'A selected qualification no longer meets the assessment policy',
     );
-    await tx.assessmentAttempt.update({ where: { id }, data: { startedAt: now } });
+    const startedAt = reservation.onDemand ? new Date() : now;
+    if (reservation.onDemand)
+      await tx.assessmentSlot.update({
+        where: { id: reservation.slotId },
+        data: {
+          startsAt: startedAt,
+          endsAt: new Date(startedAt.getTime() + reservation.blueprint.durationMinutes * 60000),
+        },
+      });
+    await tx.assessmentAttempt.update({ where: { id }, data: { startedAt } });
     await tx.assessmentTarget.update({
       where: { id: attempt.targetId },
       data: { status: 'IN_PROGRESS' },

@@ -143,6 +143,8 @@ The first admin router also applies authentication, verified email and ADMIN che
 
 ## Trainer onboarding additions
 
+On-demand additions: `POST /api/v1/assessments/on-demand` uses authenticated, verified applicant access, `assessments.schedule.self`, CSRF and an account rate limit. It enforces prepared-target ownership, eligibility, blueprint policy and serialized capacity. `PATCH /api/v1/admin/blueprints/:id/delivery` requires ADMIN, verified email, recent MFA, `assessments.manage` and CSRF; changes are audited. See [on-demand assessments](on-demand-assessments.md).
+
 `/api/v1/trainers` is separate from applicant APIs. It requires an active cookie session and verified email. Invitation acceptance binds to the verified email and a single-use seven-day verifier, is rate-limited, and rotates/revokes sessions. All remaining trainer routes require TRAINER plus the respective self permission. Qualification reads enforce ownership and clean scan/integrity; edits, uploads, withdrawals and submission enforce editable status and profile version.
 
 `/api/v1/admin/trainer-invitations`, `/admin/trainers` and `/admin/trainer-qualifications` require ADMIN, verified email, recent MFA and `trainers.manage`. Their route guard falls through for unrelated admin paths, preserving granular existing permissions. Approval requires independent evidence and excludes self-review. Profile reads, private downloads, invites, acceptances, mutations, scans and decisions are audited. Review snapshots and withdrawn evidence remain historical records. See [trainers.md](trainers.md) for the full route table and status transitions.

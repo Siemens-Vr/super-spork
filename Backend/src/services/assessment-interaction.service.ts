@@ -18,7 +18,11 @@ import {
 import { interviewer } from '../integrations/assessment-interview/provider.js';
 import { speechProviders, validateWav } from '../integrations/speech/providers.js';
 import { env } from '../config/env.js';
-import { assessmentIdentityReadiness, currentAssessmentDocuments } from './assessment-identity-policy.js';
+import {
+  assessmentIdentityReadiness,
+  currentAssessmentDocuments,
+} from './assessment-identity-policy.js';
+import { setupExpiresAt } from './assessment-on-demand-policy.js';
 import {
   interactionPolicySchema,
   frozenScenarioSchema,
@@ -145,13 +149,19 @@ export async function preflight(applicantId: string, bookingId: string) {
       where: { applicantId, ...currentAssessmentDocuments },
       select: { id: true, category: true, status: true, scanStatus: true },
     });
-    const identity = assessmentIdentityReadiness(docs, snapshot.blueprint.requiresAuthenticatedIdentity);
+    const identity = assessmentIdentityReadiness(
+      docs,
+      snapshot.blueprint.requiresAuthenticatedIdentity,
+    );
     if (identity.reason) blockingReasons.push(identity.message);
     identityRecovery = identity.recovery;
     if (
       snapshot.blueprint.requiresAuthenticatedAcademic &&
       !docs.some(
-        (d) => !['NATIONAL_ID', 'PASSPORT'].includes(d.category) && d.status === 'AUTHENTICATED' && d.scanStatus === 'CLEAN',
+        (d) =>
+          !['NATIONAL_ID', 'PASSPORT'].includes(d.category) &&
+          d.status === 'AUTHENTICATED' &&
+          d.scanStatus === 'CLEAN',
       )
     )
       blockingReasons.push('An authenticated academic document is required.');
@@ -167,6 +177,9 @@ export async function preflight(applicantId: string, bookingId: string) {
   }
   return {
     bookingId: b.id,
+    onDemand: b.onDemand,
+    setupExpiresAt:
+      b.onDemand && !b.target!.attempt!.startedAt ? setupExpiresAt(b).toISOString() : null,
     attemptId: b.target!.attempt!.id,
     session,
     startsAt: b.slot.startsAt,

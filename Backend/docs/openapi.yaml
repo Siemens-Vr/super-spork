@@ -6297,6 +6297,251 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /assessments/on-demand:
+    post:
+      operationId: post__assessments_on_demand
+      tags:
+        - Assessments
+      summary: Reserve an immediate assessment place
+      description:
+        Opt-in assessments without supervision or equipment only. Rechecks ownership, prepared
+        target, identity, qualifications, approved scenario coverage and provider readiness.
+        Admissions are serialized against per-blueprint concurrent capacity. Five minutes for device
+        checks and consent; the full assessment duration begins at explicit start. Retry the same
+        payload/key to recover the original booking. Scheduled bookings cannot be bypassed.
+        Unstarted reservations can be cancelled; expired reservations release capacity.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+            pattern: ^[a-zA-Z0-9_-]+$
+          description:
+            Unique per applicant and operation. Retry with the same key and payload; changed
+            payload returns 409.
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnDemandInput'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Booking'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/blueprints/{id}/delivery:
+    patch:
+      operationId: patch__admin_blueprints_id_delivery
+      tags:
+        - Administration
+      summary: Configure assessment delivery and immediate capacity
+      description: Requires assessments.manage, ADMIN and recent MFA. Defaults to scheduled-only.
+        Supervision or equipment requirements forbid on-demand access. Capacity cannot be reduced
+        below occupied places; disabling admissions preserves existing reservations.
+      security:
+        - sessionCookie: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-CSRF-Token
+          required: true
+          schema:
+            type: string
+          description: Fetch GET /auth/csrf using the same cookie jar. Refresh after login, MFA or
+            reauthentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryInput'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Blueprint'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                required:
+                  - data
+        '400':
+          description: Invalid request or code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication required or failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Permission, CSRF, verification, or MFA required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Workflow, capacity, eligibility, or uniqueness conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Request too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file signature or MIME type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: External dependency unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /assessments/bookings:
     post:
       operationId: post__assessments_bookings
@@ -16216,6 +16461,16 @@ components:
           type: boolean
         requiresAuthenticatedAcademic:
           type: boolean
+        onDemandEnabled:
+          type: boolean
+        onDemandCapacity:
+          type: integer
+          minimum: 1
+          maximum: 100
+        requiresSupervision:
+          type: boolean
+        requiresEquipment:
+          type: boolean
         jobRole:
           $ref: '#/components/schemas/Career'
         framework:
@@ -16265,6 +16520,23 @@ components:
                 type: array
                 items:
                   type: string
+              onDemand:
+                type: object
+                properties:
+                  enabled:
+                    type: boolean
+                  available:
+                    type: boolean
+                  remainingCapacity:
+                    type: integer
+                  durationMinutes:
+                    type: integer
+                  setupMinutes:
+                    type: integer
+                  reasons:
+                    type: array
+                    items:
+                      type: string
         timezone:
           type: string
     Slot:
@@ -16310,6 +16582,13 @@ components:
         bookingId:
           type: string
           format: uuid
+        onDemand:
+          type: boolean
+        setupExpiresAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
         slotId:
           type: string
           format: uuid
@@ -16872,6 +17151,35 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - slotId
+      additionalProperties: false
+    OnDemandInput:
+      type: object
+      properties:
+        blueprintId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - blueprintId
+      additionalProperties: false
+    DeliveryInput:
+      type: object
+      properties:
+        onDemandEnabled:
+          type: boolean
+        onDemandCapacity:
+          type: integer
+          minimum: 1
+          maximum: 100
+        requiresSupervision:
+          type: boolean
+        requiresEquipment:
+          type: boolean
+      required:
+        - onDemandEnabled
+        - onDemandCapacity
+        - requiresSupervision
+        - requiresEquipment
       additionalProperties: false
     AssessmentTargetInput:
       type: object
@@ -17948,6 +18256,13 @@ components:
     AssessmentPreflight:
       type: object
       properties:
+        onDemand:
+          type: boolean
+        setupExpiresAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
         bookingId:
           type: string
           format: uuid

@@ -83,6 +83,7 @@ export function createApi({ base = config.apiBase, fetcher = globalThis.fetch } 
     clear() { csrf = undefined; collectionGeneration++; },
     me: () => request('/auth/me'),
     bookingEligibility: () => request('/assessments/eligibility'),
+    reserveOnDemand: (blueprintId, key) => request('/assessments/on-demand', { method: 'POST', body: { blueprintId }, idempotencyKey: key }),
     bookingSlots: blueprintId => request(`/assessments/available-slots?${new URLSearchParams({ blueprintId })}`),
     bookings: (page = 1) => request(`/assessments/bookings?${new URLSearchParams({ page, limit: '100' })}`, { responseType: 'envelope' }),
     bookAssessment: (slotId, key) => request('/assessments/bookings', { method: 'POST', body: { slotId }, idempotencyKey: key }),

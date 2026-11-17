@@ -21,6 +21,7 @@ export function createAdminApi(options) {
     approveAssessment: (id, body, key) => api.request(`/admin/assessment-sessions/${encodeURIComponent(id)}/approve-results`, { method: 'POST', body, idempotencyKey: key }),
     availability: filters => api.request(`/admin/availability${query(filters)}`, { responseType: 'envelope' }),
     blueprints: filters => api.request(`/admin/blueprints${query(filters)}`, { responseType: 'envelope' }),
+    updateDelivery: (id, body) => api.request(`/admin/blueprints/${encodeURIComponent(id)}/delivery`, { method: 'PATCH', body }),
     publishAvailability: body => api.request('/admin/availability', { method: 'POST', body }),
     updateAvailability: (id, body) => api.request(`/admin/availability/${encodeURIComponent(id)}`, { method: 'PATCH', body }),
     adminBookings: filters => api.request(`/admin/bookings${query(filters)}`, { responseType: 'envelope' }),

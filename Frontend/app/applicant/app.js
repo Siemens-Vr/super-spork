@@ -234,6 +234,16 @@ document.addEventListener('click', event => {
   const action = control.dataset.bookingAction;
   if (action === 'refresh') void bookingStore.load(currentUser()?.id, true);
   if (action === 'select') bookingStore.select(control.dataset.slotId);
+  if (action === 'on-demand') {
+    const owner = currentUser()?.id;
+    void bookingStore.mutate('on-demand').then(saved => {
+      const data = bookingStore.snapshot();
+      if (saved && owner === currentUser()?.id && data.ownerId === owner && data.reservationId && getRoute() === 'booking') {
+        assessmentDevices.reset(); assessmentStore.reset();
+        navigate('/preflight?booking=' + encodeURIComponent(data.reservationId));
+      }
+    });
+  }
   if (['cancel', 'reschedule', 'dismiss'].includes(action)) bookingStore.mode(action === 'dismiss' ? '' : action);
 });
 document.addEventListener('input', event => { if (event.target.id === 'booking-reason') bookingStore.reason(event.target.value); });

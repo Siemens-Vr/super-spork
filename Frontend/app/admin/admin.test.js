@@ -297,3 +297,22 @@ test('assessor-only admins open the review queue, publish reviewed scores and re
   assert.ok(!assessmentReviewPage({ data: { ...data, status: 'COMPLETED' } }).includes('data-admin-form="approve-assessment"'));
   assert.ok(assessmentReviewsPage({ data: response([], { total: 0 }) }, { page: 1, limit: 20 }).includes('No assessment sessions'));
 });
+
+test('assessment managers configure delivery while supervision and equipment forbid immediate access', async () => {
+  const { deliveryDialog, availabilityPage } = await import('./views.js');
+  const writes = [], manager = { ...admin, permissions: ['assessments.manage'] };
+  const bp = { id: 'bp', title: '<PLC>', onDemandEnabled: false, onDemandCapacity: 2, requiresSupervision: true };
+  const store = createAdminStore({ client: client({ me: async () => manager, availability: async () => response([]), updateDelivery: async (id, body) => writes.push([id, body]) }) });
+  await store.boot();
+  assert.equal(await store.mutate('update-delivery', 'bp', { onDemandEnabled: 'true', onDemandCapacity: '2', requiresSupervision: 'true', requiresEquipment: 'false' }), false); assert.equal(writes.length, 0);
+  assert.equal(await store.mutate('update-delivery', 'bp', { onDemandEnabled: 'true', onDemandCapacity: '2', requiresSupervision: 'false', requiresEquipment: 'false' }), true);
+  assert.deepEqual(writes, [['bp', { onDemandEnabled: true, onDemandCapacity: 2, requiresSupervision: false, requiresEquipment: false }]]);
+  assert.match(deliveryDialog(bp), /data-admin-form="update-delivery"/); assert.match(deliveryDialog(bp), /&lt;PLC&gt;/);
+  assert.match(availabilityPage({ data: { blueprints: [bp], windows: response([]) } }, {}), /Supervision required/);
+});
+test('delivery settings API uses the protected blueprint route and JSON boolean settings', async () => {
+  const calls = [], body = { onDemandEnabled: true, onDemandCapacity: 2, requiresSupervision: false, requiresEquipment: false };
+  const api = createAdminApi({ base: '/api/v1', fetcher: async (url, options) => { calls.push({ url, ...options }); return Response.json({ data: url.endsWith('/csrf') ? { csrfToken: 'csrf' } : {} }); } });
+  await api.updateDelivery('a/b', body);
+  const call = calls.find(c => c.method === 'PATCH'); assert.equal(call.url, '/api/v1/admin/blueprints/a%2Fb/delivery'); assert.deepEqual(JSON.parse(call.body), body); assert.equal(call.headers['X-CSRF-Token'], 'csrf');
+});

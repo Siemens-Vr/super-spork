@@ -3,7 +3,7 @@ import { sharedLoginUrl, workspaceUrl } from '../../lib/workspaces.js';
 import { getRoute, getRouteParams, navigate, initializeNavigation } from '../../hooks/navigation.js';
 import { createAdminApi } from './api.js';
 import { createAdminStore, recoveryCodeFile } from './store.js';
-import { authView, shell, pageView, accountStatusDialog, previewDialog, previewContent, availabilityCalendar, availabilityDialog, publishAvailabilityDialog } from './views.js';
+import { authView, shell, pageView, accountStatusDialog, previewDialog, previewContent, availabilityCalendar, availabilityDialog, publishAvailabilityDialog, deliveryDialog } from './views.js';
 
 import { calendarDay } from './availability-calendar.js';
 
@@ -227,6 +227,10 @@ document.addEventListener('click', event => {
     const blueprints = store.snapshot().data?.blueprints;
     if (blueprints) openDialog(publishAvailabilityDialog(blueprints), control);
   }
+  if (action === 'delivery-dialog' && !store.snapshot().busy && store.can('assessments.manage')) {
+    const blueprint = store.snapshot().data?.blueprints.find(b => b.id === control.dataset.id);
+    if (blueprint) openDialog(deliveryDialog(blueprint), control);
+  }
   if (action === 'availability-details' && !store.snapshot().busy) {
     const data = store.snapshot().data, window = data?.windows?.data.find(item => item.id === control.dataset.id);
     if (window) openDialog(availabilityDialog(window, data.blueprints), control);
@@ -261,11 +265,11 @@ document.addEventListener('submit', async event => {
     if (saved && action === 'reset') navigate('/login');
     return;
   }
-  if (['invite-trainer','revoke-trainer-invitation','review-trainer','status', 'review', 'evidence', 'approve-assessment', 'publish-availability', 'update-availability', 'cancel-booking'].includes(action)) {
+  if (['invite-trainer','revoke-trainer-invitation','review-trainer','status', 'review', 'evidence', 'approve-assessment', 'publish-availability', 'update-availability', 'update-delivery', 'cancel-booking'].includes(action)) {
     const info = locationInfo(), id = form.dataset.id;
     const saved = await store.mutate(action, id, values);
     if (saved) {
-      if (action === 'status' || action === 'update-availability' || action === 'publish-availability') closeDialog(false);
+      if (action === 'update-delivery' || action === 'status' || action === 'update-availability' || action === 'publish-availability') closeDialog(false);
       if (locationInfo().key === info.key) { await store.load(info.page, info.filters, true); document.getElementById('page-title')?.focus(); }
     }
   }

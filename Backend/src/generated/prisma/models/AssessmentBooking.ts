@@ -44,6 +44,7 @@ export type AssessmentBookingMinAggregateOutputType = {
   slotId: string | null
   seat: number | null
   status: $Enums.BookingStatus | null
+  onDemand: boolean | null
   idempotencyKey: string | null
   rescheduleCount: number | null
   rescheduledFromId: string | null
@@ -59,6 +60,7 @@ export type AssessmentBookingMaxAggregateOutputType = {
   slotId: string | null
   seat: number | null
   status: $Enums.BookingStatus | null
+  onDemand: boolean | null
   idempotencyKey: string | null
   rescheduleCount: number | null
   rescheduledFromId: string | null
@@ -74,6 +76,7 @@ export type AssessmentBookingCountAggregateOutputType = {
   slotId: number
   seat: number
   status: number
+  onDemand: number
   idempotencyKey: number
   rescheduleCount: number
   rescheduledFromId: number
@@ -101,6 +104,7 @@ export type AssessmentBookingMinAggregateInputType = {
   slotId?: true
   seat?: true
   status?: true
+  onDemand?: true
   idempotencyKey?: true
   rescheduleCount?: true
   rescheduledFromId?: true
@@ -116,6 +120,7 @@ export type AssessmentBookingMaxAggregateInputType = {
   slotId?: true
   seat?: true
   status?: true
+  onDemand?: true
   idempotencyKey?: true
   rescheduleCount?: true
   rescheduledFromId?: true
@@ -131,6 +136,7 @@ export type AssessmentBookingCountAggregateInputType = {
   slotId?: true
   seat?: true
   status?: true
+  onDemand?: true
   idempotencyKey?: true
   rescheduleCount?: true
   rescheduledFromId?: true
@@ -233,6 +239,7 @@ export type AssessmentBookingGroupByOutputType = {
   slotId: string
   seat: number
   status: $Enums.BookingStatus
+  onDemand: boolean
   idempotencyKey: string
   rescheduleCount: number
   rescheduledFromId: string | null
@@ -271,6 +278,7 @@ export type AssessmentBookingWhereInput = {
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
   status?: Prisma.EnumBookingStatusFilter<"AssessmentBooking"> | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFilter<"AssessmentBooking"> | boolean
   idempotencyKey?: Prisma.StringFilter<"AssessmentBooking"> | string
   rescheduleCount?: Prisma.IntFilter<"AssessmentBooking"> | number
   rescheduledFromId?: Prisma.UuidNullableFilter<"AssessmentBooking"> | string | null
@@ -294,6 +302,7 @@ export type AssessmentBookingOrderByWithRelationInput = {
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   rescheduleCount?: Prisma.SortOrder
   rescheduledFromId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -322,6 +331,7 @@ export type AssessmentBookingWhereUniqueInput = Prisma.AtLeast<{
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
   status?: Prisma.EnumBookingStatusFilter<"AssessmentBooking"> | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFilter<"AssessmentBooking"> | boolean
   idempotencyKey?: Prisma.StringFilter<"AssessmentBooking"> | string
   rescheduleCount?: Prisma.IntFilter<"AssessmentBooking"> | number
   createdAt?: Prisma.DateTimeFilter<"AssessmentBooking"> | Date | string
@@ -344,6 +354,7 @@ export type AssessmentBookingOrderByWithAggregationInput = {
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   rescheduleCount?: Prisma.SortOrder
   rescheduledFromId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -367,6 +378,7 @@ export type AssessmentBookingScalarWhereWithAggregatesInput = {
   slotId?: Prisma.UuidWithAggregatesFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntWithAggregatesFilter<"AssessmentBooking"> | number
   status?: Prisma.EnumBookingStatusWithAggregatesFilter<"AssessmentBooking"> | $Enums.BookingStatus
+  onDemand?: Prisma.BoolWithAggregatesFilter<"AssessmentBooking"> | boolean
   idempotencyKey?: Prisma.StringWithAggregatesFilter<"AssessmentBooking"> | string
   rescheduleCount?: Prisma.IntWithAggregatesFilter<"AssessmentBooking"> | number
   rescheduledFromId?: Prisma.UuidNullableWithAggregatesFilter<"AssessmentBooking"> | string | null
@@ -378,6 +390,7 @@ export type AssessmentBookingCreateInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -400,6 +413,7 @@ export type AssessmentBookingUncheckedCreateInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -414,6 +428,7 @@ export type AssessmentBookingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -436,6 +451,7 @@ export type AssessmentBookingUncheckedUpdateInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -454,6 +470,7 @@ export type AssessmentBookingCreateManyInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -465,6 +482,7 @@ export type AssessmentBookingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -479,6 +497,7 @@ export type AssessmentBookingUncheckedUpdateManyInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -514,6 +533,7 @@ export type AssessmentBookingCountOrderByAggregateInput = {
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   rescheduleCount?: Prisma.SortOrder
   rescheduledFromId?: Prisma.SortOrder
@@ -534,6 +554,7 @@ export type AssessmentBookingMaxOrderByAggregateInput = {
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   rescheduleCount?: Prisma.SortOrder
   rescheduledFromId?: Prisma.SortOrder
@@ -549,6 +570,7 @@ export type AssessmentBookingMinOrderByAggregateInput = {
   slotId?: Prisma.SortOrder
   seat?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   rescheduleCount?: Prisma.SortOrder
   rescheduledFromId?: Prisma.SortOrder
@@ -818,6 +840,7 @@ export type AssessmentBookingCreateWithoutApplicantInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -838,6 +861,7 @@ export type AssessmentBookingUncheckedCreateWithoutApplicantInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -885,6 +909,7 @@ export type AssessmentBookingScalarWhereInput = {
   slotId?: Prisma.UuidFilter<"AssessmentBooking"> | string
   seat?: Prisma.IntFilter<"AssessmentBooking"> | number
   status?: Prisma.EnumBookingStatusFilter<"AssessmentBooking"> | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFilter<"AssessmentBooking"> | boolean
   idempotencyKey?: Prisma.StringFilter<"AssessmentBooking"> | string
   rescheduleCount?: Prisma.IntFilter<"AssessmentBooking"> | number
   rescheduledFromId?: Prisma.UuidNullableFilter<"AssessmentBooking"> | string | null
@@ -896,6 +921,7 @@ export type AssessmentBookingCreateWithoutBlueprintInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -916,6 +942,7 @@ export type AssessmentBookingUncheckedCreateWithoutBlueprintInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -956,6 +983,7 @@ export type AssessmentBookingCreateWithoutSlotInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -976,6 +1004,7 @@ export type AssessmentBookingUncheckedCreateWithoutSlotInput = {
   blueprintId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1016,6 +1045,7 @@ export type AssessmentBookingCreateWithoutRescheduledToInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1037,6 +1067,7 @@ export type AssessmentBookingUncheckedCreateWithoutRescheduledToInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1055,6 +1086,7 @@ export type AssessmentBookingCreateWithoutRescheduledFromInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1076,6 +1108,7 @@ export type AssessmentBookingUncheckedCreateWithoutRescheduledFromInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1105,6 +1138,7 @@ export type AssessmentBookingUpdateWithoutRescheduledToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1126,6 +1160,7 @@ export type AssessmentBookingUncheckedUpdateWithoutRescheduledToInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1150,6 +1185,7 @@ export type AssessmentBookingUpdateWithoutRescheduledFromInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1171,6 +1207,7 @@ export type AssessmentBookingUncheckedUpdateWithoutRescheduledFromInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1184,6 +1221,7 @@ export type AssessmentBookingCreateWithoutTargetInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1204,6 +1242,7 @@ export type AssessmentBookingUncheckedCreateWithoutTargetInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1244,6 +1283,7 @@ export type AssessmentBookingCreateWithoutEventsInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1265,6 +1305,7 @@ export type AssessmentBookingUncheckedCreateWithoutEventsInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1294,6 +1335,7 @@ export type AssessmentBookingUpdateWithoutEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1315,6 +1357,7 @@ export type AssessmentBookingUncheckedUpdateWithoutEventsInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1328,6 +1371,7 @@ export type AssessmentBookingCreateWithoutInteractionInput = {
   id?: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   createdAt?: Date | string
@@ -1349,6 +1393,7 @@ export type AssessmentBookingUncheckedCreateWithoutInteractionInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1378,6 +1423,7 @@ export type AssessmentBookingUpdateWithoutInteractionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1399,6 +1445,7 @@ export type AssessmentBookingUncheckedUpdateWithoutInteractionInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1415,6 +1462,7 @@ export type AssessmentBookingCreateManyApplicantInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1426,6 +1474,7 @@ export type AssessmentBookingUpdateWithoutApplicantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1446,6 +1495,7 @@ export type AssessmentBookingUncheckedUpdateWithoutApplicantInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1463,6 +1513,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutApplicantInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1477,6 +1528,7 @@ export type AssessmentBookingCreateManyBlueprintInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1488,6 +1540,7 @@ export type AssessmentBookingUpdateWithoutBlueprintInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1508,6 +1561,7 @@ export type AssessmentBookingUncheckedUpdateWithoutBlueprintInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1525,6 +1579,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutBlueprintInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1539,6 +1594,7 @@ export type AssessmentBookingCreateManySlotInput = {
   blueprintId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1550,6 +1606,7 @@ export type AssessmentBookingUpdateWithoutSlotInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1570,6 +1627,7 @@ export type AssessmentBookingUncheckedUpdateWithoutSlotInput = {
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1587,6 +1645,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutSlotInput = {
   blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1601,6 +1660,7 @@ export type AssessmentBookingCreateManyTargetInput = {
   slotId: string
   seat: number
   status?: $Enums.BookingStatus
+  onDemand?: boolean
   idempotencyKey: string
   rescheduleCount?: number
   rescheduledFromId?: string | null
@@ -1612,6 +1672,7 @@ export type AssessmentBookingUpdateWithoutTargetInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1632,6 +1693,7 @@ export type AssessmentBookingUncheckedUpdateWithoutTargetInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1649,6 +1711,7 @@ export type AssessmentBookingUncheckedUpdateManyWithoutTargetInput = {
   slotId?: Prisma.StringFieldUpdateOperationsInput | string
   seat?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string
   rescheduleCount?: Prisma.IntFieldUpdateOperationsInput | number
   rescheduledFromId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1695,6 +1758,7 @@ export type AssessmentBookingSelect<ExtArgs extends runtime.Types.Extensions.Int
   slotId?: boolean
   seat?: boolean
   status?: boolean
+  onDemand?: boolean
   idempotencyKey?: boolean
   rescheduleCount?: boolean
   rescheduledFromId?: boolean
@@ -1719,6 +1783,7 @@ export type AssessmentBookingSelectCreateManyAndReturn<ExtArgs extends runtime.T
   slotId?: boolean
   seat?: boolean
   status?: boolean
+  onDemand?: boolean
   idempotencyKey?: boolean
   rescheduleCount?: boolean
   rescheduledFromId?: boolean
@@ -1739,6 +1804,7 @@ export type AssessmentBookingSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   slotId?: boolean
   seat?: boolean
   status?: boolean
+  onDemand?: boolean
   idempotencyKey?: boolean
   rescheduleCount?: boolean
   rescheduledFromId?: boolean
@@ -1759,6 +1825,7 @@ export type AssessmentBookingSelectScalar = {
   slotId?: boolean
   seat?: boolean
   status?: boolean
+  onDemand?: boolean
   idempotencyKey?: boolean
   rescheduleCount?: boolean
   rescheduledFromId?: boolean
@@ -1766,7 +1833,7 @@ export type AssessmentBookingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AssessmentBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "targetId" | "blueprintId" | "slotId" | "seat" | "status" | "idempotencyKey" | "rescheduleCount" | "rescheduledFromId" | "createdAt" | "updatedAt", ExtArgs["result"]["assessmentBooking"]>
+export type AssessmentBookingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicantId" | "targetId" | "blueprintId" | "slotId" | "seat" | "status" | "onDemand" | "idempotencyKey" | "rescheduleCount" | "rescheduledFromId" | "createdAt" | "updatedAt", ExtArgs["result"]["assessmentBooking"]>
 export type AssessmentBookingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   applicant?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   target?: boolean | Prisma.AssessmentBooking$targetArgs<ExtArgs>
@@ -1813,6 +1880,7 @@ export type $AssessmentBookingPayload<ExtArgs extends runtime.Types.Extensions.I
     slotId: string
     seat: number
     status: $Enums.BookingStatus
+    onDemand: boolean
     idempotencyKey: string
     rescheduleCount: number
     rescheduledFromId: string | null
@@ -2256,6 +2324,7 @@ export interface AssessmentBookingFieldRefs {
   readonly slotId: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly seat: Prisma.FieldRef<"AssessmentBooking", 'Int'>
   readonly status: Prisma.FieldRef<"AssessmentBooking", 'BookingStatus'>
+  readonly onDemand: Prisma.FieldRef<"AssessmentBooking", 'Boolean'>
   readonly idempotencyKey: Prisma.FieldRef<"AssessmentBooking", 'String'>
   readonly rescheduleCount: Prisma.FieldRef<"AssessmentBooking", 'Int'>
   readonly rescheduledFromId: Prisma.FieldRef<"AssessmentBooking", 'String'>

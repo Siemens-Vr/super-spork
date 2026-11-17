@@ -227,6 +227,10 @@ const schemas: Record<string, Schema> = {
     active: { type: 'boolean' },
     requiresAuthenticatedIdentity: { type: 'boolean' },
     requiresAuthenticatedAcademic: { type: 'boolean' },
+    onDemandEnabled: { type: 'boolean' },
+    onDemandCapacity: { type: 'integer', minimum: 1, maximum: 100 },
+    requiresSupervision: { type: 'boolean' },
+    requiresEquipment: { type: 'boolean' },
     jobRole: ref('Career'),
     framework: ref('Framework'),
     createdAt: date,
@@ -241,7 +245,20 @@ const schemas: Record<string, Schema> = {
       description:
         'Owned current rejected identity to review or replace when no non-rejected current identity is available.',
     },
-    blueprints: array(object({ blueprintId: id, reasons: array(str) })),
+    blueprints: array(
+      object({
+        blueprintId: id,
+        reasons: array(str),
+        onDemand: object({
+          enabled: { type: 'boolean' },
+          available: { type: 'boolean' },
+          remainingCapacity: { type: 'integer' },
+          durationMinutes: { type: 'integer' },
+          setupMinutes: { type: 'integer' },
+          reasons: array(str),
+        }),
+      }),
+    ),
     timezone: str,
   }),
   Slot: object({
@@ -262,6 +279,8 @@ const schemas: Record<string, Schema> = {
   Booking: object(
     {
       bookingId: id,
+      onDemand: { type: 'boolean' },
+      setupExpiresAt: { type: ['string', 'null'], format: 'date-time' },
       slotId: id,
       changePolicy: object({
         deadline: date,
@@ -360,6 +379,8 @@ const inputs = {
   ReviewInput: document.reviewSchema,
   EvidenceInput: document.evidenceSchema,
   BookingInput: assessment.bookingSchema,
+  OnDemandInput: assessment.onDemandSchema,
+  DeliveryInput: assessment.deliverySchema,
   AssessmentTargetInput: target.targetSchema,
   PrepareTargetInput: target.prepareTargetSchema,
   CompleteAttemptInput: target.completeAttemptSchema,
@@ -550,6 +571,8 @@ schemas.AssessmentSession = object({
   speech: ref('SpeechConfiguration'),
 });
 schemas.AssessmentPreflight = object({
+  onDemand: { type: 'boolean' },
+  setupExpiresAt: { type: ['string', 'null'], format: 'date-time' },
   bookingId: id,
   attemptId: id,
   session: { anyOf: [object({ id, status: str }), { type: 'null' }] },
@@ -1219,6 +1242,26 @@ add(
     output: ref('LearningPlan'),
     description:
       'Progress is self-reported. Completing learning items does not certify mastery or remove the historical assessed gap; demonstrate improvement in another assessment.',
+  },
+);
+add('post', '/assessments/on-demand', 'Reserve an immediate assessment place', 'Assessments', {
+  input: 'OnDemandInput',
+  output: ref('Booking'),
+  status: 201,
+  parameters: [idem],
+  description:
+    'Opt-in assessments without supervision or equipment only. Rechecks ownership, prepared target, identity, qualifications, approved scenario coverage and provider readiness. Admissions are serialized against per-blueprint concurrent capacity. Five minutes for device checks and consent; the full assessment duration begins at explicit start. Retry the same payload/key to recover the original booking. Scheduled bookings cannot be bypassed. Unstarted reservations can be cancelled; expired reservations release capacity.',
+});
+add(
+  'patch',
+  '/admin/blueprints/{id}/delivery',
+  'Configure assessment delivery and immediate capacity',
+  'Administration',
+  {
+    input: 'DeliveryInput',
+    output: ref('Blueprint'),
+    description:
+      'Requires assessments.manage, ADMIN and recent MFA. Defaults to scheduled-only. Supervision or equipment requirements forbid on-demand access. Capacity cannot be reduced below occupied places; disabling admissions preserves existing reservations.',
   },
 );
 add('post', '/assessments/bookings', 'Reserve assessment capacity transactionally', 'Assessments', {
