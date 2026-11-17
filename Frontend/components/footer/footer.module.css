@@ -1,0 +1,1 @@
+.footer{display:flex;justify-content:space-between;color:#9293a2;font-size:11px;margin-top:45px;padding-top:24px;border-top:1px solid var(--border)}.footer a{margin-left:20px}@media(max-width:760px){.footer{gap:20px;line-height:1.7}.footer a{margin-left:10px}}

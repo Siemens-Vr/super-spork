@@ -1,3 +1,4 @@
+import { createReviewNotifications } from '../../context/notifications.js';
 import { dashboard as renderDashboard } from './dashboard/dashboard.tsx';
 import { profile as renderProfile } from './profile/profile.tsx';
 import { documentPage as renderDocumentPage, upload as renderUpload, documentDetail as renderDocumentDetail, uploadMetadata, documentSummary as renderDocumentSummary, documentDialog, documentDialogShell } from './documents/documents.tsx';
@@ -7,6 +8,8 @@ import { results as renderResults } from './results/results.tsx';
 import { learning as renderLearning } from './learning/learning.tsx';
 import { settings as renderSettings } from './settings/settings.tsx';
 import { escapeHtml as escape } from '../../components/html.js';
+import { icon } from '../../components/icon/icon.tsx';
+import { dashboardLayout } from '../../components/dashboard-layout/dashboard-layout.tsx';
 import { getRoute, getRouteParams, navigate, initializeNavigation } from '../../hooks/navigation.js';
 import { authGate, authPage as auth, initializeAuth, refreshGoogleRegistration, currentUser, updateProfileIdentity } from '../../context/auth.js';
 
@@ -21,6 +24,7 @@ import { createCareerStore } from '../../context/careers.js';
 import { createAssessmentStore } from '../../context/assessment.js';
 import { createLearningStore } from '../../context/learning.js';
 import { createAssessmentDevices } from '../../context/assessment-devices.js';
+const reviewNotifications = createReviewNotifications({ client: api, currentUser, onUnauthorized: () => { void initializeAuth(render); } });
 const assessmentRoutes = new Set(['preflight', 'assessment', 'results']);
 const learningStore = createLearningStore({ client: api, onChange: () => { if (getRoute() === 'learning') render(); }, onUnauthorized: () => { void initializeAuth(render); } });
 const assessmentStore = createAssessmentStore({ client: api, onChange: () => { if (assessmentStore.snapshot().session?.status === 'COMPLETED') { bookingStore.reset(); careerStore.reset(); learningStore.reset(); } if (assessmentRoutes.has(getRoute())) render(); }, onUnauthorized: () => { void initializeAuth(render); } });
@@ -76,8 +80,6 @@ function updateDocumentForm(kind) {
   if (submit) submit.textContent = snapshot.busy ? (kind === 'upload' ? 'Uploading…' : 'Submitting…') : kind === 'upload' ? (form.dataset.replacesId ? 'Upload replacement' : 'Upload document') : 'Submit evidence';
 }
 
-const icons={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',file:'<path d="M14 2H5v20h14V7zM14 2v6h5M8 12h8M8 16h6"/>',career:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12a20 20 0 0 0 18 0M12 12v4"/>',calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2"/>',chart:'<path d="M4 3v18h17M8 16v-5M13 16V7M18 16v-8"/>',book:'<path d="M12 5C9 2 4 3 2 4v16c3-2 7-2 10 0 3-2 7-2 10 0V4c-3-1-7-2-10 1v15"/>',settings:'<circle cx="12" cy="12" r="4"/><path d="m9 3-1 3-3 1-2 4 2 3 1 4 4 1 3 2 4-2 1-4 3-3-2-4-3-1-1-3z"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 10h18c0-2-3-2-3-10M10 22h4"/>',arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',check:'<path d="m5 12 4 4L19 6"/>',upload:'<path d="M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5"/>',shield:'<path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6zM8 12l3 3 5-6"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',logout:'<path d="M9 3H3v18h6M9 12h12m-5-5 5 5-5 5"/>'};
-const icon=n=>`<svg viewBox="0 0 24 24" aria-hidden="true">${icons[n]||icons.grid}</svg>`;
 const saved=JSON.parse(localStorage.getItem('nexus-demo')||'{}');
 const state={name:'Alex Morgan',discipline:'Mechatronics Engineering',career:'Choose a career',prepared:false,learning:saved.learning||[false,false,false],booked:false,slot:0,messages:[],started:false};
 const persist=()=>localStorage.setItem('nexus-demo',JSON.stringify({learning:state.learning}));
@@ -111,7 +113,42 @@ const field=(label,name,value='',type='text')=>
 function documents(){return renderDocumentSummary(pageContext());}
 const navigation=[['dashboard','Overview','grid'],['onboarding','My profile','user'],['documents','My documents','file'],['careers','Explore careers','career'],['booking','Assessments','calendar'],['results','My results','chart'],['learning','Learning plan','book']];
 let route='dashboard';
-function shell(body){const admin=false;const nav=navigation;document.getElementById('app').innerHTML=`<aside class="sidebar"><a class="brand" href="/dashboard"><span class="mark">N</span><span>VML NEXUS<small>VIRTUAL MECHATRONICS LABS</small></span></a><div class="nav-label">${admin?'ADMIN WORKSPACE':'APPLICANT WORKSPACE'}</div><nav aria-label="Main navigation">${nav.map(([path,label,i])=>`<a class="nav-link ${route===path?'active':''}" ${route===path?'aria-current="page"':''} href="/${path}">${icon(i)}${label}</a>`).join('')}</nav><div class="sidebar-bottom"><div class="help-box"><strong>Every step brings you closer.</strong>Build your skills. Shape your future.<a href="/help">Need a little guidance? ↗</a></div><a class="nav-link ${route==='settings'?'active':''}" href="/settings">${icon('settings')}Account settings</a><button class="nav-link logout-button" data-auth-action="logout">${icon('logout')}Sign out</button></div></aside><main class="main"><header class="topbar"><div class="inline-actions"><button class="icon-button mobile-menu" aria-label="Toggle navigation" data-action="menu">${icon('menu')}</button><span class="breadcrumb">${admin?'Admin workspace':'Applicant workspace'} &nbsp; / &nbsp; <b>${nav.find(n=>n[0]===route)?.[1]||titles[route]||'My account'}</b></span></div><div class="top-actions"><span class="demo">${route==='onboarding'?'MY PROFILE':documentRoutes.has(route)?'MY DOCUMENTS':careerRoutes.has(route)?'CAREER EXPLORER':route==='booking'?'ASSESSMENT BOOKING':(assessmentRoutes.has(route)||route==='learning')?'ASSESSMENT WORKSPACE':'DEMO DASHBOARD'}</span><button class="icon-button" data-action="notifications" aria-label="Notifications">${icon('bell')}</button><a class="user" href="/settings"><span class="avatar">${escape((currentUser()?.legalName||state.name).split(' ').map(s=>s[0]).join('').slice(0,2))}</span><div>${escape(currentUser()?.legalName||state.name)}<small>${admin?'Administrator':'Applicant'}</small></div></a></div></header><div class="content">${body}<footer class="footer"><span>© ${new Date().getFullYear()} VML NEXUS. Your potential, realized.</span><span><a href="/privacy">Privacy policy</a><a href="/help">Help center ↗</a></span></footer></div></main>`}
+function shell(body) {
+  document.getElementById('app').innerHTML = dashboardLayout({
+    role: 'applicant', links: navigation, route,
+    title: titles[route], name: currentUser()?.legalName || state.name, body,
+  });
+  syncMenu();
+  reviewNotifications.sync();
+}
+const mobileNavigation = window.matchMedia('(max-width:760px)');
+let menuOpen = false;
+function syncMenu() {
+  const sidebar = document.getElementById('workspace-sidebar');
+  const open = mobileNavigation.matches && menuOpen;
+  sidebar?.classList.toggle('open', open);
+  if (sidebar) sidebar.inert = mobileNavigation.matches && !open;
+  document.querySelector('[data-action="menu"]')?.setAttribute('aria-expanded', String(open));
+  const backdrop = document.querySelector('[data-action="close-menu"]');
+  if (backdrop) backdrop.hidden = !open;
+}
+function closeMenu(restoreFocus = false) {
+  menuOpen = false;
+  syncMenu();
+  if (restoreFocus) document.querySelector('[data-action="menu"]')?.focus();
+}
+mobileNavigation.addEventListener('change', () => closeMenu());
+window.addEventListener('app:navigate', () => closeMenu());
+document.addEventListener('keydown', event => {
+  if (!menuOpen || !mobileNavigation.matches) return;
+  if (event.key === 'Escape') { event.preventDefault(); closeMenu(true); }
+  if (event.key === 'Tab') {
+    const items = [...document.querySelectorAll('#workspace-sidebar a, #workspace-sidebar button')];
+    const first = items[0], last = items.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  }
+});
 
 // Career choices, assessment bookings and learning plans come from the backend.
 
@@ -139,7 +176,7 @@ const results = () => renderResults(pageContext());
 const learning = () => renderLearning(pageContext());
 const settings = () => renderSettings(pageContext());
 
-function render(){route=getRoute();
+function render(){route=getRoute();reviewNotifications.sync();
     
     const gate=authGate(route);if(gate!==null){documentDialogs.reset();assessmentDevices.reset();assessmentStore.reset();learningStore.reset();profileStore.reset();documentStore.reset();bookingStore.reset();careerStore.reset();state.career='Choose a career';state.prepared=false;document.getElementById('app').innerHTML=gate;document.title=`${route} · VML NEXUS`;return;}
     if (documentRoutes.has(route) || route === 'dashboard') {
@@ -165,7 +202,7 @@ function render(){route=getRoute();
     }
     const pages={dashboard,onboarding:profile,documents:documentPage,document:documentDetail,upload,careers:explore,career,target,booking,preflight,assessment,results,learning,settings,login:auth,register:auth,'register/google':auth,'verify-email':auth,'forgot-password':auth,'reset-password':auth,mfa:auth,help:()=>heading('How can we help?','A little guidance for your next step.')+card('Your journey, explained','<h3>Can I continue while documents are reviewed?</h3><p>Yes. After identity submission you can explore careers. Booking requires a clean identity scan and any additional checks required by your assessment policy.</p><h3 class="mt">Can I change my career?</h3><p>Draft targets are editable. Preparation locks your choices. Complete or appropriately abandon the current target before selecting a new career.</p><h3 class="mt">Are AI scores final?</h3><p>No. An authorized assessor must review and publish final results.</p>'),privacy:()=>heading('Privacy information','A transparent view of this preview.')+card('Demo data & local storage','<p>Your assessment bookings, confirmed answers, results and learning progress are saved to your backend account. Some other dashboard records remain illustrative. Login, registration, verification and password recovery send the supplied account details to the configured backend. My profile loads and saves your personal and academic details through the backend. Explore careers loads the career catalogue and saves your assessment target through the backend. My documents uploads your files and supporting details to private backend storage and displays their scan and verification history. Passwords and session tokens are not stored by this frontend. Other dashboard records remain illustrative. Use Account settings to reset locally saved choices.</p><p class="mt">The production privacy notice must be approved by the institution before real applicant data is collected.</p>')};shell((pages[route]||(()=>heading('Page not found','This page is not available.')+button('Back to overview','dashboard')))());assessmentDevices.attach();document.title=`${titles[route]||navigation.find(n=>n[0]===route)?.[1]||'Workspace'} · VML NEXUS`;}
 function toast(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.classList.remove('show'),4500)}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;if(a==='menu')document.querySelector('.sidebar').classList.toggle('open');if(a==='notifications')toast('You’re up to date. Academic document review is in progress.');if(a==='reset'){localStorage.removeItem('nexus-demo');location.reload()}if(a==='catalogue')toast(`${b.dataset.value} management is a page preview. Editing requires API integration.`);if(a==='review')toast(`This ${b.dataset.value} is an illustrative record. No live data has been loaded.`)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;if(a==='menu'){menuOpen=!menuOpen;syncMenu();if(menuOpen)document.querySelector('#workspace-sidebar a')?.focus();}if(a==='close-menu')closeMenu(true);if(a==='notifications')reviewNotifications.open();if(a==='reset'){localStorage.removeItem('nexus-demo');location.reload()}if(a==='catalogue')toast(`${b.dataset.value} management is a page preview. Editing requires API integration.`);if(a==='review')toast(`This ${b.dataset.value} is an illustrative record. No live data has been loaded.`)});
 document.addEventListener('input',e=>{if(e.target.id==='career-search'){let count=0;document.querySelectorAll('[data-career]').forEach(el=>{el.hidden=!el.dataset.career.includes(e.target.value.toLowerCase());if(!el.hidden)count++});document.getElementById('no-careers').hidden=!!count}});
 document.addEventListener('change',e=>{if(e.target.matches('[data-learning]')){state.learning[Number(e.target.dataset.learning)]=e.target.checked;persist();render()}});
 document.addEventListener('submit',e=>{e.preventDefault();const id=e.target.id;if(id==='profile-form'){void profileStore.save(Object.fromEntries(new FormData(e.target)));}if(id==='upload-form'&&!e.target.closest('[data-document-dialog]')){void documentStore.upload(new FormData(e.target),e.target.dataset.replacesId||undefined).then(saved=>{if(saved&&getRoute()==='upload')navigate('/documents');});}if(id==='document-evidence-form'&&!e.target.closest('[data-document-dialog]')){void documentStore.evidence(e.target.dataset.documentId,Object.fromEntries(new FormData(e.target)));}if(id==='target-form'){void careerStore.prepare().then(saved=>{if(saved){bookingStore.reset();if(getRoute()==='target')toast('Career target saved and prepared.');}});}if(id==='preflight-form'){const input=Object.fromEntries(new FormData(e.target));assessmentStore.device('speakerConfirmed',!!input.speakerConfirmed);void assessmentStore.action('start',{confirmed:!!input.confirmed,privacyAcknowledged:!!input.privacyAcknowledged,audioProcessingConsent:!!input.audioProcessingConsent,mode:assessmentStore.snapshot().preflight.policy.allowText?'TEXT':'VOICE'}).then(ok=>{if(ok&&getRoute()==='preflight')navigate('/assessment?booking='+encodeURIComponent(assessmentStore.snapshot().bookingId));});}if(id==='skip-assessment-form'){void assessmentStore.action('skip');}if(id==='answer-form'){assessmentStore.draft(document.getElementById('answer').value);void assessmentStore.action('answer');}if(id==='admin-form')toast('Availability preview complete. No backend window has been published.');});

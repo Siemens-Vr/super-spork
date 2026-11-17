@@ -32,6 +32,7 @@ export type DocumentVerificationMinAggregateOutputType = {
   outcome: $Enums.VerificationStatus | null
   reason: string | null
   internalNotes: string | null
+  applicantReadAt: Date | null
   evidenceReference: string | null
   createdAt: Date | null
 }
@@ -44,6 +45,7 @@ export type DocumentVerificationMaxAggregateOutputType = {
   outcome: $Enums.VerificationStatus | null
   reason: string | null
   internalNotes: string | null
+  applicantReadAt: Date | null
   evidenceReference: string | null
   createdAt: Date | null
 }
@@ -56,6 +58,7 @@ export type DocumentVerificationCountAggregateOutputType = {
   outcome: number
   reason: number
   internalNotes: number
+  applicantReadAt: number
   evidenceReference: number
   createdAt: number
   _all: number
@@ -70,6 +73,7 @@ export type DocumentVerificationMinAggregateInputType = {
   outcome?: true
   reason?: true
   internalNotes?: true
+  applicantReadAt?: true
   evidenceReference?: true
   createdAt?: true
 }
@@ -82,6 +86,7 @@ export type DocumentVerificationMaxAggregateInputType = {
   outcome?: true
   reason?: true
   internalNotes?: true
+  applicantReadAt?: true
   evidenceReference?: true
   createdAt?: true
 }
@@ -94,6 +99,7 @@ export type DocumentVerificationCountAggregateInputType = {
   outcome?: true
   reason?: true
   internalNotes?: true
+  applicantReadAt?: true
   evidenceReference?: true
   createdAt?: true
   _all?: true
@@ -179,6 +185,7 @@ export type DocumentVerificationGroupByOutputType = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes: string | null
+  applicantReadAt: Date | null
   evidenceReference: string | null
   createdAt: Date
   _count: DocumentVerificationCountAggregateOutputType | null
@@ -212,6 +219,7 @@ export type DocumentVerificationWhereInput = {
   outcome?: Prisma.EnumVerificationStatusFilter<"DocumentVerification"> | $Enums.VerificationStatus
   reason?: Prisma.StringFilter<"DocumentVerification"> | string
   internalNotes?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
+  applicantReadAt?: Prisma.DateTimeNullableFilter<"DocumentVerification"> | Date | string | null
   evidenceReference?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DocumentVerification"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
@@ -226,6 +234,7 @@ export type DocumentVerificationOrderByWithRelationInput = {
   outcome?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  applicantReadAt?: Prisma.SortOrderInput | Prisma.SortOrder
   evidenceReference?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   document?: Prisma.DocumentOrderByWithRelationInput
@@ -243,6 +252,7 @@ export type DocumentVerificationWhereUniqueInput = Prisma.AtLeast<{
   outcome?: Prisma.EnumVerificationStatusFilter<"DocumentVerification"> | $Enums.VerificationStatus
   reason?: Prisma.StringFilter<"DocumentVerification"> | string
   internalNotes?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
+  applicantReadAt?: Prisma.DateTimeNullableFilter<"DocumentVerification"> | Date | string | null
   evidenceReference?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DocumentVerification"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
@@ -257,6 +267,7 @@ export type DocumentVerificationOrderByWithAggregationInput = {
   outcome?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  applicantReadAt?: Prisma.SortOrderInput | Prisma.SortOrder
   evidenceReference?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DocumentVerificationCountOrderByAggregateInput
@@ -275,6 +286,7 @@ export type DocumentVerificationScalarWhereWithAggregatesInput = {
   outcome?: Prisma.EnumVerificationStatusWithAggregatesFilter<"DocumentVerification"> | $Enums.VerificationStatus
   reason?: Prisma.StringWithAggregatesFilter<"DocumentVerification"> | string
   internalNotes?: Prisma.StringNullableWithAggregatesFilter<"DocumentVerification"> | string | null
+  applicantReadAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DocumentVerification"> | Date | string | null
   evidenceReference?: Prisma.StringNullableWithAggregatesFilter<"DocumentVerification"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DocumentVerification"> | Date | string
 }
@@ -285,6 +297,7 @@ export type DocumentVerificationCreateInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutReviewsInput
@@ -299,6 +312,7 @@ export type DocumentVerificationUncheckedCreateInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -309,6 +323,7 @@ export type DocumentVerificationUpdateInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutReviewsNestedInput
@@ -323,6 +338,7 @@ export type DocumentVerificationUncheckedUpdateInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -335,6 +351,7 @@ export type DocumentVerificationCreateManyInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -345,6 +362,7 @@ export type DocumentVerificationUpdateManyMutationInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -357,6 +375,7 @@ export type DocumentVerificationUncheckedUpdateManyInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -379,6 +398,7 @@ export type DocumentVerificationCountOrderByAggregateInput = {
   outcome?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
+  applicantReadAt?: Prisma.SortOrder
   evidenceReference?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -391,6 +411,7 @@ export type DocumentVerificationMaxOrderByAggregateInput = {
   outcome?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
+  applicantReadAt?: Prisma.SortOrder
   evidenceReference?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -403,6 +424,7 @@ export type DocumentVerificationMinOrderByAggregateInput = {
   outcome?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
+  applicantReadAt?: Prisma.SortOrder
   evidenceReference?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -501,6 +523,7 @@ export type DocumentVerificationCreateWithoutReviewerInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutReviewsInput
@@ -513,6 +536,7 @@ export type DocumentVerificationUncheckedCreateWithoutReviewerInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -554,6 +578,7 @@ export type DocumentVerificationScalarWhereInput = {
   outcome?: Prisma.EnumVerificationStatusFilter<"DocumentVerification"> | $Enums.VerificationStatus
   reason?: Prisma.StringFilter<"DocumentVerification"> | string
   internalNotes?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
+  applicantReadAt?: Prisma.DateTimeNullableFilter<"DocumentVerification"> | Date | string | null
   evidenceReference?: Prisma.StringNullableFilter<"DocumentVerification"> | string | null
   createdAt?: Prisma.DateTimeFilter<"DocumentVerification"> | Date | string
 }
@@ -564,6 +589,7 @@ export type DocumentVerificationCreateWithoutDocumentInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
   reviewer: Prisma.UserCreateNestedOneWithoutReviewsInput
@@ -576,6 +602,7 @@ export type DocumentVerificationUncheckedCreateWithoutDocumentInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -613,6 +640,7 @@ export type DocumentVerificationCreateManyReviewerInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -623,6 +651,7 @@ export type DocumentVerificationUpdateWithoutReviewerInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutReviewsNestedInput
@@ -635,6 +664,7 @@ export type DocumentVerificationUncheckedUpdateWithoutReviewerInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -646,6 +676,7 @@ export type DocumentVerificationUncheckedUpdateManyWithoutReviewerInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -657,6 +688,7 @@ export type DocumentVerificationCreateManyDocumentInput = {
   outcome: $Enums.VerificationStatus
   reason: string
   internalNotes?: string | null
+  applicantReadAt?: Date | string | null
   evidenceReference?: string | null
   createdAt?: Date | string
 }
@@ -667,6 +699,7 @@ export type DocumentVerificationUpdateWithoutDocumentInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reviewer?: Prisma.UserUpdateOneRequiredWithoutReviewsNestedInput
@@ -679,6 +712,7 @@ export type DocumentVerificationUncheckedUpdateWithoutDocumentInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -690,6 +724,7 @@ export type DocumentVerificationUncheckedUpdateManyWithoutDocumentInput = {
   outcome?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
   reason?: Prisma.StringFieldUpdateOperationsInput | string
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  applicantReadAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   evidenceReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -704,6 +739,7 @@ export type DocumentVerificationSelect<ExtArgs extends runtime.Types.Extensions.
   outcome?: boolean
   reason?: boolean
   internalNotes?: boolean
+  applicantReadAt?: boolean
   evidenceReference?: boolean
   createdAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
@@ -718,6 +754,7 @@ export type DocumentVerificationSelectCreateManyAndReturn<ExtArgs extends runtim
   outcome?: boolean
   reason?: boolean
   internalNotes?: boolean
+  applicantReadAt?: boolean
   evidenceReference?: boolean
   createdAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
@@ -732,6 +769,7 @@ export type DocumentVerificationSelectUpdateManyAndReturn<ExtArgs extends runtim
   outcome?: boolean
   reason?: boolean
   internalNotes?: boolean
+  applicantReadAt?: boolean
   evidenceReference?: boolean
   createdAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
@@ -746,11 +784,12 @@ export type DocumentVerificationSelectScalar = {
   outcome?: boolean
   reason?: boolean
   internalNotes?: boolean
+  applicantReadAt?: boolean
   evidenceReference?: boolean
   createdAt?: boolean
 }
 
-export type DocumentVerificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "reviewerId" | "method" | "outcome" | "reason" | "internalNotes" | "evidenceReference" | "createdAt", ExtArgs["result"]["documentVerification"]>
+export type DocumentVerificationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "reviewerId" | "method" | "outcome" | "reason" | "internalNotes" | "applicantReadAt" | "evidenceReference" | "createdAt", ExtArgs["result"]["documentVerification"]>
 export type DocumentVerificationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   reviewer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -778,6 +817,7 @@ export type $DocumentVerificationPayload<ExtArgs extends runtime.Types.Extension
     outcome: $Enums.VerificationStatus
     reason: string
     internalNotes: string | null
+    applicantReadAt: Date | null
     evidenceReference: string | null
     createdAt: Date
   }, ExtArgs["result"]["documentVerification"]>
@@ -1212,6 +1252,7 @@ export interface DocumentVerificationFieldRefs {
   readonly outcome: Prisma.FieldRef<"DocumentVerification", 'VerificationStatus'>
   readonly reason: Prisma.FieldRef<"DocumentVerification", 'String'>
   readonly internalNotes: Prisma.FieldRef<"DocumentVerification", 'String'>
+  readonly applicantReadAt: Prisma.FieldRef<"DocumentVerification", 'DateTime'>
   readonly evidenceReference: Prisma.FieldRef<"DocumentVerification", 'String'>
   readonly createdAt: Prisma.FieldRef<"DocumentVerification", 'DateTime'>
 }

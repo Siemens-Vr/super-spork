@@ -6,7 +6,7 @@ const portal = process.argv[2] || 'applicant';
 if (!Object.hasOwn(portals, portal)) throw new Error('Choose applicant, employer, admin, or trainer');
 const root = new URL('./', import.meta.url);
 let builder;
-if (portal === 'applicant') {
+{
   if (process.env.NODE_ENV === 'production') await buildApplicant();
   else builder = await watchApplicant();
 }
@@ -54,7 +54,7 @@ const server = http.createServer(async (req, res) => {
   if (!entry) { res.writeHead(404); return res.end('Not found'); }
   try {
     const body = await readFile(entry[0]);
-    res.setHeader('Content-Type', `${entry[1]}; charset=utf-8`);
+    res.setHeader('Content-Type', entry[1].startsWith('image/') ? entry[1] : `${entry[1]}; charset=utf-8`);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     if (entry[1] === 'text/html') res.setHeader('Cache-Control', 'no-store');
     res.end(req.method === 'HEAD' ? undefined : body);

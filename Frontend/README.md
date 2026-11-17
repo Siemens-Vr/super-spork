@@ -29,7 +29,7 @@ Frontend/
   Dockerfile
 ```
 
-Applicant pages are typed TSX render functions with scoped CSS modules. Esbuild compiles them into `dist/app.js` and `dist/app.css`; the existing HTML rendering and delegated events remain in use without adding React. `context` and `hooks` organize reusable state and helpers. Page markup lives in the page folders, while shared state, layout and event wiring remain in `app/applicant/app.js`. `page-context.ts` defines the typed page dependencies.
+Applicant pages are typed TSX render functions with scoped CSS modules. Esbuild compiles every portal entry and its shared components into `dist/<portal>.js` and `dist/<portal>.css` (applicant uses `app.js` / `app.css`); the existing HTML rendering and delegated events remain in use without adding React. `context` and `hooks` organize reusable state and helpers. Page markup lives in the page folders, while shared state and event wiring remain in `app/applicant/app.js`. `page-context.ts` defines the typed page dependencies.
 
 ## Run locally
 
@@ -42,7 +42,7 @@ From Frontend, use a separate terminal for each portal:
 | npm run dev:admin | http://localhost:3002 | Admin portal |
 | npm run dev:trainer | http://localhost:3003 | Trainer onboarding portal |
 
-Run `npm ci` from Frontend first. Each `app/<portal>` folder also supports `npm run dev` independently. `npm run dev` and `npm start` from Frontend default to the applicant portal. The server builds applicant assets at startup and watches TSX/CSS changes in development; refresh the browser after edits. Stop with Ctrl+C. Restart previously running frontend servers after this restructure.
+Run `npm ci` from Frontend first. Each `app/<portal>` folder also supports `npm run dev` independently. `npm run dev` and `npm start` from Frontend default to the applicant portal. The server builds all portal assets at startup and watches TSX/CSS changes in development; refresh the browser after edits. Stop with Ctrl+C. Restart previously running frontend servers after this restructure.
 
 Use localhost consistently, matching the backend's default CORS configuration. The frontend and backend must use compatible same-site hosting for session cookies. Primary color is #262262, background is light grey, and the requested system font stack is retained.
 
@@ -147,36 +147,10 @@ docker run --rm -p 3003:3003 nexus-frontend node server.mjs trainer
 
 The image runs as an unprivileged user, binds to 0.0.0.0 inside the container, and contains only explicitly copied frontend directories. `HOST` and `PORT` can override the server defaults. `lib/config.js` is served to the browser: its API URL must be reachable from the user's browser, not merely from the container. Production HTTPS, API CORS and same-site cookie deployment must be configured for the target environment.
 
+## Shared dashboard components
 
-### Page URLs
+Each shared UI component lives in `components/<name>/<name>.tsx` with a matching `<name>.module.css`: `sidebar`, `topbar`, `footer`, `icon`, and `dashboard-layout`. These follow the existing TSX string-rendering approach; React is not required.
 
-Applicant and admin portals use History API routing: `/booking`, `/documents`, `/document?id=…`, and `/login` are normal page URLs. Internal links update the screen without a reload, and browser back/forward navigation is supported. Legacy `/#/…` bookmarks are converted in place. The bundled Node server serves each portal’s app shell for its page routes, including nested Google return paths; missing assets and API paths still return 404. Auth return queries retain only safe `status` and `error` values.
+Every portal imports `dashboardLayout` and supplies its role, current route, display name, trusted page markup and navigation links. Each portal owns `app/<role>/navigation.ts`, so changing one role’s links does not change another role. Links use typed `[route, label, icon]` tuples. The shared sidebar handles active links, mobile navigation, the VML logo, settings and optional sign out. Authentication still controls applicant access; navigation is not an authorization check.
 
-Restart the frontend Node server after changing `server.mjs`. For deployment behind another static server or reverse proxy, configure the same app-shell fallback for frontend page routes and keep backend API routing separate. Google Console’s redirect URI remains the backend callback URL.
-
-### Shared sign-in
-
-Use `http://localhost:3000/login` for both applicants and administrators. After the cookie session is confirmed through `/auth/me`, applicants open their dashboard, administrators continue on port 3002 where protected API requests enforce MFA, and accounts with both roles choose a workspace at `/workspaces`. Signed-out admin visitors return to the shared login; recovery routes also use the shared forms. Public registration still creates applicant accounts only. An account with no implemented workspace receives an access message.
-
-Configure `applicantUrl` and `adminUrl` in `lib/config.js` for deployed portal origins. Destinations are fixed application settings; URL query parameters cannot select a role or supply a redirect destination. Both portals must use the same backend API and its existing cookie session, with both portal origins allowed by backend CORS. No passwords, session cookies or tokens are passed in the redirect URL. Google sign-in follows the same role routing for existing linked accounts; admin MFA remains required.
-
-Admin MFA offers authenticator codes/recovery codes or a code sent to the verified account email. Authenticator enrollment renders a QR locally, retains the manual key/link, and provides a recovery-code `.txt` download before confirmation. Email selection sends a code through the backend worker, displays expiry guidance, and enforces the server resend cooldown. Switching to email clears authenticator setup material from the current screen. Neither recovery files nor QR secrets are stored in localStorage or sent to external services.
-
-### Assessment booking and administration
-
-Applicant `/booking` reads backend booking history and eligibility, requires a prepared target, and shows published available slots for the eligible assessment blueprint. Confirmations, cancellations and rescheduling use the protected booking APIs. Times display in the slot timezone, and confirmations include the change deadline, remaining reschedules, instructions and history. No example slots or localStorage booking records are used. Dashboard upcoming-assessment counts also use backend records.
-
-Admin `/availability` requires `assessments.manage` and MFA. It lists approved active core blueprints and publishes future availability with capacity, notice, horizon and rescheduling policies. Entered times use the chosen Africa/Nairobi or UTC timezone. Existing windows support capacity and active-status updates; deactivation retains existing bookings. Admin `/bookings` provides status/applicant filters, pagination, booking details, event history and reasoned cancellation through the backend. Server rules remain authoritative for capacity, deadlines, ownership and in-progress assessments.
-
-Booking and reschedule submissions carry idempotency keys. Unknown outcomes and conflicts require a refresh before another submission; failed mutations are not automatically replayed. Private state and late responses are cleared on account changes. Email confirmations and changes are queued through the existing worker. Keep `npm run worker` running for mail delivery. These changes connect booking management; the interactive assessment session and its existing demo preflight/room are a separate integration.
-
-
-### Trainer onboarding
-
-Run `npm run dev:trainer` and open http://localhost:3003. Apply the new backend trainer migration, allow this origin in backend `CORS_ORIGINS`, set `TRAINER_URL` to this portal’s trusted origin, and keep the existing worker running for invitation emails and qualification scans.
-
-An MFA-verified administrator with `trainers.manage` uses **Trainer invitations** to send a seven-day link. Invitations bind to the exact verified account email. The recipient signs in or registers through the shared applicant login in another tab, returns to the invitation tab, checks the session and accepts. The token is held only in memory and stripped from the address bar; reopen the email link after a page refresh. Acceptance adds the TRAINER role and rotates/revokes sessions. Existing applicant access is preserved. Shared sign-in routes trainer-only accounts here and allows multiple-role accounts to choose a workspace.
-
-The trainer can save professional details, add private PDF/JPEG/PNG qualification evidence, withdraw records while preserving history, submit for review, and read administrator feedback. No applicant National ID is required for trainer qualification uploads. Refresh checks current scan status; all current files must be clean and unexpired before submission. An admin reviews evidence and records approval with an independent evidence reference, requests changes, rejects, or suspends an approved profile. Reviewed profiles are locked until a change request allows editing. Stale versions and uncertain network outcomes require a refresh; failed forms preserve their input. Private records, files and tokens are never saved to localStorage.
-
-Trainer permissions in this milestone cover onboarding only. Approval does not grant access to applicant identity documents, assessment scoring, courses, cohorts or attendance records. See [trainer backend contract](../Backend/docs/trainers.md) for API routes, states, permissions and verification limits.
+Admin, employer and trainer use the shared layout for clearly labeled previews. Their proposed links can be edited in their navigation files; the linked pages have no backend functionality yet.
