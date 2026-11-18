@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAdminApi } from './api.js';
 import { createAdminStore, transitions } from './store.js';
-import { authView, shell, documentPage, applicantPage, documentsPage, overview, accountStatusDialog, previewDialog } from './views.js';
+import { loadView } from '../../test-utils/load-view.mjs';
+const views = await loadView(new URL('./views.js', import.meta.url));
+const { authView, shell, documentPage, applicantPage, documentsPage, overview, accountStatusDialog, previewDialog } = views;
 const admin = { id: 'admin-a', legalName: 'Admin Example', email: 'admin@example.test', phone: null, roles: ['ADMIN'], permissions: ['users.manage', 'documents.review', 'documents.verify'], emailVerifiedAt: '2026-11-01' };
 const document = { id: 'doc-a', applicantId: 'applicant-a', category: 'BACHELOR', title: 'Degree.pdf', size: 1234, mimeType: 'application/pdf', courseName: 'Engineering', institutionName: 'Example College', status: 'UNDER_REVIEW', scanStatus: 'CLEAN', createdAt: '2026-11-13T08:00:00Z', history: [], reviews: [], evidence: [] };
 const applicant = { id: 'applicant-a', legalName: 'Applicant Example', email: 'applicant@example.test', phone: '+254712345678', status: 'ACTIVE', profile: { country: 'KE', discipline: 'Engineering' }, documents: [document] };
@@ -222,7 +224,7 @@ test('admin scheduling failures preserve input and require refresh before repeat
   await store.load('availability', {}, true); assert.equal(store.snapshot().mutationUncertain, false);
 });
 test('availability and booking views use real records and show controls only to scheduling managers', async () => {
-  const { availabilityPage, availabilityDialog, bookingsPage, bookingPage } = await import('./views.js');
+  const { availabilityPage, availabilityDialog, bookingsPage, bookingPage } = views;
   const window = { id: 'w', blueprintId: 'bp', startsAt: '2026-12-01T06:00:00Z', endsAt: '2026-12-01T08:00:00Z', timezone: 'Africa/Nairobi', active: true, capacity: 2 };
   const html = availabilityPage({ data: { windows: response([window]), blueprints: [{ id: 'bp', title: '<script>', active: true, framework: { approved: true, scope: 'CORE' }, durationMinutes: 60, version: 1 }] } }, { page: 1, limit: 20 });
   assert.ok(html.includes('Publish availability')); assert.ok(availabilityDialog(window, []).includes('data-admin-form="update-availability"')); assert.ok(html.includes('&lt;script&gt;')); assert.ok(!html.includes('<script>'));
@@ -261,7 +263,7 @@ test('calendar handles Nairobi midnight, leap years, year boundaries and exclusi
 });
 test('calendar filters by career, blueprint and status and exposes crowded-day details safely', async () => {
   const { matchingWindows } = await import('./availability-calendar.js');
-  const { availabilityCalendar, availabilityDialog } = await import('./views.js');
+  const { availabilityCalendar, availabilityDialog } = views;
   const blueprint = { id: 'bp', jobRoleId: 'career', title: '<script>bad</script>', jobRole: { title: 'Engineering' } };
   const windows = Array.from({ length: 4 }, (_, i) => ({ id: `w${i}`, blueprintId: 'bp', startsAt: '2026-12-01T06:00:00Z', endsAt: '2026-12-01T08:00:00Z', capacity: 2, active: i !== 0, timezone: 'UTC' }));
   assert.equal(matchingWindows(windows, [blueprint], { career: 'career', blueprint: 'bp', active: 'true' }).length, 3);
@@ -282,7 +284,7 @@ test('calendar loads all availability pages instead of only the first twenty rec
 });
 
 test('assessor-only admins open the review queue, publish reviewed scores and retain MFA gates', async () => {
-  const { assessmentReviewsPage, assessmentReviewPage } = await import('./views.js');
+  const { assessmentReviewsPage, assessmentReviewPage } = views;
   const manager = { ...admin, permissions: ['assessments.review'] };
   let published;
   const data = { id: 'session-a', status: 'AWAITING_REVIEW', applicantId: 'applicant-a', messages: [{ role: 'APPLICANT', text: '<script>bad</script>' }], evaluation: [{ requirementId: 'r', name: 'Diagnostics', score: 50, requiredScore: 70, weight: 1, evidence: 'Evidence supports diagnosis.' }] };
@@ -299,7 +301,7 @@ test('assessor-only admins open the review queue, publish reviewed scores and re
 });
 
 test('assessment managers configure delivery while supervision and equipment forbid immediate access', async () => {
-  const { deliveryDialog, availabilityPage } = await import('./views.js');
+  const { deliveryDialog, availabilityPage } = views;
   const writes = [], manager = { ...admin, permissions: ['assessments.manage'] };
   const bp = { id: 'bp', title: '<PLC>', onDemandEnabled: false, onDemandCapacity: 2, requiresSupervision: true };
   const store = createAdminStore({ client: client({ me: async () => manager, availability: async () => response([]), updateDelivery: async (id, body) => writes.push([id, body]) }) });
