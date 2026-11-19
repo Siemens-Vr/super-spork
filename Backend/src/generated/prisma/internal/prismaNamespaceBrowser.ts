@@ -490,6 +490,10 @@ export const AssessmentBlueprintScalarFieldEnum = {
   active: 'active',
   requiresAuthenticatedIdentity: 'requiresAuthenticatedIdentity',
   requiresAuthenticatedAcademic: 'requiresAuthenticatedAcademic',
+  onDemandEnabled: 'onDemandEnabled',
+  onDemandCapacity: 'onDemandCapacity',
+  requiresSupervision: 'requiresSupervision',
+  requiresEquipment: 'requiresEquipment',
   interactionPolicy: 'interactionPolicy',
   createdAt: 'createdAt'
 } as const
@@ -509,6 +513,7 @@ export const AssessmentAvailabilityScalarFieldEnum = {
   rescheduleLimit: 'rescheduleLimit',
   timezone: 'timezone',
   active: 'active',
+  onDemand: 'onDemand',
   createdAt: 'createdAt'
 } as const
 
@@ -533,6 +538,7 @@ export const AssessmentBookingScalarFieldEnum = {
   slotId: 'slotId',
   seat: 'seat',
   status: 'status',
+  onDemand: 'onDemand',
   idempotencyKey: 'idempotencyKey',
   rescheduleCount: 'rescheduleCount',
   rescheduledFromId: 'rescheduledFromId',

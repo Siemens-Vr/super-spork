@@ -2,11 +2,23 @@ import { prisma, userLock, type Tx } from '../config/prisma.js';
 import { mayFinishAcceptedAnswer } from './assessment-processing.js';
 import { audit } from '../utils/audit.js';
 import { requireCondition } from '../errors/app-error.js';
+import { onDemandSetupMinutes } from './assessment-on-demand-policy.js';
 
 // Call under the applicant row lock, shared with booking, start, and completion.
 export async function expireBookingsForUser(tx: Tx, applicantId: string, now = new Date()) {
   const bookings = await tx.assessmentBooking.findMany({
-    where: { applicantId, status: 'SCHEDULED', slot: { endsAt: { lte: now } } },
+    where: {
+      applicantId,
+      status: 'SCHEDULED',
+      OR: [
+        { slot: { endsAt: { lte: now } } },
+        {
+          onDemand: true,
+          createdAt: { lte: new Date(now.getTime() - onDemandSetupMinutes * 60000) },
+          target: { attempt: { startedAt: null } },
+        },
+      ],
+    },
     include: { slot: true, target: { include: { attempt: { include: { interaction: true } } } } },
   });
   for (const booking of bookings) {
@@ -61,7 +73,14 @@ export async function expireAssessmentBookings() {
   const rows = await prisma.assessmentBooking.findMany({
     where: {
       status: 'SCHEDULED',
-      slot: { endsAt: { lte: new Date() } },
+      OR: [
+        { slot: { endsAt: { lte: new Date() } } },
+        {
+          onDemand: true,
+          createdAt: { lte: new Date(Date.now() - onDemandSetupMinutes * 60000) },
+          target: { attempt: { startedAt: null } },
+        },
+      ],
       target: { attempt: { interaction: { is: null } } },
     },
     take: 100,
@@ -122,8 +141,9 @@ export async function abandonTarget(
     if (!asAdmin)
       for (const booking of current.bookings)
         requireCondition(
-          booking.slot.startsAt.getTime() - Date.now() >=
-            booking.slot.availability.cancellationNoticeMinutes * 60000,
+          booking.onDemand ||
+            booking.slot.startsAt.getTime() - Date.now() >=
+              booking.slot.availability.cancellationNoticeMinutes * 60000,
           409,
           'CANCELLATION_WINDOW_CLOSED',
           'The cancellation deadline has passed; ask an administrator for recovery',

@@ -1,4 +1,17 @@
 import { z } from 'zod';
+export const onDemandSchema = z.object({ blueprintId: z.uuid() }).strict();
+export const deliverySchema = z
+  .object({
+    onDemandEnabled: z.boolean(),
+    onDemandCapacity: z.number().int().min(1).max(100),
+    requiresSupervision: z.boolean(),
+    requiresEquipment: z.boolean(),
+  })
+  .strict()
+  .refine(
+    (v) => !v.onDemandEnabled || (!v.requiresSupervision && !v.requiresEquipment),
+    'Assessments requiring supervision or equipment must use scheduled bookings',
+  );
 export const bookingSchema = z.object({ slotId: z.uuid() }).strict();
 export const reasonSchema = z.object({ reason: z.string().trim().min(5).max(1000) }).strict();
 export const rescheduleSchema = z

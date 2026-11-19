@@ -54,6 +54,7 @@ export type AssessmentAvailabilityMinAggregateOutputType = {
   rescheduleLimit: number | null
   timezone: string | null
   active: boolean | null
+  onDemand: boolean | null
   createdAt: Date | null
 }
 
@@ -69,6 +70,7 @@ export type AssessmentAvailabilityMaxAggregateOutputType = {
   rescheduleLimit: number | null
   timezone: string | null
   active: boolean | null
+  onDemand: boolean | null
   createdAt: Date | null
 }
 
@@ -84,6 +86,7 @@ export type AssessmentAvailabilityCountAggregateOutputType = {
   rescheduleLimit: number
   timezone: number
   active: number
+  onDemand: number
   createdAt: number
   _all: number
 }
@@ -117,6 +120,7 @@ export type AssessmentAvailabilityMinAggregateInputType = {
   rescheduleLimit?: true
   timezone?: true
   active?: true
+  onDemand?: true
   createdAt?: true
 }
 
@@ -132,6 +136,7 @@ export type AssessmentAvailabilityMaxAggregateInputType = {
   rescheduleLimit?: true
   timezone?: true
   active?: true
+  onDemand?: true
   createdAt?: true
 }
 
@@ -147,6 +152,7 @@ export type AssessmentAvailabilityCountAggregateInputType = {
   rescheduleLimit?: true
   timezone?: true
   active?: true
+  onDemand?: true
   createdAt?: true
   _all?: true
 }
@@ -249,6 +255,7 @@ export type AssessmentAvailabilityGroupByOutputType = {
   rescheduleLimit: number
   timezone: string
   active: boolean
+  onDemand: boolean
   createdAt: Date
   _count: AssessmentAvailabilityCountAggregateOutputType | null
   _avg: AssessmentAvailabilityAvgAggregateOutputType | null
@@ -287,6 +294,7 @@ export type AssessmentAvailabilityWhereInput = {
   rescheduleLimit?: Prisma.IntFilter<"AssessmentAvailability"> | number
   timezone?: Prisma.StringFilter<"AssessmentAvailability"> | string
   active?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
+  onDemand?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AssessmentAvailability"> | Date | string
   blueprint?: Prisma.XOR<Prisma.AssessmentBlueprintScalarRelationFilter, Prisma.AssessmentBlueprintWhereInput>
   slots?: Prisma.AssessmentSlotListRelationFilter
@@ -304,6 +312,7 @@ export type AssessmentAvailabilityOrderByWithRelationInput = {
   rescheduleLimit?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   blueprint?: Prisma.AssessmentBlueprintOrderByWithRelationInput
   slots?: Prisma.AssessmentSlotOrderByRelationAggregateInput
@@ -324,6 +333,7 @@ export type AssessmentAvailabilityWhereUniqueInput = Prisma.AtLeast<{
   rescheduleLimit?: Prisma.IntFilter<"AssessmentAvailability"> | number
   timezone?: Prisma.StringFilter<"AssessmentAvailability"> | string
   active?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
+  onDemand?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AssessmentAvailability"> | Date | string
   blueprint?: Prisma.XOR<Prisma.AssessmentBlueprintScalarRelationFilter, Prisma.AssessmentBlueprintWhereInput>
   slots?: Prisma.AssessmentSlotListRelationFilter
@@ -341,6 +351,7 @@ export type AssessmentAvailabilityOrderByWithAggregationInput = {
   rescheduleLimit?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AssessmentAvailabilityCountOrderByAggregateInput
   _avg?: Prisma.AssessmentAvailabilityAvgOrderByAggregateInput
@@ -364,6 +375,7 @@ export type AssessmentAvailabilityScalarWhereWithAggregatesInput = {
   rescheduleLimit?: Prisma.IntWithAggregatesFilter<"AssessmentAvailability"> | number
   timezone?: Prisma.StringWithAggregatesFilter<"AssessmentAvailability"> | string
   active?: Prisma.BoolWithAggregatesFilter<"AssessmentAvailability"> | boolean
+  onDemand?: Prisma.BoolWithAggregatesFilter<"AssessmentAvailability"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AssessmentAvailability"> | Date | string
 }
 
@@ -378,6 +390,7 @@ export type AssessmentAvailabilityCreateInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutAvailabilityInput
   slots?: Prisma.AssessmentSlotCreateNestedManyWithoutAvailabilityInput
@@ -395,6 +408,7 @@ export type AssessmentAvailabilityUncheckedCreateInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
   slots?: Prisma.AssessmentSlotUncheckedCreateNestedManyWithoutAvailabilityInput
 }
@@ -410,6 +424,7 @@ export type AssessmentAvailabilityUpdateInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutAvailabilityNestedInput
   slots?: Prisma.AssessmentSlotUpdateManyWithoutAvailabilityNestedInput
@@ -427,6 +442,7 @@ export type AssessmentAvailabilityUncheckedUpdateInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   slots?: Prisma.AssessmentSlotUncheckedUpdateManyWithoutAvailabilityNestedInput
 }
@@ -443,6 +459,7 @@ export type AssessmentAvailabilityCreateManyInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
 }
 
@@ -457,6 +474,7 @@ export type AssessmentAvailabilityUpdateManyMutationInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -472,6 +490,7 @@ export type AssessmentAvailabilityUncheckedUpdateManyInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -497,6 +516,7 @@ export type AssessmentAvailabilityCountOrderByAggregateInput = {
   rescheduleLimit?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -520,6 +540,7 @@ export type AssessmentAvailabilityMaxOrderByAggregateInput = {
   rescheduleLimit?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -535,6 +556,7 @@ export type AssessmentAvailabilityMinOrderByAggregateInput = {
   rescheduleLimit?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  onDemand?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -618,6 +640,7 @@ export type AssessmentAvailabilityCreateWithoutBlueprintInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
   slots?: Prisma.AssessmentSlotCreateNestedManyWithoutAvailabilityInput
 }
@@ -633,6 +656,7 @@ export type AssessmentAvailabilityUncheckedCreateWithoutBlueprintInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
   slots?: Prisma.AssessmentSlotUncheckedCreateNestedManyWithoutAvailabilityInput
 }
@@ -678,6 +702,7 @@ export type AssessmentAvailabilityScalarWhereInput = {
   rescheduleLimit?: Prisma.IntFilter<"AssessmentAvailability"> | number
   timezone?: Prisma.StringFilter<"AssessmentAvailability"> | string
   active?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
+  onDemand?: Prisma.BoolFilter<"AssessmentAvailability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"AssessmentAvailability"> | Date | string
 }
 
@@ -692,6 +717,7 @@ export type AssessmentAvailabilityCreateWithoutSlotsInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
   blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutAvailabilityInput
 }
@@ -708,6 +734,7 @@ export type AssessmentAvailabilityUncheckedCreateWithoutSlotsInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
 }
 
@@ -738,6 +765,7 @@ export type AssessmentAvailabilityUpdateWithoutSlotsInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutAvailabilityNestedInput
 }
@@ -754,6 +782,7 @@ export type AssessmentAvailabilityUncheckedUpdateWithoutSlotsInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -768,6 +797,7 @@ export type AssessmentAvailabilityCreateManyBlueprintInput = {
   rescheduleLimit?: number
   timezone?: string
   active?: boolean
+  onDemand?: boolean
   createdAt?: Date | string
 }
 
@@ -782,6 +812,7 @@ export type AssessmentAvailabilityUpdateWithoutBlueprintInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   slots?: Prisma.AssessmentSlotUpdateManyWithoutAvailabilityNestedInput
 }
@@ -797,6 +828,7 @@ export type AssessmentAvailabilityUncheckedUpdateWithoutBlueprintInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   slots?: Prisma.AssessmentSlotUncheckedUpdateManyWithoutAvailabilityNestedInput
 }
@@ -812,6 +844,7 @@ export type AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintInput = {
   rescheduleLimit?: Prisma.IntFieldUpdateOperationsInput | number
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemand?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -858,6 +891,7 @@ export type AssessmentAvailabilitySelect<ExtArgs extends runtime.Types.Extension
   rescheduleLimit?: boolean
   timezone?: boolean
   active?: boolean
+  onDemand?: boolean
   createdAt?: boolean
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slots?: boolean | Prisma.AssessmentAvailability$slotsArgs<ExtArgs>
@@ -876,6 +910,7 @@ export type AssessmentAvailabilitySelectCreateManyAndReturn<ExtArgs extends runt
   rescheduleLimit?: boolean
   timezone?: boolean
   active?: boolean
+  onDemand?: boolean
   createdAt?: boolean
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["assessmentAvailability"]>
@@ -892,6 +927,7 @@ export type AssessmentAvailabilitySelectUpdateManyAndReturn<ExtArgs extends runt
   rescheduleLimit?: boolean
   timezone?: boolean
   active?: boolean
+  onDemand?: boolean
   createdAt?: boolean
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["assessmentAvailability"]>
@@ -908,10 +944,11 @@ export type AssessmentAvailabilitySelectScalar = {
   rescheduleLimit?: boolean
   timezone?: boolean
   active?: boolean
+  onDemand?: boolean
   createdAt?: boolean
 }
 
-export type AssessmentAvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "blueprintId" | "startsAt" | "endsAt" | "capacity" | "minNoticeMinutes" | "maxHorizonDays" | "cancellationNoticeMinutes" | "rescheduleLimit" | "timezone" | "active" | "createdAt", ExtArgs["result"]["assessmentAvailability"]>
+export type AssessmentAvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "blueprintId" | "startsAt" | "endsAt" | "capacity" | "minNoticeMinutes" | "maxHorizonDays" | "cancellationNoticeMinutes" | "rescheduleLimit" | "timezone" | "active" | "onDemand" | "createdAt", ExtArgs["result"]["assessmentAvailability"]>
 export type AssessmentAvailabilityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   blueprint?: boolean | Prisma.AssessmentBlueprintDefaultArgs<ExtArgs>
   slots?: boolean | Prisma.AssessmentAvailability$slotsArgs<ExtArgs>
@@ -942,6 +979,7 @@ export type $AssessmentAvailabilityPayload<ExtArgs extends runtime.Types.Extensi
     rescheduleLimit: number
     timezone: string
     active: boolean
+    onDemand: boolean
     createdAt: Date
   }, ExtArgs["result"]["assessmentAvailability"]>
   composites: {}
@@ -1379,6 +1417,7 @@ export interface AssessmentAvailabilityFieldRefs {
   readonly rescheduleLimit: Prisma.FieldRef<"AssessmentAvailability", 'Int'>
   readonly timezone: Prisma.FieldRef<"AssessmentAvailability", 'String'>
   readonly active: Prisma.FieldRef<"AssessmentAvailability", 'Boolean'>
+  readonly onDemand: Prisma.FieldRef<"AssessmentAvailability", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"AssessmentAvailability", 'DateTime'>
 }
 

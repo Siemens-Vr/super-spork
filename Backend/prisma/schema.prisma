@@ -486,6 +486,10 @@ model AssessmentBlueprint {
   active                        Boolean                  @default(false)
   requiresAuthenticatedIdentity Boolean                  @default(false)
   requiresAuthenticatedAcademic Boolean                  @default(false)
+  onDemandEnabled               Boolean                  @default(false)
+  onDemandCapacity              Int                      @default(1)
+  requiresSupervision           Boolean                  @default(false)
+  requiresEquipment             Boolean                  @default(false)
   availability                  AssessmentAvailability[]
   bookings                      AssessmentBooking[]
   attempts                      AssessmentAttempt[]
@@ -509,6 +513,7 @@ model AssessmentAvailability {
   rescheduleLimit           Int                 @default(2)
   timezone                  String              @default("Africa/Nairobi")
   active                    Boolean             @default(true)
+  onDemand                  Boolean             @default(false)
   slots                     AssessmentSlot[]
   createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
 }
@@ -537,6 +542,7 @@ model AssessmentBooking {
   slot              AssessmentSlot                @relation(fields: [slotId], references: [id], onDelete: Restrict)
   seat              Int
   status            BookingStatus                 @default(SCHEDULED)
+  onDemand          Boolean                       @default(false)
   idempotencyKey    String
   rescheduleCount   Int                           @default(0)
   rescheduledFromId String?                       @unique @db.Uuid

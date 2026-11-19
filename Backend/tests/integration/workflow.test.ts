@@ -25,6 +25,8 @@ import { scanFile } from '../../src/integrations/storage/clamav.js';
 import { scanDocument } from '../../src/jobs/document.worker.js';
 import {
   createAvailability,
+  reserveOnDemand,
+  updateDelivery,
   createBooking,
   cancelBooking,
   eligibility,
@@ -385,6 +387,132 @@ suite('PostgreSQL-backed authentication, onboarding and booking', () => {
     vi.restoreAllMocks();
     await new Promise<void>((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
     await prisma.$disconnect();
+  });
+  async function immediateFixture(capacity = 1) {
+    const fixture = await interactionFixture({ allowText: true }, false);
+    await cancelBooking(adminId, fixture.booking.id, 'Use an immediate assessment instead', true);
+    await updateDelivery(adminId, fixture.blueprint.id, { onDemandEnabled: true, onDemandCapacity: capacity, requiresSupervision: false, requiresEquipment: false });
+    return fixture;
+  }
+  async function sameBlueprintApplicant(blueprintId: string) {
+    const p = await readyApplicant(false);
+    const b = await prisma.assessmentBlueprint.findUniqueOrThrow({ where: { id: blueprintId }, include: { jobRole: { include: { industries: true } } } });
+    const target = await post(p.a, '/assessments/targets', { jobRoleId: b.jobRoleId, industryIds: [b.jobRole.industries[0]!.industryId], companyIds: [], qualificationIds: [] });
+    expect(target.status).toBe(201);
+    expect((await post(p.a, `/assessments/targets/${target.body.data.id}/prepare`, { blueprintId })).status).toBe(200);
+    return p;
+  }
+  it('on-demand admission is owned, idempotent, private and preserves full time after explicit preflight', async () => {
+    const { p, blueprint } = await immediateFixture();
+    const e = await p.a.get('/api/v1/assessments/eligibility');
+    expect(e.body.data.blueprints[0].onDemand).toMatchObject({ available: true, remainingCapacity: 1, setupMinutes: 5 });
+    const reserve = async () => p.a.post('/api/v1/assessments/on-demand').set('X-CSRF-Token', await csrf(p.a)).set('Idempotency-Key', 'immediate-owned-key').send({ blueprintId: blueprint.id });
+    const r = await reserve();
+    expect(r.status).toBe(201);
+    expect(r.body.data.onDemand).toBe(true);
+    expect((await reserve()).body.data.bookingId).toBe(r.body.data.bookingId);
+    expect(await prisma.assessmentBooking.count({ where: { applicantId: p.id, onDemand: true } })).toBe(1);
+    const other = await applicant();
+    expect((await other.a.get(`/api/v1/assessments/${r.body.data.bookingId}/preflight`)).status).toBe(404);
+    const ready = await p.a.get(`/api/v1/assessments/${r.body.data.bookingId}/preflight`);
+    expect(ready.body.data).toMatchObject({ canStart: true, onDemand: true, setupExpiresAt: r.body.data.setupExpiresAt });
+    expect((await post(p.a, `/assessments/${r.body.data.bookingId}/start`, { ...preflightInput, devices: { ...preflightInput.devices, microphone: 'DENIED' } })).status).toBe(422);
+    await prisma.assessmentBooking.update({ where: { id: r.body.data.bookingId }, data: { createdAt: new Date(Date.now() - 4 * 60000) } });
+    const started = await post(p.a, `/assessments/${r.body.data.bookingId}/start`, preflightInput);
+    expect(started.status).toBe(200);
+    const saved = await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: r.body.data.bookingId }, include: { slot: true } });
+    expect(saved.slot.endsAt.getTime() - saved.slot.startsAt.getTime()).toBe(blueprint.durationMinutes * 60000);
+    expect(new Date(started.body.data.endsAt).getTime()).toBe(saved.slot.endsAt.getTime());
+    const manager = await adminSession();
+    const windows = await manager.get('/api/v1/admin/availability?limit=100');
+    expect(windows.body.data.every((a: { onDemand: boolean }) => !a.onDemand)).toBe(true);
+    const privateWindow = await prisma.assessmentSlot.findUniqueOrThrow({ where: { id: saved.slotId } });
+    const edit = await manager.patch(`/api/v1/admin/availability/${privateWindow.availabilityId}`).set('X-CSRF-Token', await csrf(manager)).send({ active: true });
+    expect(edit.status).toBe(409);
+  });
+  it('serializes concurrent on-demand admissions and releases cancelled or expired setup reservations', async () => {
+    const { p, blueprint } = await immediateFixture();
+    const second = await sameBlueprintApplicant(blueprint.id);
+    const results = await Promise.allSettled([reserveOnDemand(p.id, blueprint.id, 'race-immediate-one'), reserveOnDemand(second.id, blueprint.id, 'race-immediate-two')]);
+    expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(1);
+    const failed = results.find(r => r.status === 'rejected') as PromiseRejectedResult;
+    expect(failed.reason.code).toBe('ON_DEMAND_FULL');
+    const winner = results.find(r => r.status === 'fulfilled') as PromiseFulfilledResult<Awaited<ReturnType<typeof reserveOnDemand>>>;
+    const loser = winner.value.applicantId === p.id ? second : p;
+    await cancelBooking(winner.value.applicantId, winner.value.id, 'Release this unused immediate place');
+    const next = await reserveOnDemand(loser.id, blueprint.id, 'after-capacity-release');
+    await prisma.assessmentBooking.update({ where: { id: next.id }, data: { createdAt: new Date(Date.now() - 6 * 60000) } });
+    // No worker or unrelated applicant reconciliation is required to free capacity.
+    const reused = await reserveOnDemand(winner.value.applicantId, blueprint.id, 'after-setup-expired');
+    expect(reused.id).not.toBe(next.id);
+    await reconcileApplicantBookings(loser.id);
+    expect((await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: next.id } })).status).toBe('MISSED');
+    expect((await eligibility(loser.id)).blueprints[0]!.onDemand.remainingCapacity).toBe(0);
+  });
+  it('finished interviews release immediate capacity during human review, while late processing remains bounded', async () => {
+    const { p, blueprint } = await immediateFixture();
+    const reservation = await reserveOnDemand(p.id, blueprint.id, 'review-release-reserve');
+    const started = await post(p.a, `/assessments/${reservation.id}/start`, preflightInput);
+    expect(started.status).toBe(200);
+    let session = started.body.data;
+    const other = await sameBlueprintApplicant(blueprint.id);
+    // An answer already accepted at the deadline may still be processing.
+    const pending = await prisma.assessmentResponse.create({ data: { sessionId: session.id, promptId: session.currentPromptId, idempotencyKey: 'pending-capacity-key', payloadHash: '0'.repeat(64), origin: 'TEXT', confirmedText: 'Safe technical evidence', createdAt: new Date(Date.now() - 2000) } });
+    await prisma.assessmentInteractionSession.update({ where: { id: session.id }, data: { pendingResponseId: pending.id } });
+    await prisma.assessmentSlot.update({ where: { id: reservation.slotId }, data: { endsAt: new Date(Date.now() - 1000), startsAt: new Date(Date.now() - 60000) } });
+    expect((await eligibility(other.id)).blueprints[0]!.onDemand.remainingCapacity).toBe(0);
+    await prisma.assessmentInteractionSession.update({ where: { id: session.id }, data: { pendingResponseId: null } });
+    await prisma.assessmentSlot.update({ where: { id: reservation.slotId }, data: { endsAt: new Date(Date.now() + 3600000) } });
+    // The synthetic pending response is not part of the graph; remove it before continuing.
+    await prisma.assessmentResponse.delete({ where: { id: pending.id } });
+    for (let i = 0; i < 6; i++) {
+      const result = await answer(p.a, session.id, session.currentPromptId, `release-evidence-${i}`);
+      expect(result.status).toBe(200);
+      session = result.body.data;
+    }
+    expect(session.status).toBe('AWAITING_REVIEW');
+    expect((await eligibility(other.id)).blueprints[0]!.onDemand.remainingCapacity).toBe(1);
+    await expect(reserveOnDemand(other.id, blueprint.id, 'during-human-review')).resolves.toMatchObject({ onDemand: true });
+    expect((await prisma.assessmentBooking.findUniqueOrThrow({ where: { id: reservation.id } })).status).toBe('SCHEDULED');
+  });
+  it('delivery settings enforce MFA, supervision/equipment restrictions and occupied capacity', async () => {
+    const { p, blueprint } = await immediateFixture(2);
+    const second = await sameBlueprintApplicant(blueprint.id);
+    const manager = await adminSession();
+    const path = `/api/v1/admin/blueprints/${blueprint.id}/delivery`;
+    const settings = { onDemandEnabled: true, onDemandCapacity: 2, requiresSupervision: false, requiresEquipment: false };
+    expect((await p.a.patch(path).set('X-CSRF-Token', await csrf(p.a)).send(settings)).status).toBe(403);
+    for (const required of ['requiresSupervision', 'requiresEquipment']) {
+      expect((await manager.patch(path).set('X-CSRF-Token', await csrf(manager)).send({ ...settings, [required]: true })).status).toBe(422);
+    }
+    await reserveOnDemand(p.id, blueprint.id, 'capacity-settings-one');
+    await reserveOnDemand(second.id, blueprint.id, 'capacity-settings-two');
+    expect((await manager.patch(path).set('X-CSRF-Token', await csrf(manager)).send({ ...settings, onDemandCapacity: 1 })).status).toBe(409);
+    expect((await manager.patch(path).set('X-CSRF-Token', await csrf(manager)).send({ ...settings, onDemandEnabled: false, requiresSupervision: true })).status).toBe(200);
+    const third = await sameBlueprintApplicant(blueprint.id);
+    await expect(reserveOnDemand(third.id, blueprint.id, 'supervised-not-immediate')).rejects.toMatchObject({ code: 'ON_DEMAND_UNAVAILABLE' });
+    const reservations = await prisma.assessmentBooking.count({ where: { blueprintId: blueprint.id, onDemand: true, status: 'SCHEDULED' } });
+    expect(reservations).toBe(2);
+    const noMfa = await adminSession(false);
+    expect((await noMfa.patch(path).set('X-CSRF-Token', await csrf(noMfa)).send(settings)).status).toBe(403);
+  });
+  it('immediate admission cannot bypass scheduled bookings, identity checks, scenarios or provider readiness', async () => {
+    const { p, blueprint, booking } = await interactionFixture({ allowText: true }, false);
+    await expect(reserveOnDemand(p.id, blueprint.id, 'scheduled-key-bypass')).rejects.toMatchObject({ code: 'ACTIVE_BOOKING_EXISTS' });
+    await expect(reserveOnDemand(p.id, blueprint.id, booking.idempotencyKey)).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
+    await cancelBooking(p.id, booking.id, 'Prepare immediate admission test');
+    // Scheduled-only remains the default, even when a prepared target is eligible.
+    await expect(reserveOnDemand(p.id, blueprint.id, 'default-scheduled-only')).rejects.toMatchObject({ code: 'ON_DEMAND_UNAVAILABLE' });
+    await updateDelivery(adminId, blueprint.id, { onDemandEnabled: true, onDemandCapacity: 1, requiresSupervision: false, requiresEquipment: false });
+    await prisma.document.update({ where: { id: p.identityId }, data: { status: 'REJECTED' } });
+    await expect(reserveOnDemand(p.id, blueprint.id, 'identity-not-immediate')).rejects.toMatchObject({ code: 'ON_DEMAND_UNAVAILABLE' });
+    await prisma.document.update({ where: { id: p.identityId }, data: { status: 'UNDER_REVIEW' } });
+    vi.mocked(interviewer.ready).mockReturnValue(false);
+    await expect(reserveOnDemand(p.id, blueprint.id, 'provider-not-immediate')).rejects.toMatchObject({ code: 'ON_DEMAND_UNAVAILABLE' });
+    vi.mocked(interviewer.ready).mockReturnValue(true);
+    await prisma.blueprintScenario.deleteMany({ where: { blueprintId: blueprint.id } });
+    await expect(reserveOnDemand(p.id, blueprint.id, 'scenario-not-immediate')).rejects.toMatchObject({ code: 'ON_DEMAND_UNAVAILABLE' });
+    expect(await prisma.assessmentBooking.count({ where: { applicantId: p.id, onDemand: true } })).toBe(0);
   });
   it('paginates all owned documents and filters eligible qualifications beyond the first 100 records', async () => {
     const p = await applicant();

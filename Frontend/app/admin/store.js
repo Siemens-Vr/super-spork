@@ -229,6 +229,11 @@ export function createAdminStore({ client, onChange = () => {} }) {
           for (const key of ['capacity', 'minNoticeMinutes', 'maxHorizonDays', 'cancellationNoticeMinutes', 'rescheduleLimit']) body[key] = Number(input[key]);
           if (new Date(body.endsAt) <= new Date(body.startsAt)) throw new Error('End must follow start.');
           await client.publishAvailability(body);
+        } else if (kind === 'update-delivery') {
+          if (!store.can('assessments.manage')) throw new Error('Assessment management access is required.');
+          const body = { onDemandEnabled: input.onDemandEnabled === 'true', onDemandCapacity: Number(input.onDemandCapacity), requiresSupervision: input.requiresSupervision === 'true', requiresEquipment: input.requiresEquipment === 'true' };
+          if (body.onDemandEnabled && (body.requiresSupervision || body.requiresEquipment)) throw new Error('Assessments requiring supervision or equipment must use scheduled bookings.');
+          await client.updateDelivery(id, body);
         } else if (kind === 'update-availability') {
           if (!store.can('assessments.manage')) throw new Error('Assessment management access is required.');
           await client.updateAvailability(id, { active: input.active === 'true', capacity: Number(input.capacity) });
@@ -238,7 +243,7 @@ export function createAdminStore({ client, onChange = () => {} }) {
         }
         else throw new Error('Unknown action.');
         if (!current(version, owner)) return false;
-        state.notice = ({ 'invite-trainer':'Trainer invitation queued for delivery.', 'revoke-trainer-invitation':'Trainer invitation revoked.', 'review-trainer':'Trainer decision recorded and notification queued.', 'approve-assessment': 'Final assessment results and learning plan published.', 'publish-availability': 'Availability published. Eligible applicants can book its available places.', 'update-availability': 'Availability updated. Existing bookings are retained.', 'cancel-booking': 'Booking cancelled. The applicant notification has been queued.' })[kind] || (kind === 'review' ? 'Review saved. The applicant will receive the review update.' : kind === 'evidence' ? 'Evidence added to the verification record.' : 'Account status updated. Existing applicant sessions have been revoked.');
+        state.notice = ({ 'update-delivery':'Assessment delivery settings saved. Existing reservations are retained.', 'invite-trainer':'Trainer invitation queued for delivery.', 'revoke-trainer-invitation':'Trainer invitation revoked.', 'review-trainer':'Trainer decision recorded and notification queued.', 'approve-assessment': 'Final assessment results and learning plan published.', 'publish-availability': 'Availability published. Eligible applicants can book its available places.', 'update-availability': 'Availability updated. Existing bookings are retained.', 'cancel-booking': 'Booking cancelled. The applicant notification has been queued.' })[kind] || (kind === 'review' ? 'Review saved. The applicant will receive the review update.' : kind === 'evidence' ? 'Evidence added to the verification record.' : 'Account status updated. Existing applicant sessions have been revoked.');
         return true;
       } catch (error) {
         if (!current(version, owner)) return false;

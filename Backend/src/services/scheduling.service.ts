@@ -7,9 +7,20 @@ import { activeTargetStatuses, targetForBooking } from './assessment-target.serv
 import { audit } from '../utils/audit.js';
 import { applicantProfileSelect, isProfileComplete } from '../utils/applicant-profile.js';
 import type { availabilitySchema } from '../validators/assessment.schema.js';
-import { assessmentIdentityReadiness, currentAssessmentDocuments, identityMessages } from './assessment-identity-policy.js';
+import {
+  assessmentIdentityReadiness,
+  currentAssessmentDocuments,
+  identityMessages,
+} from './assessment-identity-policy.js';
+import { interviewer } from '../integrations/assessment-interview/provider.js';
+import {
+  onDemandOccupancy,
+  onDemandSetupMinutes,
+  setupExpiresAt,
+} from './assessment-on-demand-policy.js';
+import type { deliverySchema } from '../validators/assessment.schema.js';
 const bookingInclude = {
-  target: { select: { attempt: { select: { id: true } } } },
+  target: { select: { attempt: { select: { id: true, startedAt: true } } } },
   blueprint: { include: { jobRole: true } },
   slot: { include: { availability: true } },
   events: { orderBy: { createdAt: 'asc' as const } },
@@ -48,24 +59,100 @@ export async function eligibility(applicantId: string, tx: Tx = prisma, blueprin
     },
   });
   if (!blueprints.length) reasons.push('BLUEPRINT_UNAVAILABLE');
-  const policies = blueprints.map((b) => ({
-    blueprintId: b.id,
-    reasons: [
-      ...reasons,
-      ...(!identity.reason && assessmentIdentityReadiness(u.documents, b.requiresAuthenticatedIdentity).reason
-        ? ['IDENTITY_AUTHENTICATION_REQUIRED']
-        : []),
-      ...(b.requiresAuthenticatedAcademic &&
-      !u.documents.some(
-        (d) =>
-          !['NATIONAL_ID', 'PASSPORT'].includes(d.category) &&
-          d.status === 'AUTHENTICATED' &&
-          d.scanStatus === 'CLEAN',
-      )
-        ? ['ACADEMIC_AUTHENTICATION_REQUIRED']
-        : []),
-    ],
-  }));
+  const policies = await Promise.all(
+    blueprints.map(async (b) => {
+      const policy = {
+        blueprintId: b.id,
+        reasons: [
+          ...reasons,
+          ...(!identity.reason &&
+          assessmentIdentityReadiness(u.documents, b.requiresAuthenticatedIdentity).reason
+            ? ['IDENTITY_AUTHENTICATION_REQUIRED']
+            : []),
+          ...(b.requiresAuthenticatedAcademic &&
+          !u.documents.some(
+            (d) =>
+              !['NATIONAL_ID', 'PASSPORT'].includes(d.category) &&
+              d.status === 'AUTHENTICATED' &&
+              d.scanStatus === 'CLEAN',
+          )
+            ? ['ACADEMIC_AUTHENTICATION_REQUIRED']
+            : []),
+        ],
+      };
+      const demandReasons = [...policy.reasons];
+      if (!b.onDemandEnabled || b.requiresSupervision || b.requiresEquipment)
+        demandReasons.push('SCHEDULED_ONLY');
+      if (!target?.attempt || target.status !== 'PREPARED')
+        demandReasons.push('TARGET_NOT_PREPARED');
+      if (!interviewer.ready()) demandReasons.push('INTERVIEWER_UNAVAILABLE');
+      if (target?.attempt) {
+        const snapshot = target.attempt.contextSnapshot as {
+          blueprint: {
+            requiresAuthenticatedIdentity: boolean;
+            requiresAuthenticatedAcademic: boolean;
+          };
+        };
+        const pinnedIdentity = assessmentIdentityReadiness(
+          u.documents,
+          snapshot.blueprint.requiresAuthenticatedIdentity,
+        );
+        if (pinnedIdentity.reason && !demandReasons.includes(pinnedIdentity.reason))
+          demandReasons.push(pinnedIdentity.reason);
+        if (
+          snapshot.blueprint.requiresAuthenticatedAcademic &&
+          !u.documents.some(
+            (d) =>
+              !['NATIONAL_ID', 'PASSPORT'].includes(d.category) &&
+              d.status === 'AUTHENTICATED' &&
+              d.scanStatus === 'CLEAN',
+          )
+        )
+          demandReasons.push('ACADEMIC_AUTHENTICATION_REQUIRED');
+        if (
+          await tx.assessmentTargetQualification.count({
+            where: {
+              targetId: target.id,
+              document: { OR: [{ scanStatus: { not: 'CLEAN' } }, { status: 'REJECTED' }] },
+            },
+          })
+        )
+          demandReasons.push('QUALIFICATION_INVALID');
+        const [requirements, scenarios] = await Promise.all([
+          tx.assessmentRequirement.findMany({
+            where: { attemptId: target.attempt.id },
+            select: { competencyId: true },
+          }),
+          tx.blueprintScenario.findMany({
+            where: { blueprintId: b.id, scenario: { approved: true } },
+            select: { scenario: { select: { competencyIds: true } } },
+          }),
+        ]);
+        if (
+          !scenarios.length ||
+          requirements.some(
+            (r) => !scenarios.some((s) => s.scenario.competencyIds.includes(r.competencyId)),
+          )
+        )
+          demandReasons.push('APPROVED_SCENARIOS_REQUIRED');
+      }
+      const remainingCapacity = b.onDemandEnabled
+        ? Math.max(0, b.onDemandCapacity - (await onDemandOccupancy(b.id, tx)))
+        : 0;
+      if (b.onDemandEnabled && !remainingCapacity) demandReasons.push('ON_DEMAND_FULL');
+      return {
+        ...policy,
+        onDemand: {
+          enabled: b.onDemandEnabled,
+          available: !demandReasons.length,
+          remainingCapacity,
+          durationMinutes: b.durationMinutes,
+          setupMinutes: onDemandSetupMinutes,
+          reasons: [...new Set(demandReasons)],
+        },
+      };
+    }),
+  );
   return {
     targetId: target?.id ?? null,
     attemptId: target?.attempt?.id ?? null,
@@ -145,7 +232,9 @@ export async function availableSlots(
     e.eligible,
     409,
     'ASSESSMENT_NOT_ELIGIBLE',
-    e.identityRecovery ? identityMessages.IDENTITY_REJECTED : 'Complete the required onboarding steps',
+    e.identityRecovery
+      ? identityMessages.IDENTITY_REJECTED
+      : 'Complete the required onboarding steps',
   );
   const now = new Date(),
     start = from ? new Date(from) : now,
@@ -205,7 +294,9 @@ async function reserve(
   });
   if (existing) {
     requireCondition(
-      existing.slotId === slotId && existing.rescheduledFromId === (rescheduledFromId ?? null),
+      !existing.onDemand &&
+        existing.slotId === slotId &&
+        existing.rescheduledFromId === (rescheduledFromId ?? null),
       409,
       'IDEMPOTENCY_CONFLICT',
       'This key was already used for a different booking request',
@@ -223,6 +314,12 @@ async function reserve(
       409,
       'BOOKING_NOT_ACTIVE',
       'Only a scheduled booking can be rescheduled',
+    );
+    requireCondition(
+      !old.onDemand,
+      409,
+      'ON_DEMAND_NOT_RESCHEDULABLE',
+      'Cancel an unstarted on-demand reservation before choosing a scheduled time',
     );
     requireCondition(old.slotId !== slotId, 409, 'SAME_SLOT', 'Choose a different slot');
     requireCondition(
@@ -284,7 +381,9 @@ async function reserve(
     e.eligible,
     409,
     'ASSESSMENT_NOT_ELIGIBLE',
-    e.identityRecovery ? identityMessages.IDENTITY_REJECTED : 'Required onboarding or verification is incomplete',
+    e.identityRecovery
+      ? identityMessages.IDENTITY_REJECTED
+      : 'Required onboarding or verification is incomplete',
   );
   const used = new Set(slot.bookings.map((x) => x.seat));
   const seat = Array.from({ length: a.capacity }, (_, i) => i + 1).find((i) => !used.has(i));
@@ -336,6 +435,115 @@ export async function createBooking(
     { timeout: 15000 },
   );
 }
+export async function reserveOnDemand(applicantId: string, blueprintId: string, key: string) {
+  return prisma.$transaction(
+    async (tx) => {
+      await userLock(tx, applicantId);
+      await expireBookingsForUser(tx, applicantId);
+      const previous = await tx.assessmentBooking.findUnique({
+        where: { applicantId_idempotencyKey: { applicantId, idempotencyKey: key } },
+        include: bookingInclude,
+      });
+      if (previous) {
+        requireCondition(
+          previous.onDemand && previous.blueprintId === blueprintId,
+          409,
+          'IDEMPOTENCY_CONFLICT',
+          'This key was used for another booking request',
+        );
+        return previous;
+      }
+      // Serialize admissions and policy changes for this assessment across applicants.
+      await tx.$queryRaw`SELECT id FROM "AssessmentBlueprint" WHERE id=${blueprintId}::uuid FOR UPDATE`;
+      requireCondition(
+        !(await tx.assessmentBooking.count({ where: { applicantId, status: 'SCHEDULED' } })),
+        409,
+        'ACTIVE_BOOKING_EXISTS',
+        'An active assessment booking already exists',
+      );
+      const e = await eligibility(applicantId, tx, blueprintId);
+      const demand = e.blueprints.find((b) => b.blueprintId === blueprintId)?.onDemand;
+      requireCondition(
+        demand?.available,
+        409,
+        demand?.reasons.includes('ON_DEMAND_FULL') ? 'ON_DEMAND_FULL' : 'ON_DEMAND_UNAVAILABLE',
+        demand?.reasons.includes('ON_DEMAND_FULL')
+          ? 'All immediate assessment places are in use. Refresh later or choose a scheduled time.'
+          : 'Immediate assessment is unavailable. Refresh readiness or choose a scheduled time.',
+      );
+      const targetId = await targetForBooking(tx, applicantId, blueprintId);
+      const now = new Date(),
+        endsAt = new Date(now.getTime() + (demand.durationMinutes + onDemandSetupMinutes) * 60000);
+      // Private one-booking windows never appear in published scheduled availability.
+      const availability = await tx.assessmentAvailability.create({
+        data: {
+          blueprintId,
+          startsAt: now,
+          endsAt,
+          capacity: 1,
+          active: false,
+          onDemand: true,
+          minNoticeMinutes: 0,
+          cancellationNoticeMinutes: 0,
+          rescheduleLimit: 0,
+          slots: { create: { startsAt: now, endsAt } },
+        },
+        include: { slots: true },
+      });
+      const result = await tx.assessmentBooking.create({
+        data: {
+          applicantId,
+          targetId,
+          blueprintId,
+          slotId: availability.slots[0]!.id,
+          seat: 1,
+          onDemand: true,
+          idempotencyKey: key,
+          createdAt: now,
+          events: {
+            create: {
+              actorId: applicantId,
+              action: 'ON_DEMAND_RESERVED',
+              reason:
+                'Complete device checks and consent within five minutes. The full assessment duration begins at start.',
+            },
+          },
+        },
+        include: bookingInclude,
+      });
+      await audit(tx, applicantId, 'assessment.on_demand_reserved', result.id, {
+        blueprintId,
+        setupExpiresAt: setupExpiresAt(result).toISOString(),
+      });
+      return result;
+    },
+    { timeout: 15000 },
+  );
+}
+export async function updateDelivery(
+  actorId: string,
+  id: string,
+  input: z.infer<typeof deliverySchema>,
+) {
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "AssessmentBlueprint" WHERE id=${id}::uuid FOR UPDATE`;
+    requireCondition(
+      await tx.assessmentBlueprint.findUnique({ where: { id } }),
+      404,
+      'NOT_FOUND',
+      'Assessment blueprint not found',
+    );
+    requireCondition(
+      input.onDemandCapacity >= (await onDemandOccupancy(id, tx)),
+      409,
+      'CAPACITY_IN_USE',
+      'Wait for immediate assessments to finish before reducing capacity',
+    );
+    const result = await tx.assessmentBlueprint.update({ where: { id }, data: input });
+    await audit(tx, actorId, 'assessment.delivery_updated', id, input);
+    return result;
+  });
+}
 export async function cancelBooking(actorId: string, id: string, reason: string, asAdmin = false) {
   const target = await booking(actorId, id, asAdmin);
   return prisma.$transaction(async (tx) => {
@@ -360,7 +568,7 @@ export async function cancelBooking(actorId: string, id: string, reason: string,
       'ASSESSMENT_IN_PROGRESS',
       'A started assessment must be completed',
     );
-    if (!asAdmin)
+    if (!asAdmin && !b.onDemand)
       requireCondition(
         b.slot.startsAt.getTime() - Date.now() >=
           b.slot.availability.cancellationNoticeMinutes * 60000,
@@ -386,6 +594,9 @@ export function confirmation(b: Awaited<ReturnType<typeof booking>>) {
   return {
     bookingId: b.id,
     slotId: b.slotId,
+    onDemand: b.onDemand,
+    setupExpiresAt:
+      b.onDemand && !b.target?.attempt?.startedAt ? setupExpiresAt(b).toISOString() : null,
     changePolicy: {
       deadline: new Date(
         b.slot.startsAt.getTime() - b.slot.availability.cancellationNoticeMinutes * 60000,
@@ -419,6 +630,13 @@ export async function updateAvailability(
       where: { availabilityId: id },
       orderBy: { id: 'asc' },
     });
+    const availability = await tx.assessmentAvailability.findUnique({ where: { id } });
+    requireCondition(
+      availability && !availability.onDemand,
+      409,
+      'PRIVATE_AVAILABILITY',
+      'On-demand reservations are managed through their bookings',
+    );
     for (const slot of slots)
       await tx.$queryRaw`SELECT id FROM "AssessmentSlot" WHERE id=${slot.id}::uuid FOR UPDATE`;
     if (input.capacity) {

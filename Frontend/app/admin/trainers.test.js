@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createAdminStore } from "./store.js";
-import { pageView, shell } from "./views.js";
+import { loadView } from "../../test-utils/load-view.mjs";
+const { pageView, shell } = await loadView(new URL("./views.js", import.meta.url));
 import { createAdminApi } from "./api.js";
 const user = {
   id: "admin",

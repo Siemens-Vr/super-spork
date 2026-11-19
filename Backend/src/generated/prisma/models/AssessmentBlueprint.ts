@@ -29,11 +29,13 @@ export type AggregateAssessmentBlueprint = {
 export type AssessmentBlueprintAvgAggregateOutputType = {
   version: number | null
   durationMinutes: number | null
+  onDemandCapacity: number | null
 }
 
 export type AssessmentBlueprintSumAggregateOutputType = {
   version: number | null
   durationMinutes: number | null
+  onDemandCapacity: number | null
 }
 
 export type AssessmentBlueprintMinAggregateOutputType = {
@@ -47,6 +49,10 @@ export type AssessmentBlueprintMinAggregateOutputType = {
   active: boolean | null
   requiresAuthenticatedIdentity: boolean | null
   requiresAuthenticatedAcademic: boolean | null
+  onDemandEnabled: boolean | null
+  onDemandCapacity: number | null
+  requiresSupervision: boolean | null
+  requiresEquipment: boolean | null
   createdAt: Date | null
 }
 
@@ -61,6 +67,10 @@ export type AssessmentBlueprintMaxAggregateOutputType = {
   active: boolean | null
   requiresAuthenticatedIdentity: boolean | null
   requiresAuthenticatedAcademic: boolean | null
+  onDemandEnabled: boolean | null
+  onDemandCapacity: number | null
+  requiresSupervision: boolean | null
+  requiresEquipment: boolean | null
   createdAt: Date | null
 }
 
@@ -75,6 +85,10 @@ export type AssessmentBlueprintCountAggregateOutputType = {
   active: number
   requiresAuthenticatedIdentity: number
   requiresAuthenticatedAcademic: number
+  onDemandEnabled: number
+  onDemandCapacity: number
+  requiresSupervision: number
+  requiresEquipment: number
   interactionPolicy: number
   createdAt: number
   _all: number
@@ -84,11 +98,13 @@ export type AssessmentBlueprintCountAggregateOutputType = {
 export type AssessmentBlueprintAvgAggregateInputType = {
   version?: true
   durationMinutes?: true
+  onDemandCapacity?: true
 }
 
 export type AssessmentBlueprintSumAggregateInputType = {
   version?: true
   durationMinutes?: true
+  onDemandCapacity?: true
 }
 
 export type AssessmentBlueprintMinAggregateInputType = {
@@ -102,6 +118,10 @@ export type AssessmentBlueprintMinAggregateInputType = {
   active?: true
   requiresAuthenticatedIdentity?: true
   requiresAuthenticatedAcademic?: true
+  onDemandEnabled?: true
+  onDemandCapacity?: true
+  requiresSupervision?: true
+  requiresEquipment?: true
   createdAt?: true
 }
 
@@ -116,6 +136,10 @@ export type AssessmentBlueprintMaxAggregateInputType = {
   active?: true
   requiresAuthenticatedIdentity?: true
   requiresAuthenticatedAcademic?: true
+  onDemandEnabled?: true
+  onDemandCapacity?: true
+  requiresSupervision?: true
+  requiresEquipment?: true
   createdAt?: true
 }
 
@@ -130,6 +154,10 @@ export type AssessmentBlueprintCountAggregateInputType = {
   active?: true
   requiresAuthenticatedIdentity?: true
   requiresAuthenticatedAcademic?: true
+  onDemandEnabled?: true
+  onDemandCapacity?: true
+  requiresSupervision?: true
+  requiresEquipment?: true
   interactionPolicy?: true
   createdAt?: true
   _all?: true
@@ -232,6 +260,10 @@ export type AssessmentBlueprintGroupByOutputType = {
   active: boolean
   requiresAuthenticatedIdentity: boolean
   requiresAuthenticatedAcademic: boolean
+  onDemandEnabled: boolean
+  onDemandCapacity: number
+  requiresSupervision: boolean
+  requiresEquipment: boolean
   interactionPolicy: runtime.JsonValue
   createdAt: Date
   _count: AssessmentBlueprintCountAggregateOutputType | null
@@ -270,6 +302,10 @@ export type AssessmentBlueprintWhereInput = {
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandEnabled?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandCapacity?: Prisma.IntFilter<"AssessmentBlueprint"> | number
+  requiresSupervision?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  requiresEquipment?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
@@ -291,6 +327,10 @@ export type AssessmentBlueprintOrderByWithRelationInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  onDemandEnabled?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
+  requiresSupervision?: Prisma.SortOrder
+  requiresEquipment?: Prisma.SortOrder
   interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   jobRole?: Prisma.JobRoleOrderByWithRelationInput
@@ -316,6 +356,10 @@ export type AssessmentBlueprintWhereUniqueInput = Prisma.AtLeast<{
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandEnabled?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandCapacity?: Prisma.IntFilter<"AssessmentBlueprint"> | number
+  requiresSupervision?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  requiresEquipment?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
   jobRole?: Prisma.XOR<Prisma.JobRoleScalarRelationFilter, Prisma.JobRoleWhereInput>
@@ -337,6 +381,10 @@ export type AssessmentBlueprintOrderByWithAggregationInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  onDemandEnabled?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
+  requiresSupervision?: Prisma.SortOrder
+  requiresEquipment?: Prisma.SortOrder
   interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.AssessmentBlueprintCountOrderByAggregateInput
@@ -360,6 +408,10 @@ export type AssessmentBlueprintScalarWhereWithAggregatesInput = {
   active?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
+  onDemandEnabled?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
+  onDemandCapacity?: Prisma.IntWithAggregatesFilter<"AssessmentBlueprint"> | number
+  requiresSupervision?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
+  requiresEquipment?: Prisma.BoolWithAggregatesFilter<"AssessmentBlueprint"> | boolean
   interactionPolicy?: Prisma.JsonWithAggregatesFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AssessmentBlueprint"> | Date | string
 }
@@ -373,6 +425,10 @@ export type AssessmentBlueprintCreateInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -394,6 +450,10 @@ export type AssessmentBlueprintUncheckedCreateInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -411,6 +471,10 @@ export type AssessmentBlueprintUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -432,6 +496,10 @@ export type AssessmentBlueprintUncheckedUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -451,6 +519,10 @@ export type AssessmentBlueprintCreateManyInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -464,6 +536,10 @@ export type AssessmentBlueprintUpdateManyMutationInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,6 +555,10 @@ export type AssessmentBlueprintUncheckedUpdateManyInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -509,6 +589,10 @@ export type AssessmentBlueprintCountOrderByAggregateInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  onDemandEnabled?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
+  requiresSupervision?: Prisma.SortOrder
+  requiresEquipment?: Prisma.SortOrder
   interactionPolicy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -516,6 +600,7 @@ export type AssessmentBlueprintCountOrderByAggregateInput = {
 export type AssessmentBlueprintAvgOrderByAggregateInput = {
   version?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
 }
 
 export type AssessmentBlueprintMaxOrderByAggregateInput = {
@@ -529,6 +614,10 @@ export type AssessmentBlueprintMaxOrderByAggregateInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  onDemandEnabled?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
+  requiresSupervision?: Prisma.SortOrder
+  requiresEquipment?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -543,12 +632,17 @@ export type AssessmentBlueprintMinOrderByAggregateInput = {
   active?: Prisma.SortOrder
   requiresAuthenticatedIdentity?: Prisma.SortOrder
   requiresAuthenticatedAcademic?: Prisma.SortOrder
+  onDemandEnabled?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
+  requiresSupervision?: Prisma.SortOrder
+  requiresEquipment?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type AssessmentBlueprintSumOrderByAggregateInput = {
   version?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
+  onDemandCapacity?: Prisma.SortOrder
 }
 
 export type AssessmentBlueprintScalarRelationFilter = {
@@ -705,6 +799,10 @@ export type AssessmentBlueprintCreateWithoutJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   framework: Prisma.CompetencyFrameworkCreateNestedOneWithoutBlueprintsInput
@@ -724,6 +822,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -772,6 +874,10 @@ export type AssessmentBlueprintScalarWhereInput = {
   active?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandEnabled?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  onDemandCapacity?: Prisma.IntFilter<"AssessmentBlueprint"> | number
+  requiresSupervision?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
+  requiresEquipment?: Prisma.BoolFilter<"AssessmentBlueprint"> | boolean
   interactionPolicy?: Prisma.JsonFilter<"AssessmentBlueprint">
   createdAt?: Prisma.DateTimeFilter<"AssessmentBlueprint"> | Date | string
 }
@@ -785,6 +891,10 @@ export type AssessmentBlueprintCreateWithoutFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -804,6 +914,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -847,6 +961,10 @@ export type AssessmentBlueprintCreateWithoutAvailabilityInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -867,6 +985,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutAvailabilityInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutBlueprintInput
@@ -899,6 +1021,10 @@ export type AssessmentBlueprintUpdateWithoutAvailabilityInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -919,6 +1045,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutAvailabilityInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -935,6 +1065,10 @@ export type AssessmentBlueprintCreateWithoutBookingsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -955,6 +1089,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutBookingsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -987,6 +1125,10 @@ export type AssessmentBlueprintUpdateWithoutBookingsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -1007,6 +1149,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutBookingsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -1023,6 +1169,10 @@ export type AssessmentBlueprintCreateWithoutAttemptsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -1043,6 +1193,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutAttemptsInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -1075,6 +1229,10 @@ export type AssessmentBlueprintUpdateWithoutAttemptsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -1095,6 +1253,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutAttemptsInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -1111,6 +1273,10 @@ export type AssessmentBlueprintCreateWithoutScenariosInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   jobRole: Prisma.JobRoleCreateNestedOneWithoutBlueprintsInput
@@ -1131,6 +1297,10 @@ export type AssessmentBlueprintUncheckedCreateWithoutScenariosInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedCreateNestedManyWithoutBlueprintInput
@@ -1163,6 +1333,10 @@ export type AssessmentBlueprintUpdateWithoutScenariosInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -1183,6 +1357,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutScenariosInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -1200,6 +1378,10 @@ export type AssessmentBlueprintCreateManyJobRoleInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -1213,6 +1395,10 @@ export type AssessmentBlueprintUpdateWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   framework?: Prisma.CompetencyFrameworkUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -1232,6 +1418,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -1250,6 +1440,10 @@ export type AssessmentBlueprintUncheckedUpdateManyWithoutJobRoleInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1264,6 +1458,10 @@ export type AssessmentBlueprintCreateManyFrameworkInput = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: number
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
@@ -1277,6 +1475,10 @@ export type AssessmentBlueprintUpdateWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobRole?: Prisma.JobRoleUpdateOneRequiredWithoutBlueprintsNestedInput
@@ -1296,6 +1498,10 @@ export type AssessmentBlueprintUncheckedUpdateWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AssessmentAvailabilityUncheckedUpdateManyWithoutBlueprintNestedInput
@@ -1314,6 +1520,10 @@ export type AssessmentBlueprintUncheckedUpdateManyWithoutFrameworkInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedIdentity?: Prisma.BoolFieldUpdateOperationsInput | boolean
   requiresAuthenticatedAcademic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  onDemandCapacity?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresSupervision?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   interactionPolicy?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1387,6 +1597,10 @@ export type AssessmentBlueprintSelect<ExtArgs extends runtime.Types.Extensions.I
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: boolean
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
@@ -1409,6 +1623,10 @@ export type AssessmentBlueprintSelectCreateManyAndReturn<ExtArgs extends runtime
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: boolean
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
@@ -1426,6 +1644,10 @@ export type AssessmentBlueprintSelectUpdateManyAndReturn<ExtArgs extends runtime
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: boolean
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: boolean
   createdAt?: boolean
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
@@ -1443,11 +1665,15 @@ export type AssessmentBlueprintSelectScalar = {
   active?: boolean
   requiresAuthenticatedIdentity?: boolean
   requiresAuthenticatedAcademic?: boolean
+  onDemandEnabled?: boolean
+  onDemandCapacity?: boolean
+  requiresSupervision?: boolean
+  requiresEquipment?: boolean
   interactionPolicy?: boolean
   createdAt?: boolean
 }
 
-export type AssessmentBlueprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "frameworkId" | "version" | "title" | "durationMinutes" | "instructions" | "active" | "requiresAuthenticatedIdentity" | "requiresAuthenticatedAcademic" | "interactionPolicy" | "createdAt", ExtArgs["result"]["assessmentBlueprint"]>
+export type AssessmentBlueprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "jobRoleId" | "frameworkId" | "version" | "title" | "durationMinutes" | "instructions" | "active" | "requiresAuthenticatedIdentity" | "requiresAuthenticatedAcademic" | "onDemandEnabled" | "onDemandCapacity" | "requiresSupervision" | "requiresEquipment" | "interactionPolicy" | "createdAt", ExtArgs["result"]["assessmentBlueprint"]>
 export type AssessmentBlueprintInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobRole?: boolean | Prisma.JobRoleDefaultArgs<ExtArgs>
   framework?: boolean | Prisma.CompetencyFrameworkDefaultArgs<ExtArgs>
@@ -1487,6 +1713,10 @@ export type $AssessmentBlueprintPayload<ExtArgs extends runtime.Types.Extensions
     active: boolean
     requiresAuthenticatedIdentity: boolean
     requiresAuthenticatedAcademic: boolean
+    onDemandEnabled: boolean
+    onDemandCapacity: number
+    requiresSupervision: boolean
+    requiresEquipment: boolean
     interactionPolicy: runtime.JsonValue
     createdAt: Date
   }, ExtArgs["result"]["assessmentBlueprint"]>
@@ -1928,6 +2158,10 @@ export interface AssessmentBlueprintFieldRefs {
   readonly active: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
   readonly requiresAuthenticatedIdentity: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
   readonly requiresAuthenticatedAcademic: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
+  readonly onDemandEnabled: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
+  readonly onDemandCapacity: Prisma.FieldRef<"AssessmentBlueprint", 'Int'>
+  readonly requiresSupervision: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
+  readonly requiresEquipment: Prisma.FieldRef<"AssessmentBlueprint", 'Boolean'>
   readonly interactionPolicy: Prisma.FieldRef<"AssessmentBlueprint", 'Json'>
   readonly createdAt: Prisma.FieldRef<"AssessmentBlueprint", 'DateTime'>
 }

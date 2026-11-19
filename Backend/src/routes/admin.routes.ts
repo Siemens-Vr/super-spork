@@ -7,7 +7,11 @@ import { pagination } from '../validators/career.schema.js';
 import { uuid } from '../validators/auth.schema.js';
 import { reviewSchema, evidenceSchema } from '../validators/document.schema.js';
 import * as v from '../validators/admin.schema.js';
-import { availabilitySchema, reasonSchema } from '../validators/assessment.schema.js';
+import {
+  availabilitySchema,
+  reasonSchema,
+  deliverySchema,
+} from '../validators/assessment.schema.js';
 import { validate } from '../middleware/validate.js';
 import { reviewDocument, publicDocument } from '../services/document.service.js';
 import * as docs from '../controllers/document.controller.js';
@@ -296,10 +300,21 @@ adminRouter.post(
     res.json({ data });
   },
 );
+adminRouter.patch(
+  '/blueprints/:id/delivery',
+  authorize('assessments.manage'),
+  validate(deliverySchema),
+  async (req, res) => {
+    res.json({
+      data: await scheduling.updateDelivery(req.principal!.id, uuid.parse(req.params.id), req.body),
+    });
+  },
+);
 adminRouter.get('/availability', authorize('assessments.manage'), async (req, res) => {
   const p = pagination.parse(req.query);
   res.json({
     data: await prisma.assessmentAvailability.findMany({
+      where: { onDemand: false },
       take: p.limit,
       skip: (p.page - 1) * p.limit,
       orderBy: { startsAt: 'asc' },
@@ -358,7 +373,7 @@ adminRouter.get('/bookings', authorize('assessments.manage'), async (req, res) =
         : {}),
     },
     include: {
-      target: { select: { attempt: { select: { id: true } } } },
+      target: { select: { attempt: { select: { id: true, startedAt: true } } } },
       blueprint: { include: { jobRole: true } },
       slot: { include: { availability: true } },
       events: { orderBy: { createdAt: 'asc' } },

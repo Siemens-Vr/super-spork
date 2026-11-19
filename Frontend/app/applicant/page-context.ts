@@ -88,6 +88,7 @@ export interface CareerState {
 }
 
 export interface AssessmentBooking {
+  onDemand?: boolean; setupExpiresAt?: string | null;
   bookingId: string; slotId?: string; status: string; startsAt: string; endsAt: string; timezone: string; durationMinutes: number; instructions: string; jobRole: { title: string }; blueprint: { id: string; title: string }; rescheduleCount: number;
   changePolicy?: { deadline: string; reschedulesRemaining: number };
   events: { action: string; reason?: string | null; createdAt: string }[];
@@ -96,7 +97,7 @@ export interface BookingState {
   status: string; busy: boolean; error: string; notice: string; requiresMfa?: boolean; uncertain: boolean; mode: string; reason: string; selectedSlot: string; blueprintId: string;
   bookings: AssessmentBooking[];
   slots: { id: string; startsAt: string; endsAt: string; timezone: string; remainingCapacity: number }[];
-  eligibility: { reasons: string[]; attemptId: string | null; blueprints: { blueprintId: string; reasons: string[] }[]; identityRecovery?: { documentId: string } | null } | null;
+  eligibility: { reasons: string[]; attemptId: string | null; blueprints: { blueprintId: string; reasons: string[]; onDemand?: { enabled: boolean; available: boolean; remainingCapacity: number; durationMinutes: number; setupMinutes: number; reasons: string[] } }[]; identityRecovery?: { documentId: string } | null } | null;
 }
 
 export interface PageContext {

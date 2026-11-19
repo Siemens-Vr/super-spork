@@ -4,6 +4,8 @@ Each assessment has one career target. Its industries, employers and educational
 
 ## Applicant workflow
 
+Selected assessments can also offer [on-demand admission](on-demand-assessments.md), with administrator-configured concurrent capacity, a five-minute device/consent setup reservation and the full interview duration at start. Scheduled bookings remain available and are required for assessments needing supervision or equipment.
+
 All endpoints are under `/api/v1`. Authenticate with a verified applicant account, use the same browser/cookie jar, and provide CSRF for mutations. Swagger handles CSRF automatically.
 
 1. Complete the profile, including `discipline`, and submit identity. Booking/start require a current, clean, non-rejected identity, with human authentication when required by the assessment. Submit qualifications through `/documents` and wait for clean scans before selecting them.
