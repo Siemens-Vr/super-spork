@@ -81,6 +81,7 @@ export type TrainerProfileCountAggregateOutputType = {
   version: number
   submittedAt: number
   reviewedAt: number
+  workingHours: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -142,6 +143,7 @@ export type TrainerProfileCountAggregateInputType = {
   version?: true
   submittedAt?: true
   reviewedAt?: true
+  workingHours?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -246,6 +248,7 @@ export type TrainerProfileGroupByOutputType = {
   version: number
   submittedAt: Date | null
   reviewedAt: Date | null
+  workingHours: runtime.JsonValue
   createdAt: Date
   updatedAt: Date
   _count: TrainerProfileCountAggregateOutputType | null
@@ -286,9 +289,11 @@ export type TrainerProfileWhereInput = {
   version?: Prisma.IntFilter<"TrainerProfile"> | number
   submittedAt?: Prisma.DateTimeNullableFilter<"TrainerProfile"> | Date | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"TrainerProfile"> | Date | string | null
+  workingHours?: Prisma.JsonFilter<"TrainerProfile">
   createdAt?: Prisma.DateTimeFilter<"TrainerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TrainerProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  teachingSkills?: Prisma.TrainerSkillListRelationFilter
   qualifications?: Prisma.TrainerQualificationListRelationFilter
   reviews?: Prisma.TrainerReviewListRelationFilter
 }
@@ -306,9 +311,11 @@ export type TrainerProfileOrderByWithRelationInput = {
   version?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  workingHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  teachingSkills?: Prisma.TrainerSkillOrderByRelationAggregateInput
   qualifications?: Prisma.TrainerQualificationOrderByRelationAggregateInput
   reviews?: Prisma.TrainerReviewOrderByRelationAggregateInput
 }
@@ -329,9 +336,11 @@ export type TrainerProfileWhereUniqueInput = Prisma.AtLeast<{
   version?: Prisma.IntFilter<"TrainerProfile"> | number
   submittedAt?: Prisma.DateTimeNullableFilter<"TrainerProfile"> | Date | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"TrainerProfile"> | Date | string | null
+  workingHours?: Prisma.JsonFilter<"TrainerProfile">
   createdAt?: Prisma.DateTimeFilter<"TrainerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TrainerProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  teachingSkills?: Prisma.TrainerSkillListRelationFilter
   qualifications?: Prisma.TrainerQualificationListRelationFilter
   reviews?: Prisma.TrainerReviewListRelationFilter
 }, "id" | "userId">
@@ -349,6 +358,7 @@ export type TrainerProfileOrderByWithAggregationInput = {
   version?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  workingHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TrainerProfileCountOrderByAggregateInput
@@ -374,6 +384,7 @@ export type TrainerProfileScalarWhereWithAggregatesInput = {
   version?: Prisma.IntWithAggregatesFilter<"TrainerProfile"> | number
   submittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TrainerProfile"> | Date | string | null
   reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TrainerProfile"> | Date | string | null
+  workingHours?: Prisma.JsonWithAggregatesFilter<"TrainerProfile">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TrainerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TrainerProfile"> | Date | string
 }
@@ -390,9 +401,11 @@ export type TrainerProfileCreateInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTrainerProfileInput
+  teachingSkills?: Prisma.TrainerSkillCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationCreateNestedManyWithoutTrainerProfileInput
   reviews?: Prisma.TrainerReviewCreateNestedManyWithoutTrainerProfileInput
 }
@@ -410,8 +423,10 @@ export type TrainerProfileUncheckedCreateInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationUncheckedCreateNestedManyWithoutTrainerProfileInput
   reviews?: Prisma.TrainerReviewUncheckedCreateNestedManyWithoutTrainerProfileInput
 }
@@ -428,9 +443,11 @@ export type TrainerProfileUpdateInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTrainerProfileNestedInput
+  teachingSkills?: Prisma.TrainerSkillUpdateManyWithoutTrainerNestedInput
   qualifications?: Prisma.TrainerQualificationUpdateManyWithoutTrainerProfileNestedInput
   reviews?: Prisma.TrainerReviewUpdateManyWithoutTrainerProfileNestedInput
 }
@@ -448,8 +465,10 @@ export type TrainerProfileUncheckedUpdateInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedUpdateManyWithoutTrainerNestedInput
   qualifications?: Prisma.TrainerQualificationUncheckedUpdateManyWithoutTrainerProfileNestedInput
   reviews?: Prisma.TrainerReviewUncheckedUpdateManyWithoutTrainerProfileNestedInput
 }
@@ -467,6 +486,7 @@ export type TrainerProfileCreateManyInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -483,6 +503,7 @@ export type TrainerProfileUpdateManyMutationInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -500,6 +521,7 @@ export type TrainerProfileUncheckedUpdateManyInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -522,6 +544,7 @@ export type TrainerProfileCountOrderByAggregateInput = {
   version?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
+  workingHours?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -646,6 +669,20 @@ export type TrainerProfileUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TrainerProfileUpdateToOneWithWhereWithoutReviewsInput, Prisma.TrainerProfileUpdateWithoutReviewsInput>, Prisma.TrainerProfileUncheckedUpdateWithoutReviewsInput>
 }
 
+export type TrainerProfileCreateNestedOneWithoutTeachingSkillsInput = {
+  create?: Prisma.XOR<Prisma.TrainerProfileCreateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedCreateWithoutTeachingSkillsInput>
+  connectOrCreate?: Prisma.TrainerProfileCreateOrConnectWithoutTeachingSkillsInput
+  connect?: Prisma.TrainerProfileWhereUniqueInput
+}
+
+export type TrainerProfileUpdateOneRequiredWithoutTeachingSkillsNestedInput = {
+  create?: Prisma.XOR<Prisma.TrainerProfileCreateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedCreateWithoutTeachingSkillsInput>
+  connectOrCreate?: Prisma.TrainerProfileCreateOrConnectWithoutTeachingSkillsInput
+  upsert?: Prisma.TrainerProfileUpsertWithoutTeachingSkillsInput
+  connect?: Prisma.TrainerProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrainerProfileUpdateToOneWithWhereWithoutTeachingSkillsInput, Prisma.TrainerProfileUpdateWithoutTeachingSkillsInput>, Prisma.TrainerProfileUncheckedUpdateWithoutTeachingSkillsInput>
+}
+
 export type TrainerProfileCreateWithoutUserInput = {
   id?: string
   headline?: string
@@ -658,8 +695,10 @@ export type TrainerProfileCreateWithoutUserInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  teachingSkills?: Prisma.TrainerSkillCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationCreateNestedManyWithoutTrainerProfileInput
   reviews?: Prisma.TrainerReviewCreateNestedManyWithoutTrainerProfileInput
 }
@@ -676,8 +715,10 @@ export type TrainerProfileUncheckedCreateWithoutUserInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationUncheckedCreateNestedManyWithoutTrainerProfileInput
   reviews?: Prisma.TrainerReviewUncheckedCreateNestedManyWithoutTrainerProfileInput
 }
@@ -710,8 +751,10 @@ export type TrainerProfileUpdateWithoutUserInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teachingSkills?: Prisma.TrainerSkillUpdateManyWithoutTrainerNestedInput
   qualifications?: Prisma.TrainerQualificationUpdateManyWithoutTrainerProfileNestedInput
   reviews?: Prisma.TrainerReviewUpdateManyWithoutTrainerProfileNestedInput
 }
@@ -728,8 +771,10 @@ export type TrainerProfileUncheckedUpdateWithoutUserInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedUpdateManyWithoutTrainerNestedInput
   qualifications?: Prisma.TrainerQualificationUncheckedUpdateManyWithoutTrainerProfileNestedInput
   reviews?: Prisma.TrainerReviewUncheckedUpdateManyWithoutTrainerProfileNestedInput
 }
@@ -746,9 +791,11 @@ export type TrainerProfileCreateWithoutQualificationsInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTrainerProfileInput
+  teachingSkills?: Prisma.TrainerSkillCreateNestedManyWithoutTrainerInput
   reviews?: Prisma.TrainerReviewCreateNestedManyWithoutTrainerProfileInput
 }
 
@@ -765,8 +812,10 @@ export type TrainerProfileUncheckedCreateWithoutQualificationsInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedCreateNestedManyWithoutTrainerInput
   reviews?: Prisma.TrainerReviewUncheckedCreateNestedManyWithoutTrainerProfileInput
 }
 
@@ -798,9 +847,11 @@ export type TrainerProfileUpdateWithoutQualificationsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTrainerProfileNestedInput
+  teachingSkills?: Prisma.TrainerSkillUpdateManyWithoutTrainerNestedInput
   reviews?: Prisma.TrainerReviewUpdateManyWithoutTrainerProfileNestedInput
 }
 
@@ -817,8 +868,10 @@ export type TrainerProfileUncheckedUpdateWithoutQualificationsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedUpdateManyWithoutTrainerNestedInput
   reviews?: Prisma.TrainerReviewUncheckedUpdateManyWithoutTrainerProfileNestedInput
 }
 
@@ -834,9 +887,11 @@ export type TrainerProfileCreateWithoutReviewsInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTrainerProfileInput
+  teachingSkills?: Prisma.TrainerSkillCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationCreateNestedManyWithoutTrainerProfileInput
 }
 
@@ -853,8 +908,10 @@ export type TrainerProfileUncheckedCreateWithoutReviewsInput = {
   version?: number
   submittedAt?: Date | string | null
   reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedCreateNestedManyWithoutTrainerInput
   qualifications?: Prisma.TrainerQualificationUncheckedCreateNestedManyWithoutTrainerProfileInput
 }
 
@@ -886,9 +943,11 @@ export type TrainerProfileUpdateWithoutReviewsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTrainerProfileNestedInput
+  teachingSkills?: Prisma.TrainerSkillUpdateManyWithoutTrainerNestedInput
   qualifications?: Prisma.TrainerQualificationUpdateManyWithoutTrainerProfileNestedInput
 }
 
@@ -905,9 +964,107 @@ export type TrainerProfileUncheckedUpdateWithoutReviewsInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teachingSkills?: Prisma.TrainerSkillUncheckedUpdateManyWithoutTrainerNestedInput
+  qualifications?: Prisma.TrainerQualificationUncheckedUpdateManyWithoutTrainerProfileNestedInput
+}
+
+export type TrainerProfileCreateWithoutTeachingSkillsInput = {
+  id?: string
+  headline?: string
+  biography?: string
+  country?: string
+  region?: string
+  yearsExperience?: number
+  expertise?: Prisma.TrainerProfileCreateexpertiseInput | string[]
+  status?: $Enums.TrainerStatus
+  version?: number
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutTrainerProfileInput
+  qualifications?: Prisma.TrainerQualificationCreateNestedManyWithoutTrainerProfileInput
+  reviews?: Prisma.TrainerReviewCreateNestedManyWithoutTrainerProfileInput
+}
+
+export type TrainerProfileUncheckedCreateWithoutTeachingSkillsInput = {
+  id?: string
+  userId: string
+  headline?: string
+  biography?: string
+  country?: string
+  region?: string
+  yearsExperience?: number
+  expertise?: Prisma.TrainerProfileCreateexpertiseInput | string[]
+  status?: $Enums.TrainerStatus
+  version?: number
+  submittedAt?: Date | string | null
+  reviewedAt?: Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  qualifications?: Prisma.TrainerQualificationUncheckedCreateNestedManyWithoutTrainerProfileInput
+  reviews?: Prisma.TrainerReviewUncheckedCreateNestedManyWithoutTrainerProfileInput
+}
+
+export type TrainerProfileCreateOrConnectWithoutTeachingSkillsInput = {
+  where: Prisma.TrainerProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrainerProfileCreateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedCreateWithoutTeachingSkillsInput>
+}
+
+export type TrainerProfileUpsertWithoutTeachingSkillsInput = {
+  update: Prisma.XOR<Prisma.TrainerProfileUpdateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedUpdateWithoutTeachingSkillsInput>
+  create: Prisma.XOR<Prisma.TrainerProfileCreateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedCreateWithoutTeachingSkillsInput>
+  where?: Prisma.TrainerProfileWhereInput
+}
+
+export type TrainerProfileUpdateToOneWithWhereWithoutTeachingSkillsInput = {
+  where?: Prisma.TrainerProfileWhereInput
+  data: Prisma.XOR<Prisma.TrainerProfileUpdateWithoutTeachingSkillsInput, Prisma.TrainerProfileUncheckedUpdateWithoutTeachingSkillsInput>
+}
+
+export type TrainerProfileUpdateWithoutTeachingSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.StringFieldUpdateOperationsInput | string
+  biography?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  expertise?: Prisma.TrainerProfileUpdateexpertiseInput | string[]
+  status?: Prisma.EnumTrainerStatusFieldUpdateOperationsInput | $Enums.TrainerStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutTrainerProfileNestedInput
+  qualifications?: Prisma.TrainerQualificationUpdateManyWithoutTrainerProfileNestedInput
+  reviews?: Prisma.TrainerReviewUpdateManyWithoutTrainerProfileNestedInput
+}
+
+export type TrainerProfileUncheckedUpdateWithoutTeachingSkillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  headline?: Prisma.StringFieldUpdateOperationsInput | string
+  biography?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  region?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  expertise?: Prisma.TrainerProfileUpdateexpertiseInput | string[]
+  status?: Prisma.EnumTrainerStatusFieldUpdateOperationsInput | $Enums.TrainerStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workingHours?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   qualifications?: Prisma.TrainerQualificationUncheckedUpdateManyWithoutTrainerProfileNestedInput
+  reviews?: Prisma.TrainerReviewUncheckedUpdateManyWithoutTrainerProfileNestedInput
 }
 
 
@@ -916,11 +1073,13 @@ export type TrainerProfileUncheckedUpdateWithoutReviewsInput = {
  */
 
 export type TrainerProfileCountOutputType = {
+  teachingSkills: number
   qualifications: number
   reviews: number
 }
 
 export type TrainerProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  teachingSkills?: boolean | TrainerProfileCountOutputTypeCountTeachingSkillsArgs
   qualifications?: boolean | TrainerProfileCountOutputTypeCountQualificationsArgs
   reviews?: boolean | TrainerProfileCountOutputTypeCountReviewsArgs
 }
@@ -933,6 +1092,13 @@ export type TrainerProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
    * Select specific fields to fetch from the TrainerProfileCountOutputType
    */
   select?: Prisma.TrainerProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TrainerProfileCountOutputType without action
+ */
+export type TrainerProfileCountOutputTypeCountTeachingSkillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrainerSkillWhereInput
 }
 
 /**
@@ -963,9 +1129,11 @@ export type TrainerProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   version?: boolean
   submittedAt?: boolean
   reviewedAt?: boolean
+  workingHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  teachingSkills?: boolean | Prisma.TrainerProfile$teachingSkillsArgs<ExtArgs>
   qualifications?: boolean | Prisma.TrainerProfile$qualificationsArgs<ExtArgs>
   reviews?: boolean | Prisma.TrainerProfile$reviewsArgs<ExtArgs>
   _count?: boolean | Prisma.TrainerProfileCountOutputTypeDefaultArgs<ExtArgs>
@@ -984,6 +1152,7 @@ export type TrainerProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   version?: boolean
   submittedAt?: boolean
   reviewedAt?: boolean
+  workingHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1002,6 +1171,7 @@ export type TrainerProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   version?: boolean
   submittedAt?: boolean
   reviewedAt?: boolean
+  workingHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1020,13 +1190,15 @@ export type TrainerProfileSelectScalar = {
   version?: boolean
   submittedAt?: boolean
   reviewedAt?: boolean
+  workingHours?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TrainerProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "headline" | "biography" | "country" | "region" | "yearsExperience" | "expertise" | "status" | "version" | "submittedAt" | "reviewedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["trainerProfile"]>
+export type TrainerProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "headline" | "biography" | "country" | "region" | "yearsExperience" | "expertise" | "status" | "version" | "submittedAt" | "reviewedAt" | "workingHours" | "createdAt" | "updatedAt", ExtArgs["result"]["trainerProfile"]>
 export type TrainerProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  teachingSkills?: boolean | Prisma.TrainerProfile$teachingSkillsArgs<ExtArgs>
   qualifications?: boolean | Prisma.TrainerProfile$qualificationsArgs<ExtArgs>
   reviews?: boolean | Prisma.TrainerProfile$reviewsArgs<ExtArgs>
   _count?: boolean | Prisma.TrainerProfileCountOutputTypeDefaultArgs<ExtArgs>
@@ -1042,6 +1214,7 @@ export type $TrainerProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "TrainerProfile"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    teachingSkills: Prisma.$TrainerSkillPayload<ExtArgs>[]
     qualifications: Prisma.$TrainerQualificationPayload<ExtArgs>[]
     reviews: Prisma.$TrainerReviewPayload<ExtArgs>[]
   }
@@ -1058,6 +1231,7 @@ export type $TrainerProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     version: number
     submittedAt: Date | null
     reviewedAt: Date | null
+    workingHours: runtime.JsonValue
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["trainerProfile"]>
@@ -1455,6 +1629,7 @@ readonly fields: TrainerProfileFieldRefs;
 export interface Prisma__TrainerProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teachingSkills<T extends Prisma.TrainerProfile$teachingSkillsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrainerProfile$teachingSkillsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainerSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   qualifications<T extends Prisma.TrainerProfile$qualificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrainerProfile$qualificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainerQualificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.TrainerProfile$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TrainerProfile$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainerReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1498,6 +1673,7 @@ export interface TrainerProfileFieldRefs {
   readonly version: Prisma.FieldRef<"TrainerProfile", 'Int'>
   readonly submittedAt: Prisma.FieldRef<"TrainerProfile", 'DateTime'>
   readonly reviewedAt: Prisma.FieldRef<"TrainerProfile", 'DateTime'>
+  readonly workingHours: Prisma.FieldRef<"TrainerProfile", 'Json'>
   readonly createdAt: Prisma.FieldRef<"TrainerProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TrainerProfile", 'DateTime'>
 }
@@ -1898,6 +2074,30 @@ export type TrainerProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many TrainerProfiles to delete.
    */
   limit?: number
+}
+
+/**
+ * TrainerProfile.teachingSkills
+ */
+export type TrainerProfile$teachingSkillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TrainerSkill
+   */
+  select?: Prisma.TrainerSkillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TrainerSkill
+   */
+  omit?: Prisma.TrainerSkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrainerSkillInclude<ExtArgs> | null
+  where?: Prisma.TrainerSkillWhereInput
+  orderBy?: Prisma.TrainerSkillOrderByWithRelationInput | Prisma.TrainerSkillOrderByWithRelationInput[]
+  cursor?: Prisma.TrainerSkillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TrainerSkillScalarFieldEnum | Prisma.TrainerSkillScalarFieldEnum[]
 }
 
 /**

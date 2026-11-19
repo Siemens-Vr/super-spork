@@ -1,0 +1,10 @@
+.employer-content { border: 0; padding: 0; margin: 0; min-width: 0; }
+.employer-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1.25rem; }
+.employer-filters form { display: grid; gap: .6rem; align-content: start; }
+.employer-filters label { display: grid; gap: .35rem; }
+.employer-filters select, .employer-filters input { width: 100%; }
+.employer-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin-block: 1rem; }
+.employer-results ul { padding-inline-start: 1.25rem; }
+#released-profile { margin-top: 1rem; overflow-wrap: anywhere; }
+#released-profile dt { font-weight: 700; }
+#released-profile dd { margin: 0 0 .7rem; white-space: pre-wrap; }

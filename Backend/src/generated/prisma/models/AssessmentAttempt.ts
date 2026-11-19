@@ -268,6 +268,7 @@ export type AssessmentAttemptWhereInput = {
   assessor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   interaction?: Prisma.XOR<Prisma.AssessmentInteractionSessionNullableScalarRelationFilter, Prisma.AssessmentInteractionSessionWhereInput> | null
   accommodation?: Prisma.XOR<Prisma.AssessmentAccommodationNullableScalarRelationFilter, Prisma.AssessmentAccommodationWhereInput> | null
+  mockInterview?: Prisma.XOR<Prisma.MockInterviewNullableScalarRelationFilter, Prisma.MockInterviewWhereInput> | null
 }
 
 export type AssessmentAttemptOrderByWithRelationInput = {
@@ -290,6 +291,7 @@ export type AssessmentAttemptOrderByWithRelationInput = {
   assessor?: Prisma.UserOrderByWithRelationInput
   interaction?: Prisma.AssessmentInteractionSessionOrderByWithRelationInput
   accommodation?: Prisma.AssessmentAccommodationOrderByWithRelationInput
+  mockInterview?: Prisma.MockInterviewOrderByWithRelationInput
 }
 
 export type AssessmentAttemptWhereUniqueInput = Prisma.AtLeast<{
@@ -315,6 +317,7 @@ export type AssessmentAttemptWhereUniqueInput = Prisma.AtLeast<{
   assessor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   interaction?: Prisma.XOR<Prisma.AssessmentInteractionSessionNullableScalarRelationFilter, Prisma.AssessmentInteractionSessionWhereInput> | null
   accommodation?: Prisma.XOR<Prisma.AssessmentAccommodationNullableScalarRelationFilter, Prisma.AssessmentAccommodationWhereInput> | null
+  mockInterview?: Prisma.XOR<Prisma.MockInterviewNullableScalarRelationFilter, Prisma.MockInterviewWhereInput> | null
 }, "id" | "targetId">
 
 export type AssessmentAttemptOrderByWithAggregationInput = {
@@ -370,6 +373,7 @@ export type AssessmentAttemptCreateInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateInput = {
@@ -389,6 +393,7 @@ export type AssessmentAttemptUncheckedCreateInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUpdateInput = {
@@ -408,6 +413,7 @@ export type AssessmentAttemptUpdateInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateInput = {
@@ -427,6 +433,7 @@ export type AssessmentAttemptUncheckedUpdateInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateManyInput = {
@@ -730,6 +737,20 @@ export type AssessmentAttemptUpdateOneRequiredWithoutInteractionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentAttemptUpdateToOneWithWhereWithoutInteractionInput, Prisma.AssessmentAttemptUpdateWithoutInteractionInput>, Prisma.AssessmentAttemptUncheckedUpdateWithoutInteractionInput>
 }
 
+export type AssessmentAttemptCreateNestedOneWithoutMockInterviewInput = {
+  create?: Prisma.XOR<Prisma.AssessmentAttemptCreateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedCreateWithoutMockInterviewInput>
+  connectOrCreate?: Prisma.AssessmentAttemptCreateOrConnectWithoutMockInterviewInput
+  connect?: Prisma.AssessmentAttemptWhereUniqueInput
+}
+
+export type AssessmentAttemptUpdateOneRequiredWithoutMockInterviewNestedInput = {
+  create?: Prisma.XOR<Prisma.AssessmentAttemptCreateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedCreateWithoutMockInterviewInput>
+  connectOrCreate?: Prisma.AssessmentAttemptCreateOrConnectWithoutMockInterviewInput
+  upsert?: Prisma.AssessmentAttemptUpsertWithoutMockInterviewInput
+  connect?: Prisma.AssessmentAttemptWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AssessmentAttemptUpdateToOneWithWhereWithoutMockInterviewInput, Prisma.AssessmentAttemptUpdateWithoutMockInterviewInput>, Prisma.AssessmentAttemptUncheckedUpdateWithoutMockInterviewInput>
+}
+
 export type AssessmentAttemptCreateWithoutAssessorInput = {
   id?: string
   contextSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -746,6 +767,7 @@ export type AssessmentAttemptCreateWithoutAssessorInput = {
   learningPlan?: Prisma.LearningPlanCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutAssessorInput = {
@@ -764,6 +786,7 @@ export type AssessmentAttemptUncheckedCreateWithoutAssessorInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutAssessorInput = {
@@ -825,6 +848,7 @@ export type AssessmentAttemptCreateWithoutBlueprintInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutBlueprintInput = {
@@ -843,6 +867,7 @@ export type AssessmentAttemptUncheckedCreateWithoutBlueprintInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutBlueprintInput = {
@@ -887,6 +912,7 @@ export type AssessmentAttemptCreateWithoutTargetInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutTargetInput = {
@@ -905,6 +931,7 @@ export type AssessmentAttemptUncheckedCreateWithoutTargetInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutTargetInput = {
@@ -939,6 +966,7 @@ export type AssessmentAttemptUpdateWithoutTargetInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutTargetInput = {
@@ -957,6 +985,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutTargetInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateWithoutRequirementsInput = {
@@ -975,6 +1004,7 @@ export type AssessmentAttemptCreateWithoutRequirementsInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutRequirementsInput = {
@@ -993,6 +1023,7 @@ export type AssessmentAttemptUncheckedCreateWithoutRequirementsInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutRequirementsInput = {
@@ -1027,6 +1058,7 @@ export type AssessmentAttemptUpdateWithoutRequirementsInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutRequirementsInput = {
@@ -1045,6 +1077,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutRequirementsInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateWithoutResultsInput = {
@@ -1063,6 +1096,7 @@ export type AssessmentAttemptCreateWithoutResultsInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutResultsInput = {
@@ -1081,6 +1115,7 @@ export type AssessmentAttemptUncheckedCreateWithoutResultsInput = {
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutResultsInput = {
@@ -1115,6 +1150,7 @@ export type AssessmentAttemptUpdateWithoutResultsInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutResultsInput = {
@@ -1133,6 +1169,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutResultsInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateWithoutLearningPlanInput = {
@@ -1151,6 +1188,7 @@ export type AssessmentAttemptCreateWithoutLearningPlanInput = {
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutLearningPlanInput = {
@@ -1169,6 +1207,7 @@ export type AssessmentAttemptUncheckedCreateWithoutLearningPlanInput = {
   results?: Prisma.AssessmentCompetencyResultUncheckedCreateNestedManyWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutLearningPlanInput = {
@@ -1203,6 +1242,7 @@ export type AssessmentAttemptUpdateWithoutLearningPlanInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutLearningPlanInput = {
@@ -1221,6 +1261,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutLearningPlanInput = {
   results?: Prisma.AssessmentCompetencyResultUncheckedUpdateManyWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateWithoutAccommodationInput = {
@@ -1239,6 +1280,7 @@ export type AssessmentAttemptCreateWithoutAccommodationInput = {
   learningPlan?: Prisma.LearningPlanCreateNestedOneWithoutAttemptInput
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutAccommodationInput = {
@@ -1257,6 +1299,7 @@ export type AssessmentAttemptUncheckedCreateWithoutAccommodationInput = {
   results?: Prisma.AssessmentCompetencyResultUncheckedCreateNestedManyWithoutAttemptInput
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutAccommodationInput = {
@@ -1291,6 +1334,7 @@ export type AssessmentAttemptUpdateWithoutAccommodationInput = {
   learningPlan?: Prisma.LearningPlanUpdateOneWithoutAttemptNestedInput
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutAccommodationInput = {
@@ -1309,6 +1353,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutAccommodationInput = {
   results?: Prisma.AssessmentCompetencyResultUncheckedUpdateManyWithoutAttemptNestedInput
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptCreateWithoutInteractionInput = {
@@ -1327,6 +1372,7 @@ export type AssessmentAttemptCreateWithoutInteractionInput = {
   learningPlan?: Prisma.LearningPlanCreateNestedOneWithoutAttemptInput
   assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
   accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptUncheckedCreateWithoutInteractionInput = {
@@ -1345,6 +1391,7 @@ export type AssessmentAttemptUncheckedCreateWithoutInteractionInput = {
   results?: Prisma.AssessmentCompetencyResultUncheckedCreateNestedManyWithoutAttemptInput
   learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+  mockInterview?: Prisma.MockInterviewUncheckedCreateNestedOneWithoutAttemptInput
 }
 
 export type AssessmentAttemptCreateOrConnectWithoutInteractionInput = {
@@ -1379,6 +1426,7 @@ export type AssessmentAttemptUpdateWithoutInteractionInput = {
   learningPlan?: Prisma.LearningPlanUpdateOneWithoutAttemptNestedInput
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutInteractionInput = {
@@ -1396,6 +1444,99 @@ export type AssessmentAttemptUncheckedUpdateWithoutInteractionInput = {
   requirements?: Prisma.AssessmentRequirementUncheckedUpdateManyWithoutAttemptNestedInput
   results?: Prisma.AssessmentCompetencyResultUncheckedUpdateManyWithoutAttemptNestedInput
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
+  accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
+}
+
+export type AssessmentAttemptCreateWithoutMockInterviewInput = {
+  id?: string
+  contextSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  completionKey?: string | null
+  completionHash?: string | null
+  overallScore?: number | null
+  createdAt?: Date | string
+  target: Prisma.AssessmentTargetCreateNestedOneWithoutAttemptInput
+  blueprint: Prisma.AssessmentBlueprintCreateNestedOneWithoutAttemptsInput
+  requirements?: Prisma.AssessmentRequirementCreateNestedManyWithoutAttemptInput
+  results?: Prisma.AssessmentCompetencyResultCreateNestedManyWithoutAttemptInput
+  learningPlan?: Prisma.LearningPlanCreateNestedOneWithoutAttemptInput
+  assessor?: Prisma.UserCreateNestedOneWithoutAssessedAttemptsInput
+  interaction?: Prisma.AssessmentInteractionSessionCreateNestedOneWithoutAttemptInput
+  accommodation?: Prisma.AssessmentAccommodationCreateNestedOneWithoutAttemptInput
+}
+
+export type AssessmentAttemptUncheckedCreateWithoutMockInterviewInput = {
+  id?: string
+  targetId: string
+  blueprintId: string
+  contextSnapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  assessorId?: string | null
+  completionKey?: string | null
+  completionHash?: string | null
+  overallScore?: number | null
+  createdAt?: Date | string
+  requirements?: Prisma.AssessmentRequirementUncheckedCreateNestedManyWithoutAttemptInput
+  results?: Prisma.AssessmentCompetencyResultUncheckedCreateNestedManyWithoutAttemptInput
+  learningPlan?: Prisma.LearningPlanUncheckedCreateNestedOneWithoutAttemptInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedCreateNestedOneWithoutAttemptInput
+  accommodation?: Prisma.AssessmentAccommodationUncheckedCreateNestedOneWithoutAttemptInput
+}
+
+export type AssessmentAttemptCreateOrConnectWithoutMockInterviewInput = {
+  where: Prisma.AssessmentAttemptWhereUniqueInput
+  create: Prisma.XOR<Prisma.AssessmentAttemptCreateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedCreateWithoutMockInterviewInput>
+}
+
+export type AssessmentAttemptUpsertWithoutMockInterviewInput = {
+  update: Prisma.XOR<Prisma.AssessmentAttemptUpdateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedUpdateWithoutMockInterviewInput>
+  create: Prisma.XOR<Prisma.AssessmentAttemptCreateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedCreateWithoutMockInterviewInput>
+  where?: Prisma.AssessmentAttemptWhereInput
+}
+
+export type AssessmentAttemptUpdateToOneWithWhereWithoutMockInterviewInput = {
+  where?: Prisma.AssessmentAttemptWhereInput
+  data: Prisma.XOR<Prisma.AssessmentAttemptUpdateWithoutMockInterviewInput, Prisma.AssessmentAttemptUncheckedUpdateWithoutMockInterviewInput>
+}
+
+export type AssessmentAttemptUpdateWithoutMockInterviewInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  contextSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completionHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overallScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  target?: Prisma.AssessmentTargetUpdateOneRequiredWithoutAttemptNestedInput
+  blueprint?: Prisma.AssessmentBlueprintUpdateOneRequiredWithoutAttemptsNestedInput
+  requirements?: Prisma.AssessmentRequirementUpdateManyWithoutAttemptNestedInput
+  results?: Prisma.AssessmentCompetencyResultUpdateManyWithoutAttemptNestedInput
+  learningPlan?: Prisma.LearningPlanUpdateOneWithoutAttemptNestedInput
+  assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
+  accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+}
+
+export type AssessmentAttemptUncheckedUpdateWithoutMockInterviewInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  targetId?: Prisma.StringFieldUpdateOperationsInput | string
+  blueprintId?: Prisma.StringFieldUpdateOperationsInput | string
+  contextSnapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assessorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completionKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completionHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overallScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  requirements?: Prisma.AssessmentRequirementUncheckedUpdateManyWithoutAttemptNestedInput
+  results?: Prisma.AssessmentCompetencyResultUncheckedUpdateManyWithoutAttemptNestedInput
+  learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
+  interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
@@ -1428,6 +1569,7 @@ export type AssessmentAttemptUpdateWithoutAssessorInput = {
   learningPlan?: Prisma.LearningPlanUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutAssessorInput = {
@@ -1446,6 +1588,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutAssessorInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateManyWithoutAssessorInput = {
@@ -1490,6 +1633,7 @@ export type AssessmentAttemptUpdateWithoutBlueprintInput = {
   assessor?: Prisma.UserUpdateOneWithoutAssessedAttemptsNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateWithoutBlueprintInput = {
@@ -1508,6 +1652,7 @@ export type AssessmentAttemptUncheckedUpdateWithoutBlueprintInput = {
   learningPlan?: Prisma.LearningPlanUncheckedUpdateOneWithoutAttemptNestedInput
   interaction?: Prisma.AssessmentInteractionSessionUncheckedUpdateOneWithoutAttemptNestedInput
   accommodation?: Prisma.AssessmentAccommodationUncheckedUpdateOneWithoutAttemptNestedInput
+  mockInterview?: Prisma.MockInterviewUncheckedUpdateOneWithoutAttemptNestedInput
 }
 
 export type AssessmentAttemptUncheckedUpdateManyWithoutBlueprintInput = {
@@ -1583,6 +1728,7 @@ export type AssessmentAttemptSelect<ExtArgs extends runtime.Types.Extensions.Int
   assessor?: boolean | Prisma.AssessmentAttempt$assessorArgs<ExtArgs>
   interaction?: boolean | Prisma.AssessmentAttempt$interactionArgs<ExtArgs>
   accommodation?: boolean | Prisma.AssessmentAttempt$accommodationArgs<ExtArgs>
+  mockInterview?: boolean | Prisma.AssessmentAttempt$mockInterviewArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["assessmentAttempt"]>
 
@@ -1644,6 +1790,7 @@ export type AssessmentAttemptInclude<ExtArgs extends runtime.Types.Extensions.In
   assessor?: boolean | Prisma.AssessmentAttempt$assessorArgs<ExtArgs>
   interaction?: boolean | Prisma.AssessmentAttempt$interactionArgs<ExtArgs>
   accommodation?: boolean | Prisma.AssessmentAttempt$accommodationArgs<ExtArgs>
+  mockInterview?: boolean | Prisma.AssessmentAttempt$mockInterviewArgs<ExtArgs>
   _count?: boolean | Prisma.AssessmentAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AssessmentAttemptIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1668,6 +1815,7 @@ export type $AssessmentAttemptPayload<ExtArgs extends runtime.Types.Extensions.I
     assessor: Prisma.$UserPayload<ExtArgs> | null
     interaction: Prisma.$AssessmentInteractionSessionPayload<ExtArgs> | null
     accommodation: Prisma.$AssessmentAccommodationPayload<ExtArgs> | null
+    mockInterview: Prisma.$MockInterviewPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2083,6 +2231,7 @@ export interface Prisma__AssessmentAttemptClient<T, Null = never, ExtArgs extend
   assessor<T extends Prisma.AssessmentAttempt$assessorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentAttempt$assessorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   interaction<T extends Prisma.AssessmentAttempt$interactionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentAttempt$interactionArgs<ExtArgs>>): Prisma.Prisma__AssessmentInteractionSessionClient<runtime.Types.Result.GetResult<Prisma.$AssessmentInteractionSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   accommodation<T extends Prisma.AssessmentAttempt$accommodationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentAttempt$accommodationArgs<ExtArgs>>): Prisma.Prisma__AssessmentAccommodationClient<runtime.Types.Result.GetResult<Prisma.$AssessmentAccommodationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  mockInterview<T extends Prisma.AssessmentAttempt$mockInterviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentAttempt$mockInterviewArgs<ExtArgs>>): Prisma.Prisma__MockInterviewClient<runtime.Types.Result.GetResult<Prisma.$MockInterviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2645,6 +2794,25 @@ export type AssessmentAttempt$accommodationArgs<ExtArgs extends runtime.Types.Ex
    */
   include?: Prisma.AssessmentAccommodationInclude<ExtArgs> | null
   where?: Prisma.AssessmentAccommodationWhereInput
+}
+
+/**
+ * AssessmentAttempt.mockInterview
+ */
+export type AssessmentAttempt$mockInterviewArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MockInterview
+   */
+  select?: Prisma.MockInterviewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MockInterview
+   */
+  omit?: Prisma.MockInterviewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MockInterviewInclude<ExtArgs> | null
+  where?: Prisma.MockInterviewWhereInput
 }
 
 /**

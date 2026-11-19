@@ -31,7 +31,7 @@ const statusText = {
   CHANGES_REQUESTED:
     "An administrator has requested changes. Read the latest feedback, update your details and resubmit.",
   APPROVED:
-    "Your trainer profile has been approved. Training delivery and learner assignments will be connected in a later milestone.",
+    "Your trainer profile has been approved. Open the training dashboard to schedule sessions for your assigned skill groups.",
   REJECTED:
     "Your submission was not approved. Read the feedback below. You may update your profile and qualifications before submitting again.",
   SUSPENDED:
@@ -53,7 +53,7 @@ export function gateView(state, hasInvitation) {
           : "Trainer access is by invitation";
   return `<main class="auth trainer-gate"><section class="card card-body"><div class="eyebrow">VML NEXUS · TRAINERS</div><h1>${heading}</h1>${alert(state)}<p>${loading ? "Please wait while we check your existing NEXUS session." : state.auth === "unverified" ? "Use the shared verification page, then return here." : hasInvitation ? "Sign in or register with the exact email that received this invitation. Keep this tab open while signing in." : "Ask your institution administrator to invite your verified account email."}</p>${!loading ? `<div class="inline-actions"><a class="btn subtle" target="_blank" rel="noopener" href="${e(state.auth === "unverified" ? workspaceUrl("APPLICANT", "/verify-email") : sharedLoginUrl())}">${state.auth === "unverified" ? "Verify email" : "Open shared sign in"}</a>${button("Check sign-in", "refresh")}</div>${state.user && hasInvitation && state.auth !== "unverified" ? `<p>Accepting as <strong>${e(state.user.email)}</strong>.</p>${button("Accept trainer invitation", "accept", state.busy ? "disabled" : "")}` : ""}${state.user ? `<p><button class="btn subtle" data-trainer-action="logout">Sign out</button></p>` : ""}<p class="admin-small">Invitation links expire after seven days. This tab holds the invitation privately in memory; reopen the email link if you refresh it.</p>` : ""}</section></main>`;
 }
-export function profileView(state, route = "dashboard") {
+export function profileView(state, route = "dashboard", layout) {
   const p = state.profile,
     canEdit = editable(p.status),
     current = p.qualifications.filter((q) => !q.withdrawnAt),
@@ -82,5 +82,7 @@ export function profileView(state, route = "dashboard") {
         `<ol class="admin-timeline">${p.reviews.map((r) => `<li><strong>${e(label(r.outcome))}</strong><small>${date(r.createdAt)}</small><p>${e(r.reason)}</p></li>`).join("")}</ol>`,
       )
     : "";
+  if (layout) return layout({title:navigation.find(n=>n[0]===route)?.[1]||'Overview',body:
+    `<div id="trainer-main"><div class="page-heading"><div><div class="eyebrow">YOUR TRAINER WORKSPACE</div><h1>${e(navigation.find(n=>n[0]===route)?.[1]||'Overview')}</h1><p>${e(state.user.email)}</p></div><button class="btn subtle" data-trainer-action="refresh">Refresh saved profile</button></div>${alert(state)}<section class="notice trainer-status">${badge(p.status)}<p>${e(statusText[p.status])}</p>${first?`<p><strong>Latest review:</strong> ${e(first.reason)}</p>`:''}</section>${content}${history}</div>`});
   return `<a class="admin-skip" href="#trainer-main">Skip to content</a><aside class="sidebar trainer-sidebar"><a class="brand" href="/dashboard"><span class="mark">N</span><span>VML NEXUS<small>VIRTUAL MECHATRONICS LABS</small></span></a><div class="nav-label">TRAINER WORKSPACE</div><nav aria-label="Trainer navigation">${navigation.map(([path, title]) => `<a class="nav-link ${path === route ? "active" : ""}" href="/${path}" ${path === route ? 'aria-current="page"' : ""}>${title}</a>`).join("")}</nav><div class="sidebar-bottom"><a class="nav-link" href="${e(workspaceUrl("APPLICANT", "/workspaces"))}">Switch workspace</a><button class="nav-link" data-trainer-action="logout">Sign out</button></div></aside><div class="main trainer-main"><header class="topbar"><strong>Trainer onboarding</strong><span>${e(state.user.legalName)}</span></header><main class="content" id="trainer-main" tabindex="-1"><div class="page-heading"><div><div class="eyebrow">BUILD YOUR TRAINER PROFILE</div><h1>${e(navigation.find((n) => n[0] === route)?.[1] || "Overview")}</h1><p>${e(state.user.email)}</p></div><button class="btn subtle" data-trainer-action="refresh">Refresh saved profile</button></div>${alert(state)}<section class="notice trainer-status" aria-label="Trainer approval status">${badge(p.status)}<p>${e(statusText[p.status])}</p>${first ? `<p><strong>Latest review:</strong> ${e(first.reason)}</p>` : ""}</section>${content}${history}</main></div>`;
 }

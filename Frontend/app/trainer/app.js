@@ -1,3 +1,5 @@
+import { createTrainingWorkspace } from '../../context/training-workspace.js';
+import { dashboardLayout } from '../../components/dashboard-layout/dashboard-layout.tsx';
 import "../admin/admin.css";
 import "./trainer.css";
 import { createTrainerApi } from "./api.js";
@@ -23,16 +25,17 @@ const store = createTrainerStore({
     render();
   },
 });
+const training = createTrainingWorkspace({ client, mode: 'trainer', onChange: render, onAuthError: () => { void store.boot(); } });
 function setBusy() {
   const state = store.snapshot();
-  for (const fieldset of app.querySelectorAll("fieldset"))
+  for (const fieldset of app.querySelectorAll("fieldset:not(.training-workspace fieldset)"))
     fieldset.disabled =
       state.busy ||
       state.uncertain ||
       !["DRAFT", "CHANGES_REQUESTED", "REJECTED"].includes(
         state.profile?.status,
       );
-  for (const b of app.querySelectorAll("button"))
+  for (const b of app.querySelectorAll("button:not(.training-workspace button)"))
     b.disabled =
       (state.busy || state.uncertain) &&
       !["refresh", "logout"].includes(b.dataset.trainerAction);
@@ -50,6 +53,12 @@ function setBusy() {
 function render() {
   const state = store.snapshot();
   document.title = "VML NEXUS · Trainer workspace";
+  if(state.auth !== 'ready') training.reset();
+  if(state.auth === 'ready' && state.profile.status === 'APPROVED' && !['profile','qualifications'].includes(getRoute())) {
+    training.ensure(state.user.id);
+    app.innerHTML = dashboardLayout({role:'trainer',actionAttribute:'data-trainer-action',links:[['dashboard','Training dashboard','calendar'],['profile','Professional profile','user'],['qualifications','Qualifications','file']],route:'dashboard',title:'Training dashboard',name:state.user.legalName,body:training.view()});
+    return;
+  }
   app.innerHTML =
     state.auth === "ready"
       ? profileView(
@@ -57,6 +66,7 @@ function render() {
           ["profile", "qualifications"].includes(getRoute())
             ? getRoute()
             : "dashboard",
+          ({title,body}) => dashboardLayout({role:'trainer',actionAttribute:'data-trainer-action',links:[['dashboard','Training dashboard','calendar'],['profile','Professional profile','user'],['qualifications','Qualifications','file']],route:getRoute(),title,name:state.user.legalName,body}),
         )
       : gateView(state, !!invitation);
   setBusy();
@@ -154,3 +164,6 @@ window.addEventListener("pagehide", () => {
 initializeNavigation();
 render();
 void store.boot();
+
+document.addEventListener('click',event=>{const b=event.target.closest('[data-action]');if(!b)return;const a=b.dataset.action;if(a==='menu'||a==='close-menu'){const sidebar=document.getElementById('workspace-sidebar');const open=a==='menu'&&!sidebar?.classList.contains('open');sidebar?.classList.toggle('open',open);document.querySelector('[data-action="menu"]')?.setAttribute('aria-expanded',String(open));const backdrop=document.querySelector('[data-action="close-menu"]');if(backdrop)backdrop.hidden=!open;}if(a==='notifications')location.assign('/dashboard');});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.querySelector('#workspace-sidebar.open'))document.querySelector('[data-action="close-menu"]')?.click();});

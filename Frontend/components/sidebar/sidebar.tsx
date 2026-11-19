@@ -3,7 +3,7 @@ import { escapeHtml as escape } from '../html.js';
 import { icon } from '../icon/icon';
 export type PortalRole = 'applicant' | 'admin' | 'trainer' | 'employer';
 export type NavigationLink = readonly [path: string, label: string, icon: string];
-export interface SidebarProps { role: PortalRole; links: readonly NavigationLink[]; route: string; helpText?: string; showSignOut?: boolean; id?: string; actionAttribute?: 'data-auth-action' | 'data-admin-action'; helpTitle?: string }
+export interface SidebarProps { role: PortalRole; links: readonly NavigationLink[]; route: string; helpText?: string; showSignOut?: boolean; id?: string; actionAttribute?: 'data-auth-action' | 'data-admin-action' | 'data-trainer-action'; helpTitle?: string }
 export function sidebar({role, links, route, helpText, showSignOut=true, id='workspace-sidebar', actionAttribute='data-auth-action', helpTitle='Your next chapter starts here.'}: SidebarProps) {
  return `<aside id="${escape(id)}" class="sidebar ${styles.sidebar}">
  <div class="${styles.brandRow}"><a class="${styles.brand}" href="/dashboard"><span class="mark">N</span><span>VML NEXUS<small>VIRTUAL MECHATRONICS LABS</small></span></a>${role==='admin'?'<button type="button" class="icon-button admin-close-nav" data-admin-action="close-menu" aria-label="Close navigation">×</button>':''}</div>

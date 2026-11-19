@@ -236,6 +236,7 @@ export type LearningPlanItemWhereInput = {
   resources?: Prisma.StringNullableListFilter<"LearningPlanItem">
   status?: Prisma.EnumLearningStatusFilter<"LearningPlanItem"> | $Enums.LearningStatus
   completedAt?: Prisma.DateTimeNullableFilter<"LearningPlanItem"> | Date | string | null
+  trainingAssignment?: Prisma.XOR<Prisma.TrainingAssignmentNullableScalarRelationFilter, Prisma.TrainingAssignmentWhereInput> | null
   plan?: Prisma.XOR<Prisma.LearningPlanScalarRelationFilter, Prisma.LearningPlanWhereInput>
   result?: Prisma.XOR<Prisma.AssessmentCompetencyResultScalarRelationFilter, Prisma.AssessmentCompetencyResultWhereInput>
 }
@@ -249,6 +250,7 @@ export type LearningPlanItemOrderByWithRelationInput = {
   resources?: Prisma.SortOrder
   status?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trainingAssignment?: Prisma.TrainingAssignmentOrderByWithRelationInput
   plan?: Prisma.LearningPlanOrderByWithRelationInput
   result?: Prisma.AssessmentCompetencyResultOrderByWithRelationInput
 }
@@ -266,6 +268,7 @@ export type LearningPlanItemWhereUniqueInput = Prisma.AtLeast<{
   resources?: Prisma.StringNullableListFilter<"LearningPlanItem">
   status?: Prisma.EnumLearningStatusFilter<"LearningPlanItem"> | $Enums.LearningStatus
   completedAt?: Prisma.DateTimeNullableFilter<"LearningPlanItem"> | Date | string | null
+  trainingAssignment?: Prisma.XOR<Prisma.TrainingAssignmentNullableScalarRelationFilter, Prisma.TrainingAssignmentWhereInput> | null
   plan?: Prisma.XOR<Prisma.LearningPlanScalarRelationFilter, Prisma.LearningPlanWhereInput>
   result?: Prisma.XOR<Prisma.AssessmentCompetencyResultScalarRelationFilter, Prisma.AssessmentCompetencyResultWhereInput>
 }, "id" | "resultId" | "planId_priority">
@@ -307,6 +310,7 @@ export type LearningPlanItemCreateInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentCreateNestedOneWithoutLearningItemInput
   plan: Prisma.LearningPlanCreateNestedOneWithoutItemsInput
   result: Prisma.AssessmentCompetencyResultCreateNestedOneWithoutLearningItemInput
 }
@@ -320,6 +324,7 @@ export type LearningPlanItemUncheckedCreateInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedCreateNestedOneWithoutLearningItemInput
 }
 
 export type LearningPlanItemUpdateInput = {
@@ -329,6 +334,7 @@ export type LearningPlanItemUpdateInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUpdateOneWithoutLearningItemNestedInput
   plan?: Prisma.LearningPlanUpdateOneRequiredWithoutItemsNestedInput
   result?: Prisma.AssessmentCompetencyResultUpdateOneRequiredWithoutLearningItemNestedInput
 }
@@ -342,6 +348,7 @@ export type LearningPlanItemUncheckedUpdateInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedUpdateOneWithoutLearningItemNestedInput
 }
 
 export type LearningPlanItemCreateManyInput = {
@@ -434,6 +441,11 @@ export type LearningPlanItemSumOrderByAggregateInput = {
   priority?: Prisma.SortOrder
 }
 
+export type LearningPlanItemScalarRelationFilter = {
+  is?: Prisma.LearningPlanItemWhereInput
+  isNot?: Prisma.LearningPlanItemWhereInput
+}
+
 export type LearningPlanItemCreateNestedOneWithoutResultInput = {
   create?: Prisma.XOR<Prisma.LearningPlanItemCreateWithoutResultInput, Prisma.LearningPlanItemUncheckedCreateWithoutResultInput>
   connectOrCreate?: Prisma.LearningPlanItemCreateOrConnectWithoutResultInput
@@ -517,6 +529,20 @@ export type LearningPlanItemUpdateresourcesInput = {
   push?: string | string[]
 }
 
+export type LearningPlanItemCreateNestedOneWithoutTrainingAssignmentInput = {
+  create?: Prisma.XOR<Prisma.LearningPlanItemCreateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedCreateWithoutTrainingAssignmentInput>
+  connectOrCreate?: Prisma.LearningPlanItemCreateOrConnectWithoutTrainingAssignmentInput
+  connect?: Prisma.LearningPlanItemWhereUniqueInput
+}
+
+export type LearningPlanItemUpdateOneRequiredWithoutTrainingAssignmentNestedInput = {
+  create?: Prisma.XOR<Prisma.LearningPlanItemCreateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedCreateWithoutTrainingAssignmentInput>
+  connectOrCreate?: Prisma.LearningPlanItemCreateOrConnectWithoutTrainingAssignmentInput
+  upsert?: Prisma.LearningPlanItemUpsertWithoutTrainingAssignmentInput
+  connect?: Prisma.LearningPlanItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LearningPlanItemUpdateToOneWithWhereWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUpdateWithoutTrainingAssignmentInput>, Prisma.LearningPlanItemUncheckedUpdateWithoutTrainingAssignmentInput>
+}
+
 export type LearningPlanItemCreateWithoutResultInput = {
   id?: string
   priority: number
@@ -524,6 +550,7 @@ export type LearningPlanItemCreateWithoutResultInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentCreateNestedOneWithoutLearningItemInput
   plan: Prisma.LearningPlanCreateNestedOneWithoutItemsInput
 }
 
@@ -535,6 +562,7 @@ export type LearningPlanItemUncheckedCreateWithoutResultInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedCreateNestedOneWithoutLearningItemInput
 }
 
 export type LearningPlanItemCreateOrConnectWithoutResultInput = {
@@ -560,6 +588,7 @@ export type LearningPlanItemUpdateWithoutResultInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUpdateOneWithoutLearningItemNestedInput
   plan?: Prisma.LearningPlanUpdateOneRequiredWithoutItemsNestedInput
 }
 
@@ -571,6 +600,7 @@ export type LearningPlanItemUncheckedUpdateWithoutResultInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedUpdateOneWithoutLearningItemNestedInput
 }
 
 export type LearningPlanItemCreateWithoutPlanInput = {
@@ -580,6 +610,7 @@ export type LearningPlanItemCreateWithoutPlanInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentCreateNestedOneWithoutLearningItemInput
   result: Prisma.AssessmentCompetencyResultCreateNestedOneWithoutLearningItemInput
 }
 
@@ -591,6 +622,7 @@ export type LearningPlanItemUncheckedCreateWithoutPlanInput = {
   resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
   status?: $Enums.LearningStatus
   completedAt?: Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedCreateNestedOneWithoutLearningItemInput
 }
 
 export type LearningPlanItemCreateOrConnectWithoutPlanInput = {
@@ -633,6 +665,66 @@ export type LearningPlanItemScalarWhereInput = {
   completedAt?: Prisma.DateTimeNullableFilter<"LearningPlanItem"> | Date | string | null
 }
 
+export type LearningPlanItemCreateWithoutTrainingAssignmentInput = {
+  id?: string
+  priority: number
+  objective: string
+  resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
+  status?: $Enums.LearningStatus
+  completedAt?: Date | string | null
+  plan: Prisma.LearningPlanCreateNestedOneWithoutItemsInput
+  result: Prisma.AssessmentCompetencyResultCreateNestedOneWithoutLearningItemInput
+}
+
+export type LearningPlanItemUncheckedCreateWithoutTrainingAssignmentInput = {
+  id?: string
+  planId: string
+  resultId: string
+  priority: number
+  objective: string
+  resources?: Prisma.LearningPlanItemCreateresourcesInput | string[]
+  status?: $Enums.LearningStatus
+  completedAt?: Date | string | null
+}
+
+export type LearningPlanItemCreateOrConnectWithoutTrainingAssignmentInput = {
+  where: Prisma.LearningPlanItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.LearningPlanItemCreateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedCreateWithoutTrainingAssignmentInput>
+}
+
+export type LearningPlanItemUpsertWithoutTrainingAssignmentInput = {
+  update: Prisma.XOR<Prisma.LearningPlanItemUpdateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedUpdateWithoutTrainingAssignmentInput>
+  create: Prisma.XOR<Prisma.LearningPlanItemCreateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedCreateWithoutTrainingAssignmentInput>
+  where?: Prisma.LearningPlanItemWhereInput
+}
+
+export type LearningPlanItemUpdateToOneWithWhereWithoutTrainingAssignmentInput = {
+  where?: Prisma.LearningPlanItemWhereInput
+  data: Prisma.XOR<Prisma.LearningPlanItemUpdateWithoutTrainingAssignmentInput, Prisma.LearningPlanItemUncheckedUpdateWithoutTrainingAssignmentInput>
+}
+
+export type LearningPlanItemUpdateWithoutTrainingAssignmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  objective?: Prisma.StringFieldUpdateOperationsInput | string
+  resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
+  status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plan?: Prisma.LearningPlanUpdateOneRequiredWithoutItemsNestedInput
+  result?: Prisma.AssessmentCompetencyResultUpdateOneRequiredWithoutLearningItemNestedInput
+}
+
+export type LearningPlanItemUncheckedUpdateWithoutTrainingAssignmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  planId?: Prisma.StringFieldUpdateOperationsInput | string
+  resultId?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.IntFieldUpdateOperationsInput | number
+  objective?: Prisma.StringFieldUpdateOperationsInput | string
+  resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
+  status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type LearningPlanItemCreateManyPlanInput = {
   id?: string
   resultId: string
@@ -650,6 +742,7 @@ export type LearningPlanItemUpdateWithoutPlanInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUpdateOneWithoutLearningItemNestedInput
   result?: Prisma.AssessmentCompetencyResultUpdateOneRequiredWithoutLearningItemNestedInput
 }
 
@@ -661,6 +754,7 @@ export type LearningPlanItemUncheckedUpdateWithoutPlanInput = {
   resources?: Prisma.LearningPlanItemUpdateresourcesInput | string[]
   status?: Prisma.EnumLearningStatusFieldUpdateOperationsInput | $Enums.LearningStatus
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trainingAssignment?: Prisma.TrainingAssignmentUncheckedUpdateOneWithoutLearningItemNestedInput
 }
 
 export type LearningPlanItemUncheckedUpdateManyWithoutPlanInput = {
@@ -684,6 +778,7 @@ export type LearningPlanItemSelect<ExtArgs extends runtime.Types.Extensions.Inte
   resources?: boolean
   status?: boolean
   completedAt?: boolean
+  trainingAssignment?: boolean | Prisma.LearningPlanItem$trainingAssignmentArgs<ExtArgs>
   plan?: boolean | Prisma.LearningPlanDefaultArgs<ExtArgs>
   result?: boolean | Prisma.AssessmentCompetencyResultDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["learningPlanItem"]>
@@ -727,6 +822,7 @@ export type LearningPlanItemSelectScalar = {
 
 export type LearningPlanItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "planId" | "resultId" | "priority" | "objective" | "resources" | "status" | "completedAt", ExtArgs["result"]["learningPlanItem"]>
 export type LearningPlanItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  trainingAssignment?: boolean | Prisma.LearningPlanItem$trainingAssignmentArgs<ExtArgs>
   plan?: boolean | Prisma.LearningPlanDefaultArgs<ExtArgs>
   result?: boolean | Prisma.AssessmentCompetencyResultDefaultArgs<ExtArgs>
 }
@@ -742,6 +838,7 @@ export type LearningPlanItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $LearningPlanItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LearningPlanItem"
   objects: {
+    trainingAssignment: Prisma.$TrainingAssignmentPayload<ExtArgs> | null
     plan: Prisma.$LearningPlanPayload<ExtArgs>
     result: Prisma.$AssessmentCompetencyResultPayload<ExtArgs>
   }
@@ -1148,6 +1245,7 @@ readonly fields: LearningPlanItemFieldRefs;
  */
 export interface Prisma__LearningPlanItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  trainingAssignment<T extends Prisma.LearningPlanItem$trainingAssignmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LearningPlanItem$trainingAssignmentArgs<ExtArgs>>): Prisma.Prisma__TrainingAssignmentClient<runtime.Types.Result.GetResult<Prisma.$TrainingAssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   plan<T extends Prisma.LearningPlanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LearningPlanDefaultArgs<ExtArgs>>): Prisma.Prisma__LearningPlanClient<runtime.Types.Result.GetResult<Prisma.$LearningPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   result<T extends Prisma.AssessmentCompetencyResultDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AssessmentCompetencyResultDefaultArgs<ExtArgs>>): Prisma.Prisma__AssessmentCompetencyResultClient<runtime.Types.Result.GetResult<Prisma.$AssessmentCompetencyResultPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1585,6 +1683,25 @@ export type LearningPlanItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many LearningPlanItems to delete.
    */
   limit?: number
+}
+
+/**
+ * LearningPlanItem.trainingAssignment
+ */
+export type LearningPlanItem$trainingAssignmentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TrainingAssignment
+   */
+  select?: Prisma.TrainingAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TrainingAssignment
+   */
+  omit?: Prisma.TrainingAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrainingAssignmentInclude<ExtArgs> | null
+  where?: Prisma.TrainingAssignmentWhereInput
 }
 
 /**

@@ -31,6 +31,7 @@ export async function seed() {
   for (const [name, permissions] of [
     ['APPLICANT', applicantPermissions],
     ['TRAINER', trainerPermissions],
+    ['EMPLOYER', ['hiring.discover']],
     ['ADMIN', adminPermissions],
   ] as const) {
     const role = await prisma.role.upsert({ where: { name }, create: { name }, update: {} });

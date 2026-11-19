@@ -2,7 +2,7 @@ import { escapeHtml as escape } from '../components/html.js';
 import { getRoute, getRouteParams, navigate } from '../hooks/navigation.js';
 import { api } from '../lib/api.js';
 import { config } from '../lib/config.js';
-import { availableWorkspaces, workspaceUrl } from '../lib/workspaces.js';
+import { availableWorkspaces, defaultWorkspace, workspaceUrl } from '../lib/workspaces.js';
 
 const authRoutes = new Set(['login', 'register', 'signup', 'forgot-password', 'reset-password', 'verify-email', 'register/google', 'auth/google/callback']);
 const publicRoutes = new Set([...authRoutes, 'privacy', 'help']);
@@ -136,17 +136,16 @@ async function acceptSession() {
 
 function openWorkspace() {
   if (!user.emailVerifiedAt) { go('verify-email'); return; }
-  const roles = availableWorkspaces(user);
-  if (roles.length > 1) go('workspaces');
-  else if (roles[0] === 'TRAINER') location.replace(workspaceUrl('TRAINER'));
-  else if (roles[0] === 'ADMIN') location.replace(workspaceUrl('ADMIN'));
-  else if (roles[0] === 'APPLICANT') go('dashboard');
+  const role = defaultWorkspace(user);
+  if (role === 'TRAINER' || role === 'EMPLOYER') location.replace(workspaceUrl(role));
+  else if (role === 'ADMIN') location.replace(workspaceUrl('ADMIN'));
+  else if (role === 'APPLICANT') go('dashboard');
   else go('workspaces');
 }
 
 function workspacePage() {
   const roles = availableWorkspaces(user);
-  return `<main class="auth"><section class="card card-body"><h1>${roles.length ? 'Choose your workspace' : 'Workspace access required'}</h1><p>${roles.length ? 'Choose where you want to continue. Administrator access requires MFA.' : 'Your account has no supported workspace. Contact your institution operator.'}</p><div class="inline-actions">${roles.map(role => `<a class="btn primary" href="${escape(workspaceUrl(role))}">${role === 'ADMIN' ? 'Administrator workspace' : role === 'TRAINER' ? 'Trainer workspace' : 'Applicant workspace'}</a>`).join('')}<button type="button" class="btn subtle" data-auth-action="logout">Sign out</button></div></section></main>`;
+  return `<main class="auth"><section class="card card-body"><h1>${roles.length ? 'Choose your workspace' : 'Workspace access required'}</h1><p>${roles.length ? 'Choose where you want to continue. Administrator access requires MFA.' : 'Your account has no supported workspace. Contact your institution operator.'}</p><div class="inline-actions">${roles.map(role => `<a class="btn primary" href="${escape(workspaceUrl(role))}">${role === 'ADMIN' ? 'Administrator workspace' : role === 'TRAINER' ? 'Trainer workspace' : role === 'EMPLOYER' ? 'Employer workspace' : 'Applicant workspace'}</a>`).join('')}<button type="button" class="btn subtle" data-auth-action="logout">Sign out</button></div></section></main>`;
 }
 
 export function authGate(route) {

@@ -1,3 +1,5 @@
+import { createHiringWorkspace } from './hiring.js';
+import { createTrainingWorkspace } from '../../context/training-workspace.js';
 import './admin.css';
 import { sharedLoginUrl, workspaceUrl } from '../../lib/workspaces.js';
 import { getRoute, getRouteParams, navigate, initializeNavigation } from '../../hooks/navigation.js';
@@ -20,6 +22,8 @@ const store = createAdminStore({ client, onChange(reason) {
   render();
 } });
 
+const training = createTrainingWorkspace({client,mode:'admin',onChange:render,onAuthError:()=>{void store.boot();}});
+const hiring = createHiringWorkspace({ client, onChange: render, onAuthError: () => { void store.boot(); } });
 function locationInfo() {
   const route = getRoute(), params = getRouteParams();
   const page = Math.max(1, parseInt(params.get('page') || '1', 10) || 1);
@@ -38,13 +42,16 @@ function locationInfo() {
   return { route, filters, page: dataPage, key: `${dataPage}:${JSON.stringify(filters)}` };
 }
 function permitted(route) {
-  return !(['trainers','trainer','trainer-invitations'].includes(route)&&!store.can('trainers.manage')) && !(['assessment-reviews', 'assessment-review'].includes(route) && !store.can('assessments.review')) && !(['availability', 'bookings', 'booking'].includes(route) && !store.can('assessments.manage')) && !(['applicants', 'applicant'].includes(route) && !store.can('users.manage')) && !(['documents', 'identity', 'document'].includes(route) && !store.can('documents.review'));
+  if (route === 'hiring') return store.can('users.manage') || store.can('assessments.review');
+  return !(['training','trainers','trainer','trainer-invitations'].includes(route)&&!store.can('trainers.manage')) && !(['assessment-reviews', 'assessment-review'].includes(route) && !store.can('assessments.review')) && !(['availability', 'bookings', 'booking'].includes(route) && !store.can('assessments.manage')) && !(['applicants', 'applicant'].includes(route) && !store.can('users.manage')) && !(['documents', 'identity', 'document'].includes(route) && !store.can('documents.review'));
 }
 function render() {
   const state = store.snapshot(), info = locationInfo();
   if (state.auth === 'login') { location.replace(['forgot-password', 'reset-password'].includes(info.route) ? workspaceUrl('APPLICANT', `/${info.route}`) : sharedLoginUrl()); return; }
   if (state.auth === 'denied' && state.user?.roles?.includes('APPLICANT')) { location.replace(workspaceUrl('APPLICANT')); return; }
   if (state.auth !== 'ready') {
+    training.reset();
+    hiring.reset();
     app.innerHTML = authView(state, info.route);
     document.title = `${state.auth === 'mfa' ? 'Security check' : 'Sign in'} · NEXUS Admin`;
     updateForms(); return;
@@ -52,6 +59,12 @@ function render() {
   if (['login', 'forgot-password', 'reset-password'].includes(info.route)) { navigate('/dashboard'); return; }
   if (!permitted(info.route)) {
     app.innerHTML = shell(state, info.route, '<div class="page-heading"><div><h1 id="page-title" tabindex="-1">Access required</h1><p>Your account does not have permission to open this page.</p></div></div>');
+  } else if (info.route === 'hiring') {
+    hiring.ensure(state.user.id, state.user.permissions || []);
+    app.innerHTML = shell(state, info.route, hiring.view());
+  } else if(info.route === 'training') {
+    training.ensure(state.user.id);
+    app.innerHTML=shell(state,info.route,training.view());
   } else {
     if (state.page !== info.key) void store.load(info.page, info.filters);
     app.innerHTML = shell(store.snapshot(), info.route, pageView(store.snapshot(), info.route, info.route === 'availability' ? calendarFilters : info.filters, store.can));
@@ -284,7 +297,7 @@ mobile.addEventListener('change', () => { closeMenu(false); });
 window.addEventListener('app:navigate', () => {
   closeMenu(false); closeDialog(false); clearDownloads(); store.clearNotice();
   const info = locationInfo();
-  if (store.snapshot().auth === 'ready' && permitted(info.route)) void store.load(info.page, info.filters, true);
+  if (store.snapshot().auth === 'ready' && permitted(info.route) && !['training', 'hiring'].includes(info.route)) void store.load(info.page, info.filters, true);
   render(); window.scrollTo(0, 0);
 });
 window.addEventListener('pagehide', () => { closeDialog(false); clearDownloads(); });

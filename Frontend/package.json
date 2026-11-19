@@ -12,7 +12,8 @@
     "test": "npm --prefix app/applicant test && npm --prefix app/admin test && npm --prefix app/trainer test",
     "start": "node server.mjs",
     "build": "node build.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:public": "node --test app/public/public.test.js"
   },
   "dependencies": {
     "esbuild": "^0.25.0",

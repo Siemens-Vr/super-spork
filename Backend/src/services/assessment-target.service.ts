@@ -8,7 +8,10 @@ import { audit } from '../utils/audit.js';
 import { applicantProfileSelect } from '../utils/applicant-profile.js';
 import { targetSchema, completeAttemptSchema } from '../validators/assessment-target.schema.js';
 import { qualificationCategories } from '../validators/document-list.schema.js';
-import { assessmentIdentityReadiness, currentAssessmentDocuments } from './assessment-identity-policy.js';
+import {
+  assessmentIdentityReadiness,
+  currentAssessmentDocuments,
+} from './assessment-identity-policy.js';
 
 export const activeTargetStatuses = ['DRAFT', 'PREPARED', 'IN_PROGRESS'] as const;
 const qualificationSelect = {
@@ -36,7 +39,15 @@ const targetInclude = {
 const attemptInclude = {
   requirements: { orderBy: { code: 'asc' } },
   results: { include: { requirement: true }, orderBy: { requirementId: 'asc' } },
-  learningPlan: { include: { items: { orderBy: { priority: 'asc' } } } },
+  learningPlan: {
+    include: {
+      items: {
+        orderBy: { priority: 'asc' },
+        include: { trainingAssignment: { select: { signedOffAt: true } } },
+      },
+    },
+  },
+  mockInterview: { select: { scheduledAt: true, instructions: true, outcome: true } },
 } satisfies Prisma.AssessmentAttemptInclude;
 
 export async function getTarget(applicantId: string, id: string, tx: Tx = prisma) {
@@ -488,7 +499,8 @@ export async function startAttempt(applicantId: string, id: string) {
           (d) =>
             d.category !== 'NATIONAL_ID' &&
             d.category !== 'PASSPORT' &&
-            d.status === 'AUTHENTICATED' && d.scanStatus === 'CLEAN',
+            d.status === 'AUTHENTICATED' &&
+            d.scanStatus === 'CLEAN',
         ),
       409,
       'ACADEMIC_AUTHENTICATION_REQUIRED',
@@ -646,7 +658,10 @@ export async function getLearningPlan(applicantId: string, id: string) {
     where: { id, attempt: { target: { applicantId } } },
     include: {
       items: {
-        include: { result: { include: { requirement: true } } },
+        include: {
+          result: { include: { requirement: true } },
+          trainingAssignment: { select: { signedOffAt: true } },
+        },
         orderBy: { priority: 'asc' },
       },
     },
@@ -665,8 +680,15 @@ export async function updateLearningProgress(
     await expireBookingsForUser(tx, applicantId);
     const item = await tx.learningPlanItem.findFirst({
       where: { id: itemId, planId, plan: { attempt: { target: { applicantId } } } },
+      include: { trainingAssignment: { select: { signedOffAt: true } } },
     });
     requireCondition(item, 404, 'NOT_FOUND', 'Learning plan item not found');
+    requireCondition(
+      !item.trainingAssignment?.signedOffAt,
+      409,
+      'TRAINING_SIGNED_OFF',
+      'Your trainer signed off on this learning item',
+    );
     await tx.learningPlanItem.update({
       where: { id: itemId },
       data: { status, completedAt: status === 'COMPLETED' ? new Date() : null },

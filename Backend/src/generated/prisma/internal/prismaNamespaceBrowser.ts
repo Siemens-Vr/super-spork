@@ -109,7 +109,13 @@ export const ModelName = {
   TrainerInvitation: 'TrainerInvitation',
   TrainerProfile: 'TrainerProfile',
   TrainerQualification: 'TrainerQualification',
-  TrainerReview: 'TrainerReview'
+  TrainerReview: 'TrainerReview',
+  TrainerSkill: 'TrainerSkill',
+  TrainingAssignment: 'TrainingAssignment',
+  TrainingSession: 'TrainingSession',
+  TrainingEnrollment: 'TrainingEnrollment',
+  MockInterview: 'MockInterview',
+  CandidateAccess: 'CandidateAccess'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -878,6 +884,7 @@ export const TrainerProfileScalarFieldEnum = {
   version: 'version',
   submittedAt: 'submittedAt',
   reviewedAt: 'reviewedAt',
+  workingHours: 'workingHours',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -920,6 +927,81 @@ export const TrainerReviewScalarFieldEnum = {
 } as const
 
 export type TrainerReviewScalarFieldEnum = (typeof TrainerReviewScalarFieldEnum)[keyof typeof TrainerReviewScalarFieldEnum]
+
+
+export const TrainerSkillScalarFieldEnum = {
+  trainerId: 'trainerId',
+  competencyId: 'competencyId',
+  enabled: 'enabled'
+} as const
+
+export type TrainerSkillScalarFieldEnum = (typeof TrainerSkillScalarFieldEnum)[keyof typeof TrainerSkillScalarFieldEnum]
+
+
+export const TrainingAssignmentScalarFieldEnum = {
+  id: 'id',
+  learningItemId: 'learningItemId',
+  trainerId: 'trainerId',
+  competencyId: 'competencyId',
+  createdAt: 'createdAt',
+  progress: 'progress',
+  performanceNotes: 'performanceNotes',
+  signedOffAt: 'signedOffAt'
+} as const
+
+export type TrainingAssignmentScalarFieldEnum = (typeof TrainingAssignmentScalarFieldEnum)[keyof typeof TrainingAssignmentScalarFieldEnum]
+
+
+export const TrainingSessionScalarFieldEnum = {
+  id: 'id',
+  trainerId: 'trainerId',
+  competencyId: 'competencyId',
+  title: 'title',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  location: 'location',
+  capacity: 'capacity',
+  cancelledAt: 'cancelledAt',
+  createdAt: 'createdAt'
+} as const
+
+export type TrainingSessionScalarFieldEnum = (typeof TrainingSessionScalarFieldEnum)[keyof typeof TrainingSessionScalarFieldEnum]
+
+
+export const TrainingEnrollmentScalarFieldEnum = {
+  sessionId: 'sessionId',
+  assignmentId: 'assignmentId',
+  paymentReference: 'paymentReference',
+  verifiedBy: 'verifiedBy',
+  verifiedAt: 'verifiedAt',
+  attendance: 'attendance'
+} as const
+
+export type TrainingEnrollmentScalarFieldEnum = (typeof TrainingEnrollmentScalarFieldEnum)[keyof typeof TrainingEnrollmentScalarFieldEnum]
+
+
+export const MockInterviewScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  scheduledAt: 'scheduledAt',
+  instructions: 'instructions',
+  outcome: 'outcome'
+} as const
+
+export type MockInterviewScalarFieldEnum = (typeof MockInterviewScalarFieldEnum)[keyof typeof MockInterviewScalarFieldEnum]
+
+
+export const CandidateAccessScalarFieldEnum = {
+  id: 'id',
+  employerId: 'employerId',
+  interviewId: 'interviewId',
+  requestedAt: 'requestedAt',
+  confirmedAt: 'confirmedAt',
+  confirmedBy: 'confirmedBy',
+  procurementReference: 'procurementReference'
+} as const
+
+export type CandidateAccessScalarFieldEnum = (typeof CandidateAccessScalarFieldEnum)[keyof typeof CandidateAccessScalarFieldEnum]
 
 
 export const SortOrder = {

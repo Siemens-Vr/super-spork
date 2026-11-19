@@ -108,6 +108,7 @@ model User {
   sessions                   Session[]
   mfa                        AdminMfaCredential?
   documents                  Document[]
+  candidateAccess CandidateAccess[]
 
   bookings          AssessmentBooking[]
   reviews           DocumentVerification[]
@@ -434,6 +435,7 @@ model Competency {
   code                   String                  @unique
   name                   String
   description            String
+  trainerSkills          TrainerSkill[]
   frameworks             FrameworkCompetency[]
   assessmentRequirements AssessmentRequirement[]
 }
@@ -621,6 +623,7 @@ model AssessmentAttempt {
   overallScore    Float?
   interaction     AssessmentInteractionSession?
   accommodation   AssessmentAccommodation?
+  mockInterview MockInterview?
   createdAt       DateTime                      @default(now()) @db.Timestamptz(3)
 }
 
@@ -666,6 +669,7 @@ model LearningPlan {
 }
 
 model LearningPlanItem {
+  trainingAssignment TrainingAssignment?
   id          String                     @id @default(uuid()) @db.Uuid
   planId      String                     @db.Uuid
   plan        LearningPlan               @relation(fields: [planId], references: [id], onDelete: Restrict)
@@ -924,6 +928,8 @@ model TrainerProfile {
   version         Int                    @default(0)
   submittedAt     DateTime?              @db.Timestamptz(3)
   reviewedAt      DateTime?              @db.Timestamptz(3)
+  teachingSkills  TrainerSkill[]
+  workingHours Json @default("[]")
   qualifications  TrainerQualification[]
   reviews         TrainerReview[]
   createdAt       DateTime               @default(now()) @db.Timestamptz(3)
@@ -969,4 +975,102 @@ model TrainerReview {
   createdAt         DateTime       @default(now()) @db.Timestamptz(3)
 
   @@index([trainerProfileId, createdAt])
+}
+
+model TrainerSkill {
+  trainerId String @db.Uuid
+  competencyId String @db.Uuid
+  trainer TrainerProfile @relation(fields: [trainerId], references: [userId], onDelete: Restrict)
+  competency Competency @relation(fields: [competencyId], references: [id], onDelete: Restrict)
+  enabled Boolean @default(true)
+  assignments TrainingAssignment[]
+  sessions TrainingSession[]
+  @@id([trainerId, competencyId])
+}
+model TrainingAssignment {
+  id String @id @default(uuid()) @db.Uuid
+  learningItemId String @unique @db.Uuid
+  learningItem LearningPlanItem @relation(fields: [learningItemId], references: [id], onDelete: Restrict)
+  trainerId String @db.Uuid
+  competencyId String @db.Uuid
+  skill TrainerSkill @relation(fields: [trainerId, competencyId], references: [trainerId, competencyId], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  progress TrainingProgress @default(IN_PROGRESS)
+  performanceNotes String @default("")
+  signedOffAt DateTime? @db.Timestamptz(3)
+  enrollments TrainingEnrollment[]
+  @@index([trainerId, competencyId])
+}
+model TrainingSession {
+  id String @id @default(uuid()) @db.Uuid
+  trainerId String @db.Uuid
+  competencyId String @db.Uuid
+  skill TrainerSkill @relation(fields: [trainerId, competencyId], references: [trainerId, competencyId], onDelete: Restrict)
+  title String
+  startsAt DateTime @db.Timestamptz(3)
+  endsAt DateTime @db.Timestamptz(3)
+  location String
+  capacity Int
+  cancelledAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  enrollments TrainingEnrollment[]
+  @@index([trainerId, startsAt])
+}
+
+enum TrainingProgress {
+  IN_PROGRESS
+  NEEDS_ATTENTION
+  COMPLETED
+}
+
+enum TrainingAttendance {
+  PRESENT
+  ABSENT
+  EXCUSED
+}
+
+enum MockInterviewOutcome {
+  PASSED
+  FAILED
+}
+
+model TrainingEnrollment {
+  sessionId        String              @db.Uuid
+  assignmentId     String              @db.Uuid
+  session          TrainingSession     @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  assignment       TrainingAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  paymentReference String
+  verifiedBy       String              @db.Uuid
+  verifiedAt       DateTime            @default(now()) @db.Timestamptz(3)
+  attendance       TrainingAttendance?
+
+  @@id([sessionId, assignmentId])
+  @@index([assignmentId])
+}
+
+model MockInterview {
+  id           String                @id @default(uuid()) @db.Uuid
+  attemptId    String                @unique @db.Uuid
+  attempt      AssessmentAttempt    @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  scheduledAt  DateTime              @db.Timestamptz(3)
+  instructions String
+  outcome      MockInterviewOutcome?
+  access       CandidateAccess[]
+
+  @@index([outcome, id])
+}
+
+model CandidateAccess {
+  id                 String        @id @default(uuid()) @db.Uuid
+  employerId         String        @db.Uuid
+  employer           User          @relation(fields: [employerId], references: [id], onDelete: Restrict)
+  interviewId        String        @db.Uuid
+  interview          MockInterview @relation(fields: [interviewId], references: [id], onDelete: Restrict)
+  requestedAt        DateTime      @default(now()) @db.Timestamptz(3)
+  confirmedAt        DateTime?     @db.Timestamptz(3)
+  confirmedBy        String?       @db.Uuid
+  procurementReference String?
+
+  @@unique([employerId, interviewId])
+  @@index([confirmedAt, id])
 }

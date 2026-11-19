@@ -267,6 +267,7 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   mfa?: Prisma.XOR<Prisma.AdminMfaCredentialNullableScalarRelationFilter, Prisma.AdminMfaCredentialWhereInput> | null
   documents?: Prisma.DocumentListRelationFilter
+  candidateAccess?: Prisma.CandidateAccessListRelationFilter
   bookings?: Prisma.AssessmentBookingListRelationFilter
   reviews?: Prisma.DocumentVerificationListRelationFilter
   evidence?: Prisma.VerificationEvidenceListRelationFilter
@@ -298,6 +299,7 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   mfa?: Prisma.AdminMfaCredentialOrderByWithRelationInput
   documents?: Prisma.DocumentOrderByRelationAggregateInput
+  candidateAccess?: Prisma.CandidateAccessOrderByRelationAggregateInput
   bookings?: Prisma.AssessmentBookingOrderByRelationAggregateInput
   reviews?: Prisma.DocumentVerificationOrderByRelationAggregateInput
   evidence?: Prisma.VerificationEvidenceOrderByRelationAggregateInput
@@ -332,6 +334,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   mfa?: Prisma.XOR<Prisma.AdminMfaCredentialNullableScalarRelationFilter, Prisma.AdminMfaCredentialWhereInput> | null
   documents?: Prisma.DocumentListRelationFilter
+  candidateAccess?: Prisma.CandidateAccessListRelationFilter
   bookings?: Prisma.AssessmentBookingListRelationFilter
   reviews?: Prisma.DocumentVerificationListRelationFilter
   evidence?: Prisma.VerificationEvidenceListRelationFilter
@@ -397,6 +400,7 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -428,6 +432,7 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -459,6 +464,7 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -490,6 +496,7 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -883,6 +890,20 @@ export type UserUpdateOneRequiredWithoutTrainerReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTrainerReviewsInput, Prisma.UserUpdateWithoutTrainerReviewsInput>, Prisma.UserUncheckedUpdateWithoutTrainerReviewsInput>
 }
 
+export type UserCreateNestedOneWithoutCandidateAccessInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCandidateAccessInput, Prisma.UserUncheckedCreateWithoutCandidateAccessInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCandidateAccessInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCandidateAccessNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCandidateAccessInput, Prisma.UserUncheckedCreateWithoutCandidateAccessInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCandidateAccessInput
+  upsert?: Prisma.UserUpsertWithoutCandidateAccessInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCandidateAccessInput, Prisma.UserUpdateWithoutCandidateAccessInput>, Prisma.UserUncheckedUpdateWithoutCandidateAccessInput>
+}
+
 export type UserCreateWithoutRolesInput = {
   id?: string
   email: string
@@ -904,6 +925,7 @@ export type UserCreateWithoutRolesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -934,6 +956,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -980,6 +1003,7 @@ export type UserUpdateWithoutRolesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1010,6 +1034,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1040,6 +1065,7 @@ export type UserCreateWithoutProfileInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1070,6 +1096,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1116,6 +1143,7 @@ export type UserUpdateWithoutProfileInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1146,6 +1174,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1176,6 +1205,7 @@ export type UserCreateWithoutIdentitiesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1206,6 +1236,7 @@ export type UserUncheckedCreateWithoutIdentitiesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1252,6 +1283,7 @@ export type UserUpdateWithoutIdentitiesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1282,6 +1314,7 @@ export type UserUncheckedUpdateWithoutIdentitiesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1312,6 +1345,7 @@ export type UserCreateWithoutSessionsInput = {
   challenges?: Prisma.AuthChallengeCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1342,6 +1376,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   challenges?: Prisma.AuthChallengeUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1388,6 +1423,7 @@ export type UserUpdateWithoutSessionsInput = {
   challenges?: Prisma.AuthChallengeUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1418,6 +1454,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   challenges?: Prisma.AuthChallengeUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1448,6 +1485,7 @@ export type UserCreateWithoutChallengesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1478,6 +1516,7 @@ export type UserUncheckedCreateWithoutChallengesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1524,6 +1563,7 @@ export type UserUpdateWithoutChallengesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1554,6 +1594,7 @@ export type UserUncheckedUpdateWithoutChallengesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1584,6 +1625,7 @@ export type UserCreateWithoutMfaInput = {
   challenges?: Prisma.AuthChallengeCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1614,6 +1656,7 @@ export type UserUncheckedCreateWithoutMfaInput = {
   challenges?: Prisma.AuthChallengeUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1660,6 +1703,7 @@ export type UserUpdateWithoutMfaInput = {
   challenges?: Prisma.AuthChallengeUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1690,6 +1734,7 @@ export type UserUncheckedUpdateWithoutMfaInput = {
   challenges?: Prisma.AuthChallengeUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1721,6 +1766,7 @@ export type UserCreateWithoutAuditsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1751,6 +1797,7 @@ export type UserUncheckedCreateWithoutAuditsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1797,6 +1844,7 @@ export type UserUpdateWithoutAuditsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1827,6 +1875,7 @@ export type UserUncheckedUpdateWithoutAuditsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1856,6 +1905,7 @@ export type UserCreateWithoutDocumentsInput = {
   challenges?: Prisma.AuthChallengeCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -1886,6 +1936,7 @@ export type UserUncheckedCreateWithoutDocumentsInput = {
   challenges?: Prisma.AuthChallengeUncheckedCreateNestedManyWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -1932,6 +1983,7 @@ export type UserUpdateWithoutDocumentsInput = {
   challenges?: Prisma.AuthChallengeUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -1962,6 +2014,7 @@ export type UserUncheckedUpdateWithoutDocumentsInput = {
   challenges?: Prisma.AuthChallengeUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -1993,6 +2046,7 @@ export type UserCreateWithoutReviewsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
   audits?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2023,6 +2077,7 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
   audits?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2069,6 +2124,7 @@ export type UserUpdateWithoutReviewsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
   audits?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2099,6 +2155,7 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
   audits?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2129,6 +2186,7 @@ export type UserCreateWithoutEvidenceInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   audits?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2159,6 +2217,7 @@ export type UserUncheckedCreateWithoutEvidenceInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   audits?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2205,6 +2264,7 @@ export type UserUpdateWithoutEvidenceInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   audits?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2235,6 +2295,7 @@ export type UserUncheckedUpdateWithoutEvidenceInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   audits?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2265,6 +2326,7 @@ export type UserCreateWithoutSuggestionsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -2295,6 +2357,7 @@ export type UserUncheckedCreateWithoutSuggestionsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -2341,6 +2404,7 @@ export type UserUpdateWithoutSuggestionsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -2371,6 +2435,7 @@ export type UserUncheckedUpdateWithoutSuggestionsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2401,6 +2466,7 @@ export type UserCreateWithoutBookingsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
   audits?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2431,6 +2497,7 @@ export type UserUncheckedCreateWithoutBookingsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
   audits?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2477,6 +2544,7 @@ export type UserUpdateWithoutBookingsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
   audits?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2507,6 +2575,7 @@ export type UserUncheckedUpdateWithoutBookingsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
   audits?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2537,6 +2606,7 @@ export type UserCreateWithoutAssessmentTargetsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -2567,6 +2637,7 @@ export type UserUncheckedCreateWithoutAssessmentTargetsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -2613,6 +2684,7 @@ export type UserUpdateWithoutAssessmentTargetsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -2643,6 +2715,7 @@ export type UserUncheckedUpdateWithoutAssessmentTargetsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2673,6 +2746,7 @@ export type UserCreateWithoutAssessedAttemptsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -2703,6 +2777,7 @@ export type UserUncheckedCreateWithoutAssessedAttemptsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -2749,6 +2824,7 @@ export type UserUpdateWithoutAssessedAttemptsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -2779,6 +2855,7 @@ export type UserUncheckedUpdateWithoutAssessedAttemptsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2808,6 +2885,7 @@ export type UserCreateWithoutTrainerInvitationsSentInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -2838,6 +2916,7 @@ export type UserUncheckedCreateWithoutTrainerInvitationsSentInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -2873,6 +2952,7 @@ export type UserCreateWithoutTrainerInvitationsAcceptedInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -2903,6 +2983,7 @@ export type UserUncheckedCreateWithoutTrainerInvitationsAcceptedInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -2949,6 +3030,7 @@ export type UserUpdateWithoutTrainerInvitationsSentInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -2979,6 +3061,7 @@ export type UserUncheckedUpdateWithoutTrainerInvitationsSentInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -3020,6 +3103,7 @@ export type UserUpdateWithoutTrainerInvitationsAcceptedInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -3050,6 +3134,7 @@ export type UserUncheckedUpdateWithoutTrainerInvitationsAcceptedInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -3080,6 +3165,7 @@ export type UserCreateWithoutTrainerProfileInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -3110,6 +3196,7 @@ export type UserUncheckedCreateWithoutTrainerProfileInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -3156,6 +3243,7 @@ export type UserUpdateWithoutTrainerProfileInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -3186,6 +3274,7 @@ export type UserUncheckedUpdateWithoutTrainerProfileInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -3216,6 +3305,7 @@ export type UserCreateWithoutTrainerReviewsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
@@ -3246,6 +3336,7 @@ export type UserUncheckedCreateWithoutTrainerReviewsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedCreateNestedManyWithoutEmployerInput
   bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
   reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
   evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
@@ -3292,6 +3383,7 @@ export type UserUpdateWithoutTrainerReviewsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUpdateManyWithoutEmployerNestedInput
   bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
@@ -3322,6 +3414,147 @@ export type UserUncheckedUpdateWithoutTrainerReviewsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
+  candidateAccess?: Prisma.CandidateAccessUncheckedUpdateManyWithoutEmployerNestedInput
+  bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
+  reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
+  evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
+  audits?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  suggestions?: Prisma.CompanySuggestionUncheckedUpdateManyWithoutApplicantNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedUpdateManyWithoutApplicantNestedInput
+  assessedAttempts?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutAssessorNestedInput
+}
+
+export type UserCreateWithoutCandidateAccessInput = {
+  id?: string
+  email: string
+  legalName: string
+  phone?: string | null
+  passwordHash?: string | null
+  emailVerifiedAt?: Date | string | null
+  status?: $Enums.AccountStatus
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  trainerProfile?: Prisma.TrainerProfileCreateNestedOneWithoutUserInput
+  trainerInvitationsSent?: Prisma.TrainerInvitationCreateNestedManyWithoutInvitedByInput
+  trainerInvitationsAccepted?: Prisma.TrainerInvitationCreateNestedManyWithoutAcceptedByInput
+  trainerReviews?: Prisma.TrainerReviewCreateNestedManyWithoutReviewerInput
+  profile?: Prisma.ApplicantProfileCreateNestedOneWithoutUserInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  identities?: Prisma.AuthIdentityCreateNestedManyWithoutUserInput
+  challenges?: Prisma.AuthChallengeCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  mfa?: Prisma.AdminMfaCredentialCreateNestedOneWithoutUserInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutApplicantInput
+  bookings?: Prisma.AssessmentBookingCreateNestedManyWithoutApplicantInput
+  reviews?: Prisma.DocumentVerificationCreateNestedManyWithoutReviewerInput
+  evidence?: Prisma.VerificationEvidenceCreateNestedManyWithoutAuthorInput
+  audits?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  suggestions?: Prisma.CompanySuggestionCreateNestedManyWithoutApplicantInput
+  assessmentTargets?: Prisma.AssessmentTargetCreateNestedManyWithoutApplicantInput
+  assessedAttempts?: Prisma.AssessmentAttemptCreateNestedManyWithoutAssessorInput
+}
+
+export type UserUncheckedCreateWithoutCandidateAccessInput = {
+  id?: string
+  email: string
+  legalName: string
+  phone?: string | null
+  passwordHash?: string | null
+  emailVerifiedAt?: Date | string | null
+  status?: $Enums.AccountStatus
+  sessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  trainerProfile?: Prisma.TrainerProfileUncheckedCreateNestedOneWithoutUserInput
+  trainerInvitationsSent?: Prisma.TrainerInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  trainerInvitationsAccepted?: Prisma.TrainerInvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  trainerReviews?: Prisma.TrainerReviewUncheckedCreateNestedManyWithoutReviewerInput
+  profile?: Prisma.ApplicantProfileUncheckedCreateNestedOneWithoutUserInput
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  identities?: Prisma.AuthIdentityUncheckedCreateNestedManyWithoutUserInput
+  challenges?: Prisma.AuthChallengeUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  mfa?: Prisma.AdminMfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutApplicantInput
+  bookings?: Prisma.AssessmentBookingUncheckedCreateNestedManyWithoutApplicantInput
+  reviews?: Prisma.DocumentVerificationUncheckedCreateNestedManyWithoutReviewerInput
+  evidence?: Prisma.VerificationEvidenceUncheckedCreateNestedManyWithoutAuthorInput
+  audits?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  suggestions?: Prisma.CompanySuggestionUncheckedCreateNestedManyWithoutApplicantInput
+  assessmentTargets?: Prisma.AssessmentTargetUncheckedCreateNestedManyWithoutApplicantInput
+  assessedAttempts?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutAssessorInput
+}
+
+export type UserCreateOrConnectWithoutCandidateAccessInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCandidateAccessInput, Prisma.UserUncheckedCreateWithoutCandidateAccessInput>
+}
+
+export type UserUpsertWithoutCandidateAccessInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCandidateAccessInput, Prisma.UserUncheckedUpdateWithoutCandidateAccessInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCandidateAccessInput, Prisma.UserUncheckedCreateWithoutCandidateAccessInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCandidateAccessInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCandidateAccessInput, Prisma.UserUncheckedUpdateWithoutCandidateAccessInput>
+}
+
+export type UserUpdateWithoutCandidateAccessInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainerProfile?: Prisma.TrainerProfileUpdateOneWithoutUserNestedInput
+  trainerInvitationsSent?: Prisma.TrainerInvitationUpdateManyWithoutInvitedByNestedInput
+  trainerInvitationsAccepted?: Prisma.TrainerInvitationUpdateManyWithoutAcceptedByNestedInput
+  trainerReviews?: Prisma.TrainerReviewUpdateManyWithoutReviewerNestedInput
+  profile?: Prisma.ApplicantProfileUpdateOneWithoutUserNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  identities?: Prisma.AuthIdentityUpdateManyWithoutUserNestedInput
+  challenges?: Prisma.AuthChallengeUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  mfa?: Prisma.AdminMfaCredentialUpdateOneWithoutUserNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutApplicantNestedInput
+  bookings?: Prisma.AssessmentBookingUpdateManyWithoutApplicantNestedInput
+  reviews?: Prisma.DocumentVerificationUpdateManyWithoutReviewerNestedInput
+  evidence?: Prisma.VerificationEvidenceUpdateManyWithoutAuthorNestedInput
+  audits?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  suggestions?: Prisma.CompanySuggestionUpdateManyWithoutApplicantNestedInput
+  assessmentTargets?: Prisma.AssessmentTargetUpdateManyWithoutApplicantNestedInput
+  assessedAttempts?: Prisma.AssessmentAttemptUpdateManyWithoutAssessorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCandidateAccessInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  sessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainerProfile?: Prisma.TrainerProfileUncheckedUpdateOneWithoutUserNestedInput
+  trainerInvitationsSent?: Prisma.TrainerInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  trainerInvitationsAccepted?: Prisma.TrainerInvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  trainerReviews?: Prisma.TrainerReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  profile?: Prisma.ApplicantProfileUncheckedUpdateOneWithoutUserNestedInput
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  identities?: Prisma.AuthIdentityUncheckedUpdateManyWithoutUserNestedInput
+  challenges?: Prisma.AuthChallengeUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  mfa?: Prisma.AdminMfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutApplicantNestedInput
   bookings?: Prisma.AssessmentBookingUncheckedUpdateManyWithoutApplicantNestedInput
   reviews?: Prisma.DocumentVerificationUncheckedUpdateManyWithoutReviewerNestedInput
   evidence?: Prisma.VerificationEvidenceUncheckedUpdateManyWithoutAuthorNestedInput
@@ -3345,6 +3578,7 @@ export type UserCountOutputType = {
   challenges: number
   sessions: number
   documents: number
+  candidateAccess: number
   bookings: number
   reviews: number
   evidence: number
@@ -3363,6 +3597,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   challenges?: boolean | UserCountOutputTypeCountChallengesArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   documents?: boolean | UserCountOutputTypeCountDocumentsArgs
+  candidateAccess?: boolean | UserCountOutputTypeCountCandidateAccessArgs
   bookings?: boolean | UserCountOutputTypeCountBookingsArgs
   reviews?: boolean | UserCountOutputTypeCountReviewsArgs
   evidence?: boolean | UserCountOutputTypeCountEvidenceArgs
@@ -3441,6 +3676,13 @@ export type UserCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountCandidateAccessArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CandidateAccessWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AssessmentBookingWhereInput
 }
@@ -3510,6 +3752,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   mfa?: boolean | Prisma.User$mfaArgs<ExtArgs>
   documents?: boolean | Prisma.User$documentsArgs<ExtArgs>
+  candidateAccess?: boolean | Prisma.User$candidateAccessArgs<ExtArgs>
   bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
   evidence?: boolean | Prisma.User$evidenceArgs<ExtArgs>
@@ -3572,6 +3815,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   mfa?: boolean | Prisma.User$mfaArgs<ExtArgs>
   documents?: boolean | Prisma.User$documentsArgs<ExtArgs>
+  candidateAccess?: boolean | Prisma.User$candidateAccessArgs<ExtArgs>
   bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
   evidence?: boolean | Prisma.User$evidenceArgs<ExtArgs>
@@ -3598,6 +3842,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     mfa: Prisma.$AdminMfaCredentialPayload<ExtArgs> | null
     documents: Prisma.$DocumentPayload<ExtArgs>[]
+    candidateAccess: Prisma.$CandidateAccessPayload<ExtArgs>[]
     bookings: Prisma.$AssessmentBookingPayload<ExtArgs>[]
     reviews: Prisma.$DocumentVerificationPayload<ExtArgs>[]
     evidence: Prisma.$VerificationEvidencePayload<ExtArgs>[]
@@ -4022,6 +4267,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mfa<T extends Prisma.User$mfaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mfaArgs<ExtArgs>>): Prisma.Prisma__AdminMfaCredentialClient<runtime.Types.Result.GetResult<Prisma.$AdminMfaCredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   documents<T extends Prisma.User$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  candidateAccess<T extends Prisma.User$candidateAccessArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$candidateAccessArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CandidateAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookings<T extends Prisma.User$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.User$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidence<T extends Prisma.User$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VerificationEvidencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4707,6 +4953,30 @@ export type User$documentsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
+}
+
+/**
+ * User.candidateAccess
+ */
+export type User$candidateAccessArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CandidateAccess
+   */
+  select?: Prisma.CandidateAccessSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CandidateAccess
+   */
+  omit?: Prisma.CandidateAccessOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CandidateAccessInclude<ExtArgs> | null
+  where?: Prisma.CandidateAccessWhereInput
+  orderBy?: Prisma.CandidateAccessOrderByWithRelationInput | Prisma.CandidateAccessOrderByWithRelationInput[]
+  cursor?: Prisma.CandidateAccessWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CandidateAccessScalarFieldEnum | Prisma.CandidateAccessScalarFieldEnum[]
 }
 
 /**

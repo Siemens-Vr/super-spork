@@ -1,7 +1,7 @@
 import { allBookingPages } from './bookings.js';
 
 export function createLearningStore({ client, onChange = () => {}, onUnauthorized = () => {} }) {
-  const empty = () => ({ owner: '', requestedId: '', bookingId: '', booking: null, plan: null, status: 'idle', busy: false, error: '', requiresMfa: false });
+  const empty = () => ({ owner: '', requestedId: '', bookingId: '', booking: null, plan: null, mockInterview: null, status: 'idle', busy: false, error: '', requiresMfa: false });
   let state = empty(), version = 0;
   const current = v => v === version;
   const fail = error => {
@@ -20,7 +20,7 @@ export function createLearningStore({ client, onChange = () => {}, onUnauthorize
       if (state.busy || (!force && state.status !== 'idle')) return;
       const v = ++version;
       state.status = 'loading'; state.error = ''; state.requiresMfa = false;
-      state.plan = null; state.booking = null; state.bookingId = ''; onChange();
+      state.plan = null; state.mockInterview = null; state.booking = null; state.bookingId = ''; onChange();
       try {
         const bookings = await allBookingPages(page => client.bookings(page));
         if (!current(v)) return;
@@ -41,13 +41,14 @@ export function createLearningStore({ client, onChange = () => {}, onUnauthorize
         state.booking = selected?.booking || requested;
         state.bookingId = state.booking?.bookingId || '';
         state.plan = selected?.attempt.learningPlan || null;
+        state.mockInterview = selected?.attempt.mockInterview || null;
         state.status = 'ready';
       } catch (error) { if (current(v)) { state.status = 'error'; fail(error); } }
       if (current(v)) onChange();
     },
     async progress(itemId, status) {
       const plan = state.plan;
-      if (state.status !== 'ready' || state.busy || !plan?.items.some(item => item.id === itemId) || !['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)) return;
+      if (state.status !== 'ready' || state.busy || !plan?.items.some(item => item.id === itemId && !item.trainingAssignment?.signedOffAt) || !['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)) return;
       const v = version; state.busy = true; state.error = ''; onChange();
       try {
         const updated = await client.learningProgress(plan.id, itemId, status);

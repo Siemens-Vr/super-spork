@@ -31,9 +31,17 @@ export async function watchAdmin() {
 }
 export async function buildTrainer() { await build(options('trainer')); }
 export async function watchTrainer() {const builder=await context(options('trainer'));await builder.rebuild();await builder.watch();return builder;}
+export async function buildEmployer() { await build(options('employer')); }
+export async function watchEmployer() {
+  const builder = await context(options('employer'));
+  await builder.rebuild();
+  await builder.watch();
+  return builder;
+}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await buildApplicant();
   await buildAdmin();
   await buildTrainer();
-  console.log("Applicant, admin and trainer assets built in dist/.");
+  await buildEmployer();
+  console.log("Applicant, admin, trainer and employer assets built in dist/.");
 }

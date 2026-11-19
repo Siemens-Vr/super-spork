@@ -61,5 +61,17 @@ export function connectedLearning(ctx) {
   const plan = s.plan;
   if (!plan) return title + errors(s, e) + card('Your personalized learning plan', '<p>Your learning plan will appear when an assessor publishes your final results.</p>');
   const done = plan.items.filter(i => i.status === 'COMPLETED').length, percent = plan.items.length ? Math.round(done * 100 / plan.items.length) : 100;
-  return title + errors(s, e) + card('Your personalized learning plan', `<div class="progress-label"><span>${done} of ${plan.items.length} activities completed</span><strong>${percent}%</strong></div><div class="progress"><span style="width:${percent}%"></span></div>${plan.items.length ? plan.items.map((item, i) => `<div class="document-row" style="padding:25px 0"><span class="step-number">${i + 1}</span><div style="flex:1"><h3>${e(item.objective)}</h3>${item.resources.filter(r => /^https?:\/\//i.test(r)).map(r => `<p><a href="${e(r)}" target="_blank" rel="noopener noreferrer">Learning resource ↗</a></p>`).join('')}</div><label class="check"><input type="checkbox" data-learning-item="${e(item.id)}" ${item.status === 'COMPLETED' ? 'checked' : ''} ${s.busy ? 'disabled' : ''}>Done</label></div>`).join('') : '<p>No competency gaps were identified in this assessment.</p>'}<p class="notice mt">Progress is saved to your account. Completing an activity records your progress; it does not certify competency.</p>`);
+  const interview = s.mockInterview;
+  let nextStep = '';
+  if (interview?.outcome) {
+    nextStep = card('Mock interview', `<p>${interview.outcome === 'PASSED' ? 'Passed' : 'Failed'}</p>`);
+  } else if (interview) {
+    const when = new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'long', timeStyle: 'short', timeZone: 'Africa/Nairobi',
+    }).format(new Date(interview.scheduledAt));
+    nextStep = card('Mock interview', `<p>Scheduled for ${e(when)} EAT</p><p>${e(interview.instructions)}</p>`);
+  } else if (plan.items.every(item => item.trainingAssignment?.signedOffAt)) {
+    nextStep = card('Mock interview', '<p>Your mock interview is ready to be scheduled. Check your email for joining details.</p>');
+  }
+  return title + errors(s, e) + nextStep + card('Your personalized learning plan', `<div class="progress-label"><span>${done} of ${plan.items.length} activities completed</span><strong>${percent}%</strong></div><div class="progress"><span style="width:${percent}%"></span></div>${plan.items.length ? plan.items.map((item, i) => `<div class="document-row" style="padding:25px 0"><span class="step-number">${i + 1}</span><div style="flex:1"><h3>${e(item.objective)}</h3>${item.resources.filter(r => /^https?:\/\//i.test(r)).map(r => `<p><a href="${e(r)}" target="_blank" rel="noopener noreferrer">Learning resource ↗</a></p>`).join('')}</div><label class="check"><input type="checkbox" data-learning-item="${e(item.id)}" ${item.status === 'COMPLETED' ? 'checked' : ''} ${s.busy || item.trainingAssignment?.signedOffAt ? 'disabled' : ''}>${item.trainingAssignment?.signedOffAt ? 'Trainer signed off' : 'Done'}</label></div>`).join('') : '<p>No competency gaps were identified in this assessment.</p>'}<p class="notice mt">Progress is saved to your account. Completing an activity records your progress; it does not certify competency.</p>`);
 }

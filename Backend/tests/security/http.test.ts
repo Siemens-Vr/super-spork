@@ -25,7 +25,12 @@ describe('HTTP security without external services', () => {
     expect(r.body.error.code).toBe('CSRF_INVALID');
     expect(r.body.error.requestId).toBeTruthy();
   });
-  it.each(['http://localhost:3000', 'http://localhost:3002', 'http://localhost:4000'])(
+  it.each([
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:4000',
+  ])(
     'allows credentialed frontend and Swagger requests from %s while enforcing CSRF',
     async (origin) => {
       const preflight = await request(app)
@@ -52,6 +57,18 @@ describe('HTTP security without external services', () => {
     const r = await request(app).get('/api/v1/applicants/me');
     expect(r.status).toBe(401);
     expect(r.body.error.code).toBe('AUTHENTICATION_REQUIRED');
+  });
+  it('requires a session before revealing a shortlist, an access request, or admin hiring data', async () => {
+    for (const path of [
+      '/api/v1/employer/candidates',
+      '/api/v1/employer/requests/10000000-0000-4000-8000-000000000001/details',
+      '/api/v1/admin/hiring/requests',
+    ]) {
+      const response = await request(app).get(path);
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('AUTHENTICATION_REQUIRED');
+      expect(response.headers['cache-control']).toBe('no-store');
+    }
   });
   it('serves interactive Swagger documentation', async () => {
     const r = await request(app).get('/docs/');

@@ -1,27 +1,31 @@
+import { renderPublicPage } from './app/public/pages.mjs';
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { buildApplicant, watchApplicant, buildAdmin, watchAdmin } from './build.mjs';
+import {
+  buildApplicant, watchApplicant, buildAdmin, watchAdmin,
+  buildEmployer, watchEmployer, buildTrainer, watchTrainer,
+} from './build.mjs';
 const portals = { applicant: 3000, employer: 3001, admin: 3002, trainer: 3003 };
 const portal = process.argv[2] || 'applicant';
 if (!Object.hasOwn(portals, portal)) throw new Error('Choose applicant, employer, admin, or trainer');
 const root = new URL('./', import.meta.url);
+const [buildPortal, watchPortal] = {
+  applicant: [buildApplicant, watchApplicant],
+  admin: [buildAdmin, watchAdmin],
+  employer: [buildEmployer, watchEmployer],
+  trainer: [buildTrainer, watchTrainer],
+}[portal];
 let builder;
-{
-  if (process.env.NODE_ENV === 'production') await buildApplicant();
-  else builder = await watchApplicant();
-}
-if (portal === 'admin') {
-  if (process.env.NODE_ENV === 'production') await buildAdmin();
-  else builder = await watchAdmin();
-}
-let trainerBuilder;
-if(portal==='trainer'){const { buildTrainer,watchTrainer }=await import('./build.mjs');if(process.env.NODE_ENV==='production')await buildTrainer();else trainerBuilder=await watchTrainer();}
+if (process.env.NODE_ENV === 'production') await buildPortal();
+else builder = await watchPortal();
 const paths = [
+  ...(portal === 'applicant' ? ['app/public/public.css', 'app/public/public.js'] : []),
   'styles/globals.css', 'components/html.js', 'hooks/navigation.js',
   ...(portal === 'applicant' ? [
     'dist/app.js', 'dist/app.css', 'styles/auth.css',
   ] : []),
   ...(portal === 'admin' ? ['dist/admin/app.js', 'dist/admin/app.css', 'styles/auth.css'] : []),
+  ...(portal === 'employer' ? ['dist/employer/app.js', 'dist/employer/app.css'] : []),
   ...(portal === 'trainer' ? ['dist/trainer/app.js','dist/trainer/app.css'] : []),
 ];
 const files = Object.fromEntries(paths.map(path => [
@@ -31,11 +35,15 @@ files['/'] = [new URL(`app/${portal}/index.html`, root), 'text/html'];
 const authPaths = new Set(['/login', '/signup', '/register', '/forgot-password', '/reset-password', '/verify-email', '/register/google', '/auth/google/callback']);
 const pagePaths = new Set(portal === 'applicant'
   ? ['/', '/dashboard', '/workspaces', '/onboarding', '/documents', '/document', '/upload', '/careers', '/career', '/target', '/booking', '/preflight', '/assessment', '/results', '/learning', '/settings', '/help', '/privacy', '/mfa', ...authPaths]
-  : portal === 'admin' ? ['/', '/dashboard', '/assessment-reviews', '/assessment-review', '/availability', '/bookings', '/booking', '/applicants', '/applicant', '/documents', '/identity', '/document', '/settings', '/login', '/forgot-password', '/reset-password', '/trainers', '/trainer', '/trainer-invitations'] : portal==='trainer'?['/','/dashboard','/profile','/qualifications','/invitations/accept']:['/']);
+  : portal === 'admin' ? ['/', '/dashboard', '/assessment-reviews', '/assessment-review', '/availability', '/bookings', '/booking', '/applicants', '/applicant', '/documents', '/identity', '/document', '/settings', '/login', '/forgot-password', '/reset-password', '/training', '/hiring', '/trainers', '/trainer', '/trainer-invitations'] : portal==='trainer'?['/','/dashboard','/profile','/qualifications','/invitations/accept']:['/', '/dashboard', '/candidates', '/requests', '/settings']);
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const pathname = url.pathname.replace(/\/+$/, '') || '/';
   if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405, { Allow: 'GET, HEAD' }); return res.end(); }
+  if (portal === 'applicant' && ['/', '/about', '/contact'].includes(pathname) && !url.hash) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(req.method === 'HEAD' ? undefined : renderPublicPage(pathname));
+  }
   if ((portal === 'applicant' && authPaths.has(pathname)) || (portal === 'admin' && ['/login', '/forgot-password', '/reset-password'].includes(pathname))) {
     // Keep only OAuth outcomes. Never forward codes, tokens or return URLs.
     const params = new URLSearchParams();
@@ -66,7 +74,6 @@ server.listen(port, process.env.HOST || '127.0.0.1', () => console.log(`VML NEXU
 server.on('error', error => { console.error(error.message); process.exitCode = 1; });
 async function stop() {
   await builder?.dispose();
-  await trainerBuilder?.dispose();
   server.close();
 }
 process.once('SIGINT', () => void stop());

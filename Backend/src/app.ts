@@ -1,3 +1,5 @@
+import { employerRouter, hiringAdminRouter } from './routes/hiring.routes.js';
+import { trainingAdminRouter, trainingRouter } from './routes/training.routes.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -135,7 +137,11 @@ export function createApp() {
   app.use('/api/v1/identity', identityRouter);
   app.use('/api/v1/documents', documentRouter);
   app.use('/api/v1/assessments', assessmentRouter);
+  app.use('/api/v1/trainers/training', trainingRouter);
   app.use('/api/v1/trainers', trainerRouter);
+  app.use('/api/v1/employer', employerRouter);
+  app.use('/api/v1/admin/hiring', hiringAdminRouter);
+  app.use('/api/v1/admin/training', trainingAdminRouter);
   app.use('/api/v1/admin', trainerAdminRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/admin', assessmentInteractionAdminRouter);

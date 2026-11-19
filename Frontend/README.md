@@ -14,7 +14,7 @@ Frontend/
       results/      # results.tsx + results.module.css
       learning/     # learning.tsx + learning.module.css
       settings/     # settings.tsx + settings.module.css
-    employer/        # Future employer portal
+    employer/        # Candidate shortlist and profile requests
     admin/           # Administrator sign-in, applicants and document verification
     trainer/         # Trainer invitations, professional profile and qualifications
   components/        # Shared rendering primitives and future UI components
@@ -38,7 +38,7 @@ From Frontend, use a separate terminal for each portal:
 | Command | Address | Status |
 | --- | --- | --- |
 | npm run dev:applicant | http://localhost:3000 | Applicant portal |
-| npm run dev:employer | http://localhost:3001 | Placeholder |
+| npm run dev:employer | http://localhost:3001 | Candidate discovery and profile requests |
 | npm run dev:admin | http://localhost:3002 | Admin portal |
 | npm run dev:trainer | http://localhost:3003 | Trainer onboarding portal |
 
@@ -112,7 +112,7 @@ Backend configuration must include `FRONTEND_URL=http://localhost:3000`, the fro
 
 The public `apiBase` and `consentVersion` in `lib/config.js` must match your backend deployment and `PRIVACY_NOTICE_VERSION`. They currently target localhost and the `2026-11-01` privacy notice. Production hosting needs those public values updated along with backend URLs/CORS and cookie settings. Restart the frontend server after changing return-path handling.
 
-Some unconnected applicant dashboard content remains illustrative. Prototype choices may be saved in localStorage; connected assessment answers and learning progress are saved through the backend. The employer portal remains a placeholder. Trainer onboarding is connected to the protected backend APIs.
+Some unconnected applicant dashboard content remains illustrative. Prototype choices may be saved in localStorage; connected assessment answers and learning progress are saved through the backend.
 
 ### Administrator workspace
 
@@ -151,6 +151,11 @@ The image runs as an unprivileged user, binds to 0.0.0.0 inside the container, a
 
 Each shared UI component lives in `components/<name>/<name>.tsx` with a matching `<name>.module.css`: `sidebar`, `topbar`, `footer`, `icon`, and `dashboard-layout`. These follow the existing TSX string-rendering approach; React is not required.
 
-Every portal imports `dashboardLayout` and supplies its role, current route, display name, trusted page markup and navigation links. Each portal owns `app/<role>/navigation.ts`, so changing one role’s links does not change another role. Links use typed `[route, label, icon]` tuples. The shared sidebar handles active links, mobile navigation, the VML logo, settings and optional sign out. Authentication still controls applicant access; navigation is not an authorization check.
+The portals use role-specific navigation. The employer portal uses the shared sign-in at port 3000 and requires a verified account with employer access granted in Admin → Hiring operations. Add the employer frontend origin to the backend CORS allowlist before opening the portal. See [Trainer and hiring workflows](../Backend/docs/training-dashboard.md) for setup and operation.
+## Public website
 
-Admin, employer and trainer use the shared layout for clearly labeled previews. Their proposed links can be edited in their navigation files; the linked pages have no backend functionality yet.
+The applicant frontend also serves the project’s public pages: `/` (landing), `/about`, and `/contact`. `/login` and `/signup` continue to use the existing shared authentication flow and role-based dashboard redirects. `/dashboard` remains the authenticated applicant workspace.
+
+Public markup is rendered by `app/public/pages.mjs`, with isolated styles and interactions in the same directory. The 3D landing illustration uses CSS transforms and honours reduced-motion preferences. Public pages do not load private workspace data or require the API to be available. Only the public CSS/JS files are served; page source modules are not exposed.
+
+Contact uses `vr.africa@dkut.ac.ke`. The contact form prepares a mailto draft in the visitor’s email app; it does not submit or store messages on the backend. Run `npm run test:public` for public-page checks.

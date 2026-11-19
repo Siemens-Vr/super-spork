@@ -402,17 +402,23 @@ test('shared password login routes backend roles without signing administrators 
     await submit(['ADMIN']);
     assert.equal(destination, 'http://localhost:3002/dashboard'); assert.equal(logouts, 0);
     await submit(['APPLICANT']); assert.equal(location.pathname, '/dashboard'); assert.equal(destination, '');
-    await submit(['ADMIN', 'APPLICANT']); assert.equal(location.pathname, '/workspaces');
+    await submit(['ADMIN', 'APPLICANT']); assert.equal(destination, 'http://localhost:3002/dashboard');
     const picker = authGate('workspaces');
     assert.ok(picker.includes('http://localhost:3002/dashboard'));
     assert.ok(picker.includes('http://localhost:3000/dashboard'));
     assert.ok(picker.includes('requires MFA'));
     await submit(['TRAINER']); assert.equal(destination,'http://localhost:3003/dashboard');
-    await submit(['TRAINER','APPLICANT']); assert.equal(location.pathname,'/workspaces'); assert.ok(authGate('workspaces').includes('Trainer workspace'));
-    await submit(['EMPLOYER']); assert.equal(location.pathname, '/workspaces');
+    await submit(['TRAINER','APPLICANT']); assert.equal(destination,'http://localhost:3003/dashboard'); assert.ok(authGate('workspaces').includes('Trainer workspace'));
+    await submit(['APPLICANT','TRAINER','ADMIN']); assert.equal(destination,'http://localhost:3002/dashboard');
+    setPath('/login'); destination=''; location.replace=url=>{destination=url;}; await initializeAuth(() => {}); authGate('login'); assert.equal(destination,'http://localhost:3002/dashboard');
+    await submit(['EMPLOYER']); assert.equal(destination, 'http://localhost:3001/dashboard');
+    await submit(['APPLICANT', 'EMPLOYER']); assert.equal(destination, 'http://localhost:3001/dashboard');
+    assert.ok(authGate('workspaces').includes('Employer workspace'));
+    assert.ok(authGate('workspaces').includes('Applicant workspace'));
+    await submit(['UNSUPPORTED']); assert.equal(location.pathname, '/workspaces');
     assert.ok(authGate('workspaces').includes('Workspace access required'));
     assert.ok(!authGate('workspaces').includes('Administrator workspace'));
-    setPath('/login'); principal.emailVerifiedAt = null; principal.roles = ['ADMIN'];
+    setPath('/login'); location.replace=url=>{destination=url;}; principal.emailVerifiedAt = null; principal.roles = ['ADMIN'];
     await initializeAuth(() => {}); authGate('login'); assert.equal(location.pathname, '/verify-email');
   } finally { Object.assign(api, originals); globalThis.FormData = originalFormData; }
 });

@@ -147,3 +147,29 @@ export const TrainerInvitationStatus = {
 } as const
 
 export type TrainerInvitationStatus = (typeof TrainerInvitationStatus)[keyof typeof TrainerInvitationStatus]
+
+
+export const TrainingProgress = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  NEEDS_ATTENTION: 'NEEDS_ATTENTION',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type TrainingProgress = (typeof TrainingProgress)[keyof typeof TrainingProgress]
+
+
+export const TrainingAttendance = {
+  PRESENT: 'PRESENT',
+  ABSENT: 'ABSENT',
+  EXCUSED: 'EXCUSED'
+} as const
+
+export type TrainingAttendance = (typeof TrainingAttendance)[keyof typeof TrainingAttendance]
+
+
+export const MockInterviewOutcome = {
+  PASSED: 'PASSED',
+  FAILED: 'FAILED'
+} as const
+
+export type MockInterviewOutcome = (typeof MockInterviewOutcome)[keyof typeof MockInterviewOutcome]

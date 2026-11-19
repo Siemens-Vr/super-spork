@@ -667,6 +667,57 @@ export type EnumTrainerStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTrainerStatusFilter<$PrismaModel>
 }
 
+export type EnumTrainingProgressFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingProgress | Prisma.EnumTrainingProgressFieldRefInput<$PrismaModel>
+  in?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel> | $Enums.TrainingProgress
+}
+
+export type EnumTrainingProgressWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingProgress | Prisma.EnumTrainingProgressFieldRefInput<$PrismaModel>
+  in?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTrainingProgressWithAggregatesFilter<$PrismaModel> | $Enums.TrainingProgress
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel>
+}
+
+export type EnumTrainingAttendanceNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingAttendance | Prisma.EnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel> | $Enums.TrainingAttendance | null
+}
+
+export type EnumTrainingAttendanceNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingAttendance | Prisma.EnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTrainingAttendanceNullableWithAggregatesFilter<$PrismaModel> | $Enums.TrainingAttendance | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel>
+}
+
+export type EnumMockInterviewOutcomeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MockInterviewOutcome | Prisma.EnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel> | $Enums.MockInterviewOutcome | null
+}
+
+export type EnumMockInterviewOutcomeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MockInterviewOutcome | Prisma.EnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMockInterviewOutcomeNullableWithAggregatesFilter<$PrismaModel> | $Enums.MockInterviewOutcome | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1262,6 +1313,57 @@ export type NestedEnumTrainerStatusWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTrainerStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTrainerStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTrainingProgressFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingProgress | Prisma.EnumTrainingProgressFieldRefInput<$PrismaModel>
+  in?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel> | $Enums.TrainingProgress
+}
+
+export type NestedEnumTrainingProgressWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingProgress | Prisma.EnumTrainingProgressFieldRefInput<$PrismaModel>
+  in?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TrainingProgress[] | Prisma.ListEnumTrainingProgressFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTrainingProgressWithAggregatesFilter<$PrismaModel> | $Enums.TrainingProgress
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTrainingProgressFilter<$PrismaModel>
+}
+
+export type NestedEnumTrainingAttendanceNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingAttendance | Prisma.EnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel> | $Enums.TrainingAttendance | null
+}
+
+export type NestedEnumTrainingAttendanceNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TrainingAttendance | Prisma.EnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TrainingAttendance[] | Prisma.ListEnumTrainingAttendanceFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTrainingAttendanceNullableWithAggregatesFilter<$PrismaModel> | $Enums.TrainingAttendance | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTrainingAttendanceNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MockInterviewOutcome | Prisma.EnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel> | $Enums.MockInterviewOutcome | null
+}
+
+export type NestedEnumMockInterviewOutcomeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MockInterviewOutcome | Prisma.EnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MockInterviewOutcome[] | Prisma.ListEnumMockInterviewOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMockInterviewOutcomeNullableWithAggregatesFilter<$PrismaModel> | $Enums.MockInterviewOutcome | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMockInterviewOutcomeNullableFilter<$PrismaModel>
 }
 
 

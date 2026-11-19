@@ -312,3 +312,33 @@ export type TrainerQualification = Prisma.TrainerQualificationModel
  *
  */
 export type TrainerReview = Prisma.TrainerReviewModel
+/**
+ * Model TrainerSkill
+ *
+ */
+export type TrainerSkill = Prisma.TrainerSkillModel
+/**
+ * Model TrainingAssignment
+ *
+ */
+export type TrainingAssignment = Prisma.TrainingAssignmentModel
+/**
+ * Model TrainingSession
+ *
+ */
+export type TrainingSession = Prisma.TrainingSessionModel
+/**
+ * Model TrainingEnrollment
+ *
+ */
+export type TrainingEnrollment = Prisma.TrainingEnrollmentModel
+/**
+ * Model MockInterview
+ *
+ */
+export type MockInterview = Prisma.MockInterviewModel
+/**
+ * Model CandidateAccess
+ *
+ */
+export type CandidateAccess = Prisma.CandidateAccessModel
